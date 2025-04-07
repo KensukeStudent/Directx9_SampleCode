@@ -1,0 +1,32 @@
+﻿  d3dapp.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'framework/d3dapp.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  d3denumeration.cpp
+  d3dfile.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\framework\d3dfile.cpp(623,28): warning C4456: 'pChildData' を宣言すると、以前のローカル宣言が隠蔽されます
+      C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\framework\d3dfile.cpp(563,25):
+      'pChildData' の宣言を確認してください
+  
+C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\framework\d3dfile.cpp(563,25): warning C4189: 'pChildData': ローカル変数が初期化されましたが、参照されていません
+  d3dfont.cpp
+  d3dsettings.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'framework/d3dsettings.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  d3dutil.cpp
+  dxutil.cpp
+  main.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  コードを生成中...
+resource.h(56): warning RC4005: 'IDM_EXIT' : redefinition
+  
+  2_7_Texture.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\x64\Debug\2_7_Texture.exe
