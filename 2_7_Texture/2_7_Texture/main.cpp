@@ -153,29 +153,24 @@ HRESULT CMyD3DApplication::ConfirmDevice(D3DCAPS9* pCaps,
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::InitDeviceObjects()
 {
-	// HRESULT hr = D3DUtil_CreateTexture(m_pd3dDevice, TEXT("texture.bmp"), &m_pTexture);
+    D3DXIMAGE_INFO info;
 
-    //IDirect3DTexture9* pTexture;
-    //D3DXIMAGE_INFO info;
-    //// ファイルからテクスチャーを生成する
-    //HRESULT hr = D3DXCreateTextureFromFileExA(
-    //    m_pd3dDevice,	// Direct3DDevice
-    //    "earth.bmp",		// ファイル名
-    //    D3DX_DEFAULT,		// 横幅(D3DX_DEFAULTでファイルから判定)
-    //    D3DX_DEFAULT,		// 高さ(D3DX_DEFAULTでファイルから判定)
-    //    1,			// ミップマップの数
-    //    0,			// 使用用途
-    //    D3DFMT_A8R8G8B8,	// フォーマット
-    //    D3DPOOL_MANAGED,	// メモリの管理設定
-    //    D3DX_FILTER_NONE,	// フィルター設定
-    //    D3DX_DEFAULT,		// ミップマップフィルターの設定
-    //    0x00000000,		// カラーキー
-    //    &info,			// 画像情報
-    //    NULL,			// パレットデータ
-    //    &pTexture);		// 生成したテクスチャーの格納先
-
-
-    HRESULT hr = NULL;
+    // ファイルからテクスチャーを生成する
+    HRESULT hr = D3DXCreateTextureFromFileExA(
+        m_pd3dDevice,	// Direct3DDevice
+        "earth.bmp",		// ファイル名
+        D3DX_DEFAULT,		// 横幅(D3DX_DEFAULTでファイルから判定)
+        D3DX_DEFAULT,		// 高さ(D3DX_DEFAULTでファイルから判定)
+        1,			// ミップマップの数
+        0,			// 使用用途
+        D3DFMT_A8R8G8B8,	// フォーマット
+        D3DPOOL_MANAGED,	// メモリの管理設定
+        D3DX_FILTER_NONE,	// フィルター設定
+        D3DX_DEFAULT,		// ミップマップフィルターの設定
+        0x00000000,		// カラーキー
+        &info,			// 画像情報
+        NULL,			// パレットデータ
+        &m_pTexture);		// 生成したテクスチャーの格納先
 
     // ★★★ 追加：テクスチャーを読み込む
     if (FAILED(hr))    // テクスチャオブジェクト
