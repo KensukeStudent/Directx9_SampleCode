@@ -143,6 +143,7 @@
     <ClInclude Include="framework\d3dsettings.h" />
     <ClInclude Include="framework\d3dutil.h" />
     <ClInclude Include="framework\dxutil.h" />
+    <ClInclude Include="d3dinput.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="framework\d3dsettings.cpp" />
     <ClCompile Include="framework\d3dutil.cpp" />
     <ClCompile Include="framework\dxutil.cpp" />
+    <ClCompile Include="d3dinput.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

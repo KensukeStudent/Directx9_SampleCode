@@ -1,7 +1,7 @@
-//-------------------------------------------------------------
+ï»¿//-------------------------------------------------------------
 // File: main.cpp
 //
-// Desc: ƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒfƒBƒ“ƒO
+// Desc: ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‡ã‚£ãƒ³ã‚°
 //-------------------------------------------------------------
 #define STRICT
 #include <windows.h>
@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <d3dx9.h>
 #include <tchar.h>
+
 #include "DXUtil.h"
 #include "D3DEnumeration.h"
 #include "D3DSettings.h"
@@ -19,26 +20,27 @@
 #include "D3DFont.h"
 #include "D3DFile.h"
 #include "D3DUtil.h"
+#include "d3dinput.h"
 #include "resource.h"
 #include "main.h"
 
 
 
 //-------------------------------------------------------------
-// ’¸“_ƒtƒH[ƒ}ƒbƒg
+// é ‚ç‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 //-------------------------------------------------------------
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
 typedef struct {
-    FLOAT x, y, z, rhw;    // ƒXƒNƒŠ[ƒ“À•W‚Å‚ÌˆÊ’u
-    DWORD color;           // ’¸“_F
-    FLOAT tu, tv;          // ƒeƒNƒXƒ`ƒƒ[À•W
+    FLOAT x, y, z, rhw;    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã§ã®ä½ç½®
+    DWORD color;           // é ‚ç‚¹è‰²
+    FLOAT tu, tv;          // ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼åº§æ¨™
 } CUSTOMVERTEX;
 
 
 
 //-------------------------------------------------------------
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 //-------------------------------------------------------------
 CMyD3DApplication* g_pApp  = NULL;
 HINSTANCE          g_hInst = NULL;
@@ -46,7 +48,7 @@ HINSTANCE          g_hInst = NULL;
 
 //-------------------------------------------------------------
 // Name: WinMain()
-// Desc: ƒƒCƒ“ŠÖ”
+// Desc: ãƒ¡ã‚¤ãƒ³é–¢æ•°
 //-------------------------------------------------------------
 INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
 {
@@ -59,6 +61,9 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
     if( FAILED( d3dApp.Create( hInst ) ) )
         return 0;
 
+    if (!InitDirectInput(hInst, g_pApp->GetWindowHandle()))
+        return 0;
+
     return d3dApp.Run();
 }
 
@@ -67,7 +72,7 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
 
 //-------------------------------------------------------------
 // Name: CMyD3DApplication()
-// Desc: ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// Desc: ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //-------------------------------------------------------------
 CMyD3DApplication::CMyD3DApplication()
 {
@@ -91,7 +96,7 @@ CMyD3DApplication::CMyD3DApplication()
 
 //-------------------------------------------------------------
 // Name: ~CMyD3DApplication()
-// Desc: ƒfƒXƒgƒ‰ƒNƒ^
+// Desc: ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //-------------------------------------------------------------
 CMyD3DApplication::~CMyD3DApplication()
 {
@@ -102,13 +107,13 @@ CMyD3DApplication::~CMyD3DApplication()
 
 //-------------------------------------------------------------
 // Name: OneTimeSceneInit()
-// Desc: ˆê“x‚¾‚¯s‚¤‰Šú‰»
-//		ƒEƒBƒ“ƒhƒE‚Ì‰Šú‰»‚âIDirect3D9‚Ì‰Šú‰»‚ÍI‚í‚Á‚Ä‚Ü‚·B
-//		‚½‚¾ALPDIRECT3DDEVICE9 ‚Ì‰Šú‰»‚ÍI‚í‚Á‚Ä‚¢‚Ü‚¹‚ñB
+// Desc: ä¸€åº¦ã ã‘è¡Œã†åˆæœŸåŒ–
+//		ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸåŒ–ã‚„IDirect3D9ã®åˆæœŸåŒ–ã¯çµ‚ã‚ã£ã¦ã¾ã™ã€‚
+//		ãŸã ã€LPDIRECT3DDEVICE9 ã®åˆæœŸåŒ–ã¯çµ‚ã‚ã£ã¦ã„ã¾ã›ã‚“ã€‚
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::OneTimeSceneInit()
 {
-    // ƒ[ƒfƒBƒ“ƒOƒƒbƒZ[ƒW‚ğ•\¦‚·‚é
+    // ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹
     SendMessage( m_hWnd, WM_PAINT, 0, 0 );
 
     m_bLoadingApp = FALSE;
@@ -121,7 +126,7 @@ HRESULT CMyD3DApplication::OneTimeSceneInit()
 
 //-------------------------------------------------------------
 // Name: ConfirmDevice()
-// Desc: ‰Šú‰»‚Ì‚ÉŒÄ‚Î‚ê‚Ü‚·B•K—v‚È”\—Í‚ğƒ`ƒFƒbƒN‚µ‚Ü‚·B
+// Desc: åˆæœŸåŒ–ã®æ™‚ã«å‘¼ã°ã‚Œã¾ã™ã€‚å¿…è¦ãªèƒ½åŠ›ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¾ã™ã€‚
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::ConfirmDevice( D3DCAPS9* pCaps,
                      DWORD dwBehavior,    D3DFORMAT Format )
@@ -132,7 +137,7 @@ HRESULT CMyD3DApplication::ConfirmDevice( D3DCAPS9* pCaps,
     
     BOOL bCapsAcceptable;
 
-    // ƒOƒ‰ƒtƒBƒbƒNƒXƒ{[ƒh‚ªƒvƒƒOƒ‰ƒ€‚ğÀs‚·‚é”\—Í‚ª‚ ‚é‚©Šm”F‚·‚é
+    // ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒœãƒ¼ãƒ‰ãŒãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’å®Ÿè¡Œã™ã‚‹èƒ½åŠ›ãŒã‚ã‚‹ã‹ç¢ºèªã™ã‚‹
     bCapsAcceptable = TRUE;
 
     if( bCapsAcceptable )         
@@ -145,22 +150,22 @@ static HRESULT LoadTexture(LPCSTR pSrcFile, LPDIRECT3DTEXTURE9* pTexture)
 {
     D3DXIMAGE_INFO info;
 
-    // ƒtƒ@ƒCƒ‹‚©‚çƒeƒNƒXƒ`ƒƒ[‚ğ¶¬‚·‚é
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’ç”Ÿæˆã™ã‚‹
     HRESULT hr = D3DXCreateTextureFromFileExA(
         g_pApp->GetD3DDevice(),	// Direct3DDevice
-        pSrcFile,		// ƒtƒ@ƒCƒ‹–¼
-        D3DX_DEFAULT,		// ‰¡•(D3DX_DEFAULT‚Åƒtƒ@ƒCƒ‹‚©‚ç”»’è)
-        D3DX_DEFAULT,		// ‚‚³(D3DX_DEFAULT‚Åƒtƒ@ƒCƒ‹‚©‚ç”»’è)
-        1,			// ƒ~ƒbƒvƒ}ƒbƒv‚Ì”
-        0,			// g—p—p“r
-        D3DFMT_A8R8G8B8,	// ƒtƒH[ƒ}ƒbƒg
-        D3DPOOL_MANAGED,	// ƒƒ‚ƒŠ‚ÌŠÇ—İ’è
-        D3DX_FILTER_NONE,	// ƒtƒBƒ‹ƒ^[İ’è
-        D3DX_DEFAULT,		// ƒ~ƒbƒvƒ}ƒbƒvƒtƒBƒ‹ƒ^[‚Ìİ’è
-        0x00000000,		// ƒJƒ‰[ƒL[
-        &info,			// ‰æ‘œî•ñ
-        NULL,			// ƒpƒŒƒbƒgƒf[ƒ^
-        pTexture);		// ¶¬‚µ‚½ƒeƒNƒXƒ`ƒƒ[‚ÌŠi”[æ
+        pSrcFile,		// ãƒ•ã‚¡ã‚¤ãƒ«å
+        D3DX_DEFAULT,		// æ¨ªå¹…(D3DX_DEFAULTã§ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰åˆ¤å®š)
+        D3DX_DEFAULT,		// é«˜ã•(D3DX_DEFAULTã§ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰åˆ¤å®š)
+        1,			// ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ã®æ•°
+        0,			// ä½¿ç”¨ç”¨é€”
+        D3DFMT_A8R8G8B8,	// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+        D3DPOOL_MANAGED,	// ãƒ¡ãƒ¢ãƒªã®ç®¡ç†è¨­å®š
+        D3DX_FILTER_NONE,	// ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼è¨­å®š
+        D3DX_DEFAULT,		// ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã®è¨­å®š
+        0x00000000,		// ã‚«ãƒ©ãƒ¼ã‚­ãƒ¼
+        &info,			// ç”»åƒæƒ…å ±
+        NULL,			// ãƒ‘ãƒ¬ãƒƒãƒˆãƒ‡ãƒ¼ã‚¿
+        pTexture);		// ç”Ÿæˆã—ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ ¼ç´å…ˆ
     
     return hr;
 }
@@ -168,26 +173,26 @@ static HRESULT LoadTexture(LPCSTR pSrcFile, LPDIRECT3DTEXTURE9* pTexture)
 
 //-------------------------------------------------------------
 // Name: InitDeviceObjects()
-// Desc: ƒfƒoƒCƒX‚ª¶¬‚³‚ê‚½Œã‚Ì‰Šú‰»‚ğ‚µ‚Ü‚·B
-//		ƒtƒŒ[ƒ€ƒoƒbƒtƒ@ƒtƒH[ƒ}ƒbƒg‚âƒfƒoƒCƒX‚Ìí—Ş‚ª•Ï‚í‚Á‚½
-//		Œã‚É’Ê‰ß‚µ‚Ü‚·B
-//		‚±‚±‚ÅŠm•Û‚µ‚½ƒƒ‚ƒŠ‚ÍDeleteDeviceObjects()‚ÅŠJ•ú‚µ‚Ü‚·
+// Desc: ãƒ‡ãƒã‚¤ã‚¹ãŒç”Ÿæˆã•ã‚ŒãŸå¾Œã®åˆæœŸåŒ–ã‚’ã—ã¾ã™ã€‚
+//		ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚„ãƒ‡ãƒã‚¤ã‚¹ã®ç¨®é¡ãŒå¤‰ã‚ã£ãŸ
+//		å¾Œã«é€šéã—ã¾ã™ã€‚
+//		ã“ã“ã§ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã¯DeleteDeviceObjects()ã§é–‹æ”¾ã—ã¾ã™
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::InitDeviceObjects()
 {
-    // ’n‹…ƒeƒNƒXƒ`ƒƒ[‚ğ“Ç‚İ‚Ş
+    // åœ°çƒãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’èª­ã¿è¾¼ã‚€
     if(FAILED(LoadTexture(
-					 "earth.bmp"			// ƒtƒ@ƒCƒ‹–¼
-					, &m_pEarthTexture ) ) )// ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					 "earth.bmp"			// ãƒ•ã‚¡ã‚¤ãƒ«å
+					, &m_pEarthTexture ) ) )// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
         return E_FAIL;
 
-    // ‰_ƒeƒNƒXƒ`ƒƒ[‚ğ“Ç‚İ‚Ş
+    // é›²ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’èª­ã¿è¾¼ã‚€
     if( FAILED(LoadTexture( 
-					  "cloud.bmp"			// ƒtƒ@ƒCƒ‹–¼
-					, &m_pCloudTexture ) ) )// ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					  "cloud.bmp"			// ãƒ•ã‚¡ã‚¤ãƒ«å
+					, &m_pCloudTexture ) ) )// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
         return E_FAIL;
 
-	// ƒtƒHƒ“ƒg
+	// ãƒ•ã‚©ãƒ³ãƒˆ
     m_pFont->InitDeviceObjects( m_pd3dDevice );
 
     return S_OK;
@@ -195,82 +200,82 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 
 //-------------------------------------------------------------
 // Name: RestoreDeviceObjects()
-// Desc: ‰æ–Ê‚ÌƒTƒCƒY‚ª•ÏX‚³‚ê‚½“™‚ÉŒÄ‚Î‚ê‚Ü‚·B
-//		Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ÍInvalidateDeviceObjects()‚ÅŠJ•ú‚µ‚Ü‚·B
+// Desc: ç”»é¢ã®ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸæ™‚ç­‰ã«å‘¼ã°ã‚Œã¾ã™ã€‚
+//		ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã¯InvalidateDeviceObjects()ã§é–‹æ”¾ã—ã¾ã™ã€‚
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::RestoreDeviceObjects()
 {
-    // ’¸“_‚ÆFî•ñ
+    // é ‚ç‚¹ã¨è‰²æƒ…å ±
     CUSTOMVERTEX vertices[] = {
-		//   x,     y,      z,  rhw,   ’¸“_‚ÌF   ( Ô    —Î   Â   ƒ¿ )  U  V
+		//   x,     y,      z,  rhw,   é ‚ç‚¹ã®è‰²   ( èµ¤    ç·‘   é’   Î± )  U  V
         {  50.0f,  50.0f, 0.5f, 1.0f, D3DCOLOR_RGBA(0xff,0xff,0xff,0x80), 0, 0},
         { 250.0f,  50.0f, 0.5f, 1.0f, D3DCOLOR_RGBA(0xff,0xff,0xff,0x80), 1, 0},
         {  50.0f, 250.0f, 0.5f, 1.0f, D3DCOLOR_RGBA(0xff,0xff,0xff,0x80), 0, 1},
         { 250.0f, 250.0f, 0.5f, 1.0f, D3DCOLOR_RGBA(0xff,0xff,0xff,0x80), 1, 1},
     };
 	
-	// ’¸“_ƒoƒbƒtƒ@‚ğ¶¬‚·‚é
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ç”Ÿæˆã™ã‚‹
     if( FAILED( m_pd3dDevice->CreateVertexBuffer( 
-				4*sizeof(CUSTOMVERTEX),		// ’¸“_ƒoƒbƒtƒ@‚ÌƒTƒCƒY
-                0, D3DFVF_CUSTOMVERTEX,		// g—p–@A’¸“_ƒtƒH[ƒ}ƒbƒg
-                D3DPOOL_DEFAULT,			// ƒƒ‚ƒŠƒNƒ‰ƒX
-				&m_pVB, NULL )))			// ’¸“_ƒoƒbƒtƒ@ƒŠƒ\[ƒX —\–ñÏ 
+				4*sizeof(CUSTOMVERTEX),		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º
+                0, D3DFVF_CUSTOMVERTEX,		// ä½¿ç”¨æ³•ã€é ‚ç‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+                D3DPOOL_DEFAULT,			// ãƒ¡ãƒ¢ãƒªã‚¯ãƒ©ã‚¹
+				&m_pVB, NULL )))			// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒªã‚½ãƒ¼ã‚¹ äºˆç´„æ¸ˆ 
 		return E_FAIL;
 
-    // ’¸“_ƒoƒbƒtƒ@‚Éî•ñ‚ğŠi”[‚·‚é
+    // é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æƒ…å ±ã‚’æ ¼ç´ã™ã‚‹
     VOID* pVertices;
     if(FAILED( m_pVB->Lock(0, sizeof(vertices), (void**)&pVertices, 0)))
 		return E_FAIL;
     memcpy( pVertices, vertices, sizeof(vertices) );
     m_pVB->Unlock();
 
-	// ’·‚¢‚©‚ç’ZkŒ`‚ğì‚Á‚Ä‚İ‚½
+	// é•·ã„ã‹ã‚‰çŸ­ç¸®å½¢ã‚’ä½œã£ã¦ã¿ãŸ
 	#define RS   m_pd3dDevice->SetRenderState
 	#define TSS  m_pd3dDevice->SetTextureStageState
 	#define SAMP m_pd3dDevice->SetSamplerState
 
-    // ‡¬•û–@‚ğİ’è‚·‚é
-	TSS( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);// ˆø”‚Ì¬•ª‚ğæZ‚·‚é
+    // åˆæˆæ–¹æ³•ã‚’è¨­å®šã™ã‚‹
+	TSS( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);// å¼•æ•°ã®æˆåˆ†ã‚’ä¹—ç®—ã™ã‚‹
     TSS( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
     TSS( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 
-#define ALPHA_TYPE 0	// ‚±‚±‚ğ•Ï‚¦‚é‚ÆA‡¬•û–@‚ª•Ï‚í‚é
+#define ALPHA_TYPE 3	// ã“ã“ã‚’å¤‰ãˆã‚‹ã¨ã€åˆæˆæ–¹æ³•ãŒå¤‰ã‚ã‚‹
 
 #if ALPHA_TYPE == 0
-	// üŒ`‡¬ C = Cd(1-As)+CsAs
-	RS(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    // ç·šå½¢åˆæˆ C = Cd(1-As)+CsAs
+    RS(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+    RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 #else
 #if ALPHA_TYPE == 1
-	// ‰ÁZ‡¬ C = Cd+CsAs
-	RS(D3DRS_DESTBLEND, D3DBLEND_ONE);
-	RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    // åŠ ç®—åˆæˆ C = Cd+CsAs
+    RS(D3DRS_DESTBLEND, D3DBLEND_ONE);
+    RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 #else
 #if ALPHA_TYPE == 2
-	// Œ¸Z‡¬ C = Cd-CsAs
-	RS(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
-	RS(D3DRS_DESTBLEND, D3DBLEND_ONE);
-	RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    // æ¸›ç®—åˆæˆ C = Cd-CsAs
+    RS(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+    RS(D3DRS_DESTBLEND, D3DBLEND_ONE);
+    RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 #else
 #if ALPHA_TYPE == 3
-	// æZ‡¬ C = Cd*Cs
-	RS(D3DRS_DESTBLEND, D3DBLEND_SRCCOLOR);
-	RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+    // ä¹—ç®—åˆæˆ C = Cd*Cs
+    RS(D3DRS_DESTBLEND, D3DBLEND_SRCCOLOR);
+    RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
 #else
 #if ALPHA_TYPE == 4
-	// Ä‚«‚İ Cd*Cd
-	RS(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
-	RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+    // ç„¼ãè¾¼ã¿ Cd*Cd
+    RS(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+    RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
 #else
 #if ALPHA_TYPE == 5
-	// ƒlƒKƒ|ƒW”½“] C = (1-Cd)*Cs
-	RS(D3DRS_DESTBLEND, D3DBLEND_ZERO);
-	RS(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+    // ãƒã‚¬ãƒã‚¸åè»¢ C = (1-Cd)*Cs
+    RS(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+    RS(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
 #else
 #if ALPHA_TYPE == 6
-	// •s“§–¾ C = Cs
-	RS(D3DRS_DESTBLEND, D3DBLEND_ZERO);
-	RS(D3DRS_SRCBLEND, D3DBLEND_ONE);
+    // ä¸é€æ˜ C = Cs
+    RS(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+    RS(D3DRS_SRCBLEND, D3DBLEND_ONE);
 #endif
 #endif
 #endif
@@ -279,18 +284,18 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 #endif
 #endif
 
-    // ƒŒƒ“ƒ_ƒŠƒ“ƒOó‘Ô‚Ìİ’è
+    // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°çŠ¶æ…‹ã®è¨­å®š
     RS( D3DRS_DITHERENABLE,   FALSE );
     RS( D3DRS_SPECULARENABLE, FALSE );
     RS( D3DRS_ZENABLE,        TRUE );
     RS( D3DRS_AMBIENT,        0x000F0F0F );
     
-    // ƒeƒNƒXƒ`ƒƒ[‚ÉŠÖ‚·‚éİ’è
+    // ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã«é–¢ã™ã‚‹è¨­å®š
     TSS( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
     TSS( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
     TSS( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 
-	// ƒtƒHƒ“ƒg
+	// ãƒ•ã‚©ãƒ³ãƒˆ
     m_pFont->RestoreDeviceObjects();
 
 	return S_OK;
@@ -300,10 +305,19 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 
 //-------------------------------------------------------------
 // Name: FrameMove()
-// Desc: –ˆƒtƒŒ[ƒ€ŒÄ‚Î‚ê‚Ü‚·BƒAƒjƒ‚Ìˆ—‚È‚Ç‚ğs‚¢‚Ü‚·B
+// Desc: æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å‘¼ã°ã‚Œã¾ã™ã€‚ã‚¢ãƒ‹ãƒ¡ã®å‡¦ç†ãªã©ã‚’è¡Œã„ã¾ã™ã€‚
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::FrameMove()
 {
+	// å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ã®æ›´æ–°
+    KeyUpdate();
+
+	if (GetKeyUp(VK_ESCAPE))
+	{
+        m_AlphaType++;
+		m_AlphaType %= 7;
+	}
+
 	return S_OK;
 }
 
@@ -311,33 +325,33 @@ HRESULT CMyD3DApplication::FrameMove()
 
 //-------------------------------------------------------------
 // Name: Render()
-// Desc: ‰æ–Ê‚ğ•`‰æ‚·‚é.
+// Desc: ç”»é¢ã‚’æç”»ã™ã‚‹.
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::Render()
 {
-    // ‰æ–Ê‚ğƒNƒŠƒA‚·‚é
+    // ç”»é¢ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
     m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,
                          0x000000ff, 1.0f, 0L );
 
 	//---------------------------------------------------------
-	// •`‰æ
+	// æç”»
 	//---------------------------------------------------------
     if( SUCCEEDED( m_pd3dDevice->BeginScene() ) )
     {
+        RenderText();	// ç”»é¢ã®çŠ¶æ…‹ã‚„ãƒ˜ãƒ«ãƒ—ã‚’è¡¨ç¤ºã™ã‚‹
+
 	    m_pd3dDevice->SetStreamSource( 0, m_pVB, 0, sizeof(CUSTOMVERTEX) );
 	    m_pd3dDevice->SetFVF( D3DFVF_CUSTOMVERTEX );
 
-		RS(D3DRS_ALPHABLENDENABLE, FALSE);// ”¼“§–¾‚Å•`‚©‚È‚¢
+		RS(D3DRS_ALPHABLENDENABLE, FALSE);// åŠé€æ˜ã§æã‹ãªã„
 		m_pd3dDevice->SetTexture( 0, m_pEarthTexture );
 		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 2 );
 		
-		RS(D3DRS_ALPHABLENDENABLE, TRUE);// ”¼“§–¾‚Å•`‰æ
+		RS(D3DRS_ALPHABLENDENABLE, TRUE);// åŠé€æ˜ã§æç”»
 		m_pd3dDevice->SetTexture( 0, m_pCloudTexture );
 		m_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 0, 2 );
 
-		RenderText();	// ‰æ–Ê‚Ìó‘Ô‚âƒwƒ‹ƒv‚ğ•\¦‚·‚é
-
-		// •`‰æ‚ÌI—¹
+		// æç”»ã®çµ‚äº†
         m_pd3dDevice->EndScene();
     }
 
@@ -349,14 +363,14 @@ HRESULT CMyD3DApplication::Render()
 
 //-------------------------------------------------------------
 // Name: RenderText()
-// Desc: ó‘Ô‚âƒwƒ‹ƒv‚ğ‰æ–Ê‚É•\¦‚·‚é
+// Desc: çŠ¶æ…‹ã‚„ãƒ˜ãƒ«ãƒ—ã‚’ç”»é¢ã«è¡¨ç¤ºã™ã‚‹
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::RenderText()
 {
     D3DCOLOR fontColor        = D3DCOLOR_ARGB(255,255,255,0);
     TCHAR szMsg[MAX_PATH] = TEXT("");
 
-    // ‰æ–Ê‚Ìó‘Ô‚ğ•\¦‚·‚é
+    // ç”»é¢ã®çŠ¶æ…‹ã‚’è¡¨ç¤ºã™ã‚‹
     FLOAT fNextLine = 40.0f; 
 
     lstrcpy( szMsg, m_strDeviceStats );
@@ -367,7 +381,7 @@ HRESULT CMyD3DApplication::RenderText()
     fNextLine -= 20.0f;
     m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
 
-    // ‘€ì–@‚âƒpƒ‰ƒ[ƒ^‚ğ•\¦‚·‚é
+    // æ“ä½œæ³•ã‚„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¡¨ç¤ºã™ã‚‹
     fNextLine = (FLOAT) m_d3dsdBackBuffer.Height; 
     lstrcpy( szMsg, TEXT("Press 'F2' to configure display") );
     fNextLine -= 20.0f; m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
@@ -379,7 +393,7 @@ HRESULT CMyD3DApplication::RenderText()
 
 //-------------------------------------------------------------
 // Name: MsgProc()
-// Desc: WndProc ‚ğƒI[ƒo[ƒ‰ƒCƒh‚µ‚½‚à‚Ì
+// Desc: WndProc ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ãŸã‚‚ã®
 //-------------------------------------------------------------
 LRESULT CMyD3DApplication::MsgProc( HWND hWnd, UINT msg,
                                  WPARAM wParam, LPARAM lParam )
@@ -390,7 +404,7 @@ LRESULT CMyD3DApplication::MsgProc( HWND hWnd, UINT msg,
         {
             if( m_bLoadingApp )
             {
-                // ƒ[ƒh’†
+                // ãƒ­ãƒ¼ãƒ‰ä¸­
                 HDC hDC = GetDC( hWnd );
                 TCHAR strMsg[MAX_PATH];
                 wsprintf(strMsg, TEXT("Loading... Please wait"));
@@ -413,13 +427,13 @@ LRESULT CMyD3DApplication::MsgProc( HWND hWnd, UINT msg,
 
 //-------------------------------------------------------------
 // Name: InvalidateDeviceObjects()
-// Desc: RestoreDeviceObjects() ‚Åì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌŠJ•ú
+// Desc: RestoreDeviceObjects() ã§ä½œæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®é–‹æ”¾
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 {
-    SAFE_RELEASE( m_pVB );				// ’¸“_ƒoƒbƒtƒ@
+    SAFE_RELEASE( m_pVB );				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 
-    m_pFont->InvalidateDeviceObjects();	// ƒtƒHƒ“ƒg
+    m_pFont->InvalidateDeviceObjects();	// ãƒ•ã‚©ãƒ³ãƒˆ
 
     return S_OK;
 }
@@ -429,14 +443,14 @@ HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 
 //-------------------------------------------------------------
 // Name: DeleteDeviceObjects()
-// Desc: InitDeviceObjects() ‚Åì¬‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğŠJ•ú‚·‚é
+// Desc: InitDeviceObjects() ã§ä½œæˆã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’é–‹æ”¾ã™ã‚‹
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::DeleteDeviceObjects()
 {
-    SAFE_RELEASE( m_pCloudTexture );	// ƒeƒNƒXƒ`ƒƒ
-    SAFE_RELEASE( m_pEarthTexture );	// ƒeƒNƒXƒ`ƒƒ
+    SAFE_RELEASE( m_pCloudTexture );	// ãƒ†ã‚¯ã‚¹ãƒãƒ£
+    SAFE_RELEASE( m_pEarthTexture );	// ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
-    // ƒtƒHƒ“ƒg
+    // ãƒ•ã‚©ãƒ³ãƒˆ
     m_pFont->DeleteDeviceObjects();
 
     return S_OK;
@@ -447,11 +461,11 @@ HRESULT CMyD3DApplication::DeleteDeviceObjects()
 
 //-------------------------------------------------------------
 // Name: FinalCleanup()
-// Desc: I—¹‚·‚é’¼‘O‚ÉŒÄ‚Î‚ê‚é
+// Desc: çµ‚äº†ã™ã‚‹ç›´å‰ã«å‘¼ã°ã‚Œã‚‹
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::FinalCleanup()
 {
-    SAFE_DELETE( m_pFont );	// ƒtƒHƒ“ƒg
+    SAFE_DELETE( m_pFont );	// ãƒ•ã‚©ãƒ³ãƒˆ
 
     return S_OK;
 }

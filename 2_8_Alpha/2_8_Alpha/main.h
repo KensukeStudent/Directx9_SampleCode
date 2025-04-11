@@ -1,7 +1,7 @@
-//-------------------------------------------------------------
+ï»¿//-------------------------------------------------------------
 // File: main.h
 //
-// Desc: ƒeƒNƒXƒ`ƒƒ‚ğ’£‚é
+// Desc: ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¼µã‚‹
 //-------------------------------------------------------------
 #pragma once
 
@@ -9,17 +9,19 @@
 
 //-------------------------------------------------------------
 // Name: class CMyD3DApplication
-// Desc: ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒNƒ‰ƒX
+// Desc: ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¯ãƒ©ã‚¹
 //-------------------------------------------------------------
 class CMyD3DApplication : public CD3DApplication
 {
-	LPDIRECT3DTEXTURE9		m_pEarthTexture;// ’n‹…ƒeƒNƒXƒ`ƒƒ[
-	LPDIRECT3DTEXTURE9		m_pCloudTexture;// ‰_ƒeƒNƒXƒ`ƒƒ[
-	LPDIRECT3DVERTEXBUFFER9 m_pVB;			// ’¸“_î•ñ‚ğŠi”[‚·‚é
+	LPDIRECT3DTEXTURE9		m_pEarthTexture;// åœ°çƒãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼
+	LPDIRECT3DTEXTURE9		m_pCloudTexture;// é›²ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼
+	LPDIRECT3DVERTEXBUFFER9 m_pVB;			// é ‚ç‚¹æƒ…å ±ã‚’æ ¼ç´ã™ã‚‹
 
 
-	BOOL					m_bLoadingApp;	// ƒ[ƒh’†H
-    CD3DFont*				m_pFont;		// ƒtƒHƒ“ƒg
+	BOOL					m_bLoadingApp;	// ãƒ­ãƒ¼ãƒ‰ä¸­ï¼Ÿ
+    CD3DFont*				m_pFont;		// ãƒ•ã‚©ãƒ³ãƒˆ
+
+	int                     m_AlphaType;	// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰ã®ç¨®é¡ Max6
 
 protected:
     virtual HRESULT OneTimeSceneInit();
@@ -39,5 +41,6 @@ public:
     CMyD3DApplication();
     virtual ~CMyD3DApplication();
 	LPDIRECT3DDEVICE9 GetD3DDevice() { return m_pd3dDevice; }
+	HWND GetWindowHandle() { return m_hWnd; }
 };
 
