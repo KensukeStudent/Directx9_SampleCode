@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0BFFB7F1-40B1-469B-9AA3-B5E736473B9B}|3_5_3D\\3_5_3D.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\3_5_3D\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{0BFFB7F1-40B1-469B-9AA3-B5E736473B9B}|3_5_3D\\3_5_3D.vcxproj|solutionrelative:3_5_3D\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BFFB7F1-40B1-469B-9AA3-B5E736473B9B}|3_5_3D\\3_5_3D.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\3_5_3D\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{0BFFB7F1-40B1-469B-9AA3-B5E736473B9B}|3_5_3D\\3_5_3D.vcxproj|solutionrelative:3_5_3D\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 23,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\3_5_3D\\main.cpp",
+              "RelativeDocumentMoniker": "3_5_3D\\main.cpp",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\3_5_3D\\main.cpp*",
+              "RelativeToolTip": "3_5_3D\\main.cpp*",
+              "ViewState": "AgIAAOYAAAAAAAAAAAAAAAIBAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-14T14:03:22.319Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "main.h",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\3_5_3D\\main.h",
+              "RelativeDocumentMoniker": "3_5_3D\\main.h",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_5_3D\\3_5_3D\\main.h",
+              "RelativeToolTip": "3_5_3D\\main.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-14T14:03:19.738Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

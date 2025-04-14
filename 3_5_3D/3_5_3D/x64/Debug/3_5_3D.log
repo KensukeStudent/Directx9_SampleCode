@@ -1,0 +1,7 @@
+﻿  main.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\3_5_3D\3_5_3D\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\3_5_3D\3_5_3D\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  3_5_3D.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\3_5_3D\x64\Debug\3_5_3D.exe
