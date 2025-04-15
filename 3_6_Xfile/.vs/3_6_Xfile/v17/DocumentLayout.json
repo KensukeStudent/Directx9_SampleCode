@@ -1,0 +1,88 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|solutionrelative:3_6_Xfile\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\framework\\d3dfile.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|solutionrelative:3_6_Xfile\\framework\\d3dfile.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|solutionrelative:3_6_Xfile\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\framework\\d3dfile.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7780C08F-776C-4DD5-B5DA-4B9D8AF8A6DC}|3_6_Xfile\\3_6_Xfile.vcxproj|solutionrelative:3_6_Xfile\\framework\\d3dfile.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 23,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "d3dfile.cpp",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\framework\\d3dfile.cpp",
+              "RelativeDocumentMoniker": "3_6_Xfile\\framework\\d3dfile.cpp",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\framework\\d3dfile.cpp",
+              "RelativeToolTip": "3_6_Xfile\\framework\\d3dfile.cpp",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAAwDUAAABPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-15T13:56:26.397Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "d3dfile.h",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\framework\\d3dfile.h",
+              "RelativeDocumentMoniker": "3_6_Xfile\\framework\\d3dfile.h",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\framework\\d3dfile.h",
+              "RelativeToolTip": "3_6_Xfile\\framework\\d3dfile.h",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAADMAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-15T13:51:24.62Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.h",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\main.h",
+              "RelativeDocumentMoniker": "3_6_Xfile\\main.h",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\main.h",
+              "RelativeToolTip": "3_6_Xfile\\main.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-15T13:41:59.149Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\main.cpp",
+              "RelativeDocumentMoniker": "3_6_Xfile\\main.cpp",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\3_6_Xfile\\3_6_Xfile\\main.cpp",
+              "RelativeToolTip": "3_6_Xfile\\main.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-15T13:40:49.555Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

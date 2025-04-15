@@ -1,0 +1,9 @@
+﻿  main.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\3_6_Xfile\3_6_Xfile\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\3_6_Xfile\3_6_Xfile\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+resource.h(56): warning RC4005: 'IDM_EXIT' : redefinition
+  
+  3_6_Xfile.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\3_6_Xfile\x64\Debug\3_6_Xfile.exe
