@@ -1,0 +1,25 @@
+﻿  d3dapp.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\main\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'framework/d3dapp.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\main\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  d3denumeration.cpp
+  d3dfile.cpp
+  d3dfont.cpp
+  d3dsettings.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\main\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'framework/d3dsettings.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\main\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  d3dutil.cpp
+  dxutil.cpp
+  main.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\main\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\main\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  コードを生成中...
+  main.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\5_1_1_DiffuseWorld\x64\Debug\main.exe
