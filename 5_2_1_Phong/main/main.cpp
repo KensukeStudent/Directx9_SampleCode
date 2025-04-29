@@ -374,19 +374,19 @@ HRESULT CMyD3DApplication::Render()
                 m = mWorld * m_mView * m_mProj;
                 m_pEffect->SetMatrix(m_hmWVP, &m);
 
-                // ライトの方向ベクトルをローカル→ワールド変換してセット
+                // ライトの方向ベクトルをワールド → ローカル空間に変換
                 light_pos = D3DXVECTOR4(-0.577f, -0.577f, -0.577f, 0);
-                D3DXMatrixInverse(&m, NULL, &mWorld);
-                D3DXVec4Transform(&v, &light_pos, &m);
-                D3DXVec3Normalize((D3DXVECTOR3*)&v, (D3DXVECTOR3*)&v);
+                D3DXMatrixInverse(&m, NULL, &mWorld); // ワールド->ローカル変換行列(逆行列)
+				D3DXVec4Transform(&v, &light_pos, &m); // ワールド空間->ローカル空間に変換
+                D3DXVec3Normalize((D3DXVECTOR3*)&v, (D3DXVECTOR3*)&v); // 上の変換で長さが変わってしまう可能性があるので、正規化（長さを1に）
                 v.w = -0.3f; // 環境光強度
                 m_pEffect->SetVector(m_hvLightDir, &v);
 
-                // 視点位置（ローカル空間からワールド空間への原点変換）
-                m = mWorld * m_mView;
-                D3DXMatrixInverse(&m, NULL, &m);
+                // モデルのローカル空間における視点（カメラ）位置を取得
+                m = mWorld * m_mView; // ローカル->ビュー空間
+                D3DXMatrixInverse(&m, NULL, &m); // ビュー空間->ローカル
                 v = D3DXVECTOR4(0, 0, 0, 1);
-                D3DXVec4Transform(&v, &v, &m);
+                D3DXVec4Transform(&v, &v, &m); // ローカル空間から見た視点の位置: v
                 m_pEffect->SetVector(m_hvEyePos, &v);
 
                 if (m_pMesh && m_pMesh->m_pMaterials && m_pMesh->m_pLocalMesh)
