@@ -2,6 +2,7 @@
 // ŠgUŒõ
 // 
 // Copyright (c) 2003 IMAGIRE Takashi. All rights reserved.
+// Ql: https://note.com/cgm_cyuiragi/n/nc780a8bf6767
 // -------------------------------------------------------------
 
 // -------------------------------------------------------------
@@ -14,7 +15,7 @@ float4x4 mWIT;
 float3 vLightDir;							// ƒ‰ƒCƒg‚Ì•ûŒü
 
 // Œõ‚Ì‹­‚³
-float4 I_a = { 0.3f, 0.3f, 0.3f, 0.0f };    // ambient
+float4 I_a = { 0.3f, 0.3f, 0.3f, 0.0f }; // ambient
 float4 I_d = { 0.7f, 0.7f, 0.7f, 0.0f };    // diffuse
 
 // ”½Ë—¦
@@ -45,10 +46,14 @@ VS_OUTPUT VS(
 	// ’¸“_F
 	float3 L = -vLightDir;
 	float3 N = normalize(mul(Normal, (float3x3)mWIT)); // ƒ[ƒ‹ƒhÀ•WŒn‚Å‚Ì–@ü
-
-	Out.Color = I_a * k_a					   // ŠÂ‹«Œõ
-	          + I_d * k_d * max(0, dot(N, L)); // ŠgUŒõ
+    
+    float4 diffuse = I_d * k_d * max(0, dot(N, L)); // ŠgUŒõ
+    float4 ambient = I_a * k_a; // ŠÂ‹«Œõ
 	
+    //Out.Color = diffuse; // ŠgUŒõ
+    //Out.Color = ambient;// ŠÂ‹«Œõ
+    Out.Color = ambient + diffuse; // ŠÂ‹«Œõ + ŠgUŒõ
+    
 	return Out;
 }
 

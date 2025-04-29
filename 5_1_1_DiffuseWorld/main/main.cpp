@@ -364,7 +364,7 @@ HRESULT CMyD3DApplication::Render()
                 D3DXMatrixTranslation(&m, 1.0f, 0.0f, 0.0f);
                 D3DXMatrixRotationY(&mR, m_fTime);
                 D3DXMatrixTranslation(&mT, 1.0f, 1.2f, 0.0f);
-                mWorld = m * mR * mT;
+                mWorld = m * mR * mT; // mTに平行移動して回転する、原点から1移動する
 
                 // ワールド逆行列の転置（法線用）
                 D3DXMatrixInverse(&m, NULL, &mWorld);
