@@ -35,18 +35,21 @@ VS_OUTPUT VS(
 	Out.Pos = mul(Pos, mWVP);
 	
 	// 頂点色
-	float amb = -vLightDir.w;	// 環境光の強さ
+	float ambient = -vLightDir.w;	// 環境光の強さ
 	
 	float3 eye = normalize(vEyePos - Pos.xyz);
 	float3 L = -vLightDir; // ローカル座標系でのライトベクトル
 	float3 N = Normal.xyz;
-	float3 R = -eye + 2.0f*dot(N,eye)*N;	// 反射ベクトル
+	float3 R = -eye + 2.0f*dot(N,eye)*N;	// 反射ベクトル 公式: R = -E + 2.0 * dot(N・E) * N
 	
-	Out.Color = vColor * max(amb, dot(Normal, -vLightDir))
-				+ pow(max(0,dot(L, R)), 10);
+	// 環境光 + 拡散反射 + 鏡面反射
+    float4 ambientAndDiffuse = vColor * max(ambient, dot(Normal, -vLightDir));
+    float4 phong = pow(max(0, dot(L, R)), 10);
+    Out.Color = ambientAndDiffuse + phong;
 	
 	return Out;
 }
+
 // -------------------------------------------------------------
 float4 PS(VS_OUTPUT In) : COLOR
 {   
