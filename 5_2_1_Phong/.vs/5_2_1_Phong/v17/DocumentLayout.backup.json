@@ -21,7 +21,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 201,
+          "DockedWidth": 200,
           "SelectedChildIndex": 1,
           "Children": [
             {
@@ -44,7 +44,7 @@
               "RelativeDocumentMoniker": "main\\main.cpp",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\5_2_1_Phong\\main\\main.cpp",
               "RelativeToolTip": "main\\main.cpp",
-              "ViewState": "AgIAAFcBAAAAAAAAAAAlwH4BAAA0AAAAAAAAAA==",
+              "ViewState": "AgIAAHcBAAAAAAAAAAD4v5EBAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-29T09:00:42.723Z",
               "EditorCaption": ""
@@ -52,7 +52,7 @@
           ]
         },
         {
-          "DockedWidth": 217,
+          "DockedWidth": 218,
           "SelectedChildIndex": 0,
           "Children": [
             {
@@ -61,9 +61,9 @@
               "Title": "hlsl.fx",
               "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\5_2_1_Phong\\main\\hlsl.fx",
               "RelativeDocumentMoniker": "main\\hlsl.fx",
-              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\5_2_1_Phong\\main\\hlsl.fx*",
-              "RelativeToolTip": "main\\hlsl.fx*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAArAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\5_2_1_Phong\\main\\hlsl.fx",
+              "RelativeToolTip": "main\\hlsl.fx",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAADEAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-04-29T09:06:14.472Z",
               "EditorCaption": ""

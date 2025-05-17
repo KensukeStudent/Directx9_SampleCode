@@ -1,0 +1,7 @@
+﻿  d3dapp.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\5_4_BumpMap\main\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'framework/d3dapp.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\5_4_BumpMap\main\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+  main.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\5_4_BumpMap\x64\Debug\main.exe

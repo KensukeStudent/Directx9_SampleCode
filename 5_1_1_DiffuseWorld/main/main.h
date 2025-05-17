@@ -33,6 +33,8 @@ class CMyD3DApplication : public CD3DApplication
     CD3DMesh* m_pMesh;
     CD3DMesh* m_pMeshBg;
 
+    LPDIRECT3DTEXTURE9		m_pTexture;	// ★追加:テクスチャ
+
     // シェーダ
     LPD3DXEFFECT		    m_pEffect;		// エフェクト
     D3DXHANDLE				m_hTechnique;	// テクニック
@@ -40,6 +42,7 @@ class CMyD3DApplication : public CD3DApplication
     D3DXHANDLE				m_hmWIT;		// ローカル-ワールド変換行列
     D3DXHANDLE				m_hvLightDir;	// ライトの方向
     D3DXHANDLE				m_hvCol;		// 頂点色
+	D3DXHANDLE				m_hvTex;		// テクスチャ
 
     // 通常の座標変換行列
     D3DXMATRIX				m_mView;

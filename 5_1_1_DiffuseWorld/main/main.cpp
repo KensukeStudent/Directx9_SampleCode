@@ -64,12 +64,14 @@ CMyD3DApplication::CMyD3DApplication()
 {
     m_pMesh = new CD3DMesh();
     m_pMeshBg = new CD3DMesh();
+    m_pTexture = NULL;
 
     m_pEffect = NULL;
     m_hTechnique = NULL;
     m_hmWVP = NULL;
     m_hmWIT = NULL;
     m_hvLightDir = NULL;
+	m_hvTex = NULL;
 
     m_fWorldRotX = -D3DX_PI / 8;
     m_fWorldRotY = D3DX_PI / 2;
@@ -176,6 +178,28 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
         return hr;
     }
 
+    D3DXIMAGE_INFO info;
+
+    // ファイルからテクスチャーを生成する
+// ★★★ 追加：テクスチャーを読み込む
+    if (FAILED(D3DXCreateTextureFromFileExA(
+        m_pd3dDevice,	// Direct3DDevice
+        "t-pot.bmp",		// ファイル名
+        D3DX_DEFAULT,		// 横幅(D3DX_DEFAULTでファイルから判定)
+        D3DX_DEFAULT,		// 高さ(D3DX_DEFAULTでファイルから判定)
+        1,			// ミップマップの数
+        0,			// 使用用途
+        D3DFMT_A8R8G8B8,	// フォーマット
+        D3DPOOL_MANAGED,	// メモリの管理設定
+        D3DX_FILTER_NONE,	// フィルター設定
+        D3DX_DEFAULT,		// ミップマップフィルターの設定
+        0x00000000,		// カラーキー
+        &info,			// 画像情報
+        NULL,			// パレットデータ
+        &m_pTexture)		// 生成したテクスチャーの格納先
+    ))    // テクスチャオブジェクト
+        return E_FAIL;
+
     // シェーダの読み込み
     LPD3DXBUFFER pErr = NULL;
     if (FAILED(hr = D3DXCreateEffectFromFile(m_pd3dDevice, _T("hlsl.fx"), NULL, NULL, 0, NULL, &m_pEffect, &pErr))) {
@@ -188,6 +212,7 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
         m_hmWIT = m_pEffect->GetParameterByName(NULL, "mWIT");
         m_hvLightDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
         m_hvCol = m_pEffect->GetParameterByName(NULL, "vColor");
+		m_hvTex = m_pEffect->GetParameterByName(NULL, "vTex");
     }
     SAFE_RELEASE(pErr);
 
@@ -378,6 +403,7 @@ HRESULT CMyD3DApplication::Render()
                 // ライトの方向設定
                 light_pos = D3DXVECTOR4(-0.577f, -0.577f, -0.577f, 0.0f);
                 m_pEffect->SetVector(m_hvLightDir, &light_pos);
+                m_pEffect->SetTexture(m_hvTex, m_pTexture);
 
                 // マテリアルごとに描画
                 if (m_pMesh && m_pMesh->m_pMaterials && m_pMesh->m_pLocalMesh)
@@ -391,7 +417,6 @@ HRESULT CMyD3DApplication::Render()
                         v.w = pMtrl->Diffuse.a;
                         m_pEffect->SetVector("k_d", &v);
                         m_pEffect->SetVector("k_a", &v);
-
                         m_pMesh->m_pLocalMesh->DrawSubset(i);  // 描画
                         pMtrl++;
                     }
@@ -529,6 +554,8 @@ HRESULT CMyD3DApplication::FinalCleanup()
 {
     SAFE_DELETE(m_pMeshBg); // メッシュ
     SAFE_DELETE(m_pMesh);
+
+    SAFE_RELEASE(m_pTexture);
 
     SAFE_DELETE(m_pFont);	// フォント
 

@@ -1,0 +1,9 @@
+﻿  main.cpp
+C:\Users\nagak\Downloads\Directx9_SampleCode\6_2_Planar\main\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
+  (ソース ファイル 'main.cpp' をコンパイルしています)
+      C:\Users\nagak\Downloads\Directx9_SampleCode\6_2_Planar\main\resource.h(11,9):
+      'IDM_EXIT' の以前の定義を確認してください
+  
+C:\Users\nagak\Downloads\Directx9_SampleCode\6_2_Planar\main\main.cpp(230,23): warning C4244: '=': 'double' から 'FLOAT' への変換です。データが失われる可能性があります。
+C:\Users\nagak\Downloads\Directx9_SampleCode\6_2_Planar\main\main.cpp(232,23): warning C4244: '=': 'double' から 'FLOAT' への変換です。データが失われる可能性があります。
+  main.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\6_2_Planar\x64\Debug\main.exe

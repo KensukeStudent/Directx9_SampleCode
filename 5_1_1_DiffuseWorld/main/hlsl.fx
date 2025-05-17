@@ -22,6 +22,17 @@ float4 I_d = { 0.7f, 0.7f, 0.7f, 0.0f };    // diffuse
 float4 k_a = { 1.0f, 1.0f, 1.0f, 1.0f };    // ambient
 float4 k_d = { 1.0f, 1.0f, 1.0f, 1.0f };    // diffuse
 
+texture vTex;
+sampler Samp = sampler_state
+{
+    Texture = <vTex>;
+    MinFilter = LINEAR;
+    MagFilter = LINEAR;
+    MipFilter = LINEAR;
+    AddressU = WRAP;
+    AddressV = WRAP;
+};
+
 // -------------------------------------------------------------
 // 頂点シェーダからピクセルシェーダに渡すデータ
 // -------------------------------------------------------------
@@ -29,6 +40,7 @@ struct VS_OUTPUT
 {
     float4 Pos			: POSITION;
     float4 Color		: COLOR0;
+    float2 Tex : TEXCOORD0;
 };
 
 // -------------------------------------------------------------
@@ -36,7 +48,8 @@ struct VS_OUTPUT
 // -------------------------------------------------------------
 VS_OUTPUT VS(
       float4 Pos    : POSITION,          // ローカル位置座標
-      float3 Normal : NORMAL            // 法線ベクトル
+      float3 Normal : NORMAL,            // 法線ベクトル
+      float2 Texcoord : TEXCOORD0 // テクスチャ座標
 ){
 	VS_OUTPUT Out = (VS_OUTPUT)0;        // 出力データ
 	
@@ -53,6 +66,7 @@ VS_OUTPUT VS(
     //Out.Color = diffuse; // 拡散光
     //Out.Color = ambient;// 環境光
     Out.Color = ambient + diffuse; // 環境光 + 拡散光
+    Out.Tex = Texcoord; // テクスチャ座標
     
 	return Out;
 }
@@ -60,7 +74,7 @@ VS_OUTPUT VS(
 // -------------------------------------------------------------
 float4 PS(VS_OUTPUT In) : COLOR
 {   
-    return In.Color;
+    return tex2D(Samp, In.Tex);
 }
 
 // -------------------------------------------------------------

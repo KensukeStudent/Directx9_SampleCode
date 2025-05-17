@@ -1,8 +1,1 @@
-﻿  main.cpp
-C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(56,9): warning C4005: 'IDM_EXIT': マクロが再定義されました。
-  (ソース ファイル 'main.cpp' をコンパイルしています)
-      C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\2_7_Texture\resource.h(11,9):
-      'IDM_EXIT' の以前の定義を確認してください
-  
-  LINK : 前回のインクリメンタル リンクで C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\x64\Debug\2_7_Texture.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
-  2_7_Texture.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\x64\Debug\2_7_Texture.exe
+﻿  2_7_Texture.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\2_7_Texture\x64\Debug\2_7_Texture.exe
