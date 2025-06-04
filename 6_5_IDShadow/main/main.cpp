@@ -328,17 +328,41 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::FrameMove()
 {
-	// UFOを動かす
-	m_pos.x = 1.5f * (FLOAT)cos(1.0f * this->m_fTime) + 1.0f;
-	m_pos.z = 1.5f * (FLOAT)sin(1.0f * this->m_fTime);
-	m_pos.y = 1.3f;
+	UpdateInput(&m_UserInput); // 入力データの更新
 
-	// 入力データの更新
-	UpdateInput(&m_UserInput);
+	// UFOを動かす
+	if (m_UserInput.arrowW)
+	{
+		// z軸方向に移動
+		m_pos.z += 0.1f * 0.016f;
+	}
+
+	if (m_UserInput.arrowS)
+	{
+		// z軸方向に移動
+		m_pos.z -= 0.1f * 0.016f;
+	}
+
+	if (m_UserInput.arrowD)
+	{
+		// x軸方向に移動
+		m_pos.x += 0.1f * 0.016f;
+	}
+
+	if (m_UserInput.arrowA)
+	{
+		// x軸方向に移動
+		m_pos.x -= 0.1f * 0.016f;
+	}
+
+	//m_pos.x = 1.5f * (FLOAT)cos(1.0f * this->m_fTime) + 1.0f;
+	//m_pos.z = 1.5f * (FLOAT)sin(1.0f * this->m_fTime);
+	m_pos.y = -3.0f;
 
 	//---------------------------------------------------------
 	// 入力に応じて座標系を更新する
 	//---------------------------------------------------------
+	
 	// 回転
 	D3DXMATRIX matRotY;
 	D3DXMATRIX matRotX;
@@ -389,133 +413,136 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 
 	pUserInput->bZoomIn = (m_bActive && (GetAsyncKeyState('Z') & 0x8000) == 0x8000);
 	pUserInput->bZoomOut = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
+
+	pUserInput->arrowW = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
+	pUserInput->arrowS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
+	pUserInput->arrowD = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
+	pUserInput->arrowA = (m_bActive && (GetAsyncKeyState('A') & 0x8000) == 0x8000);
 }
 
-//-------------------------------------------------------------
-// 各モデルの描画
-//-------------------------------------------------------------
 VOID CMyD3DApplication::DrawModel(int pass)
 {
-	D3DXMATRIX m, mL;
-	D3DXVECTOR3 vDir;
-	D3DXVECTOR4 v;
+	D3DXMATRIX mVP = m_mWorld * m_mView * m_mProj;
+
+	float fOffsetX = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
+	float fOffsetY = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
+	D3DXMATRIX mScaleBias(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f,
+		fOffsetX, fOffsetY, 0.0f, 1.0f
+	);
+
+	DrawUfo(pass, mVP, mScaleBias);
+	DrawGround(pass, mVP, mScaleBias);
+}
+
+void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias)
+{
+	D3DXMATRIX mL, m;
+	D3DXVECTOR4 v(0, 0, 0, 1);
 	D3DMATERIAL9* pMtrl;
 	DWORD i;
 
-	//---------------------------------------------------------
-	// 行列の生成
-	//---------------------------------------------------------
-	// ローカル-射影行列
-	D3DXMATRIX mVP = m_mWorld * m_mView * m_mProj;
-
-	// 射影空間から、テクスチャーの空間に変換する
-	float fOffsetX = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
-	float fOffsetY = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
-	D3DXMATRIX mScaleBias(0.5f, 0.0f, 0.0f, 0.0f,
-		0.0f, -0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 0.0f,
-		fOffsetX, fOffsetY, 0.0f, 1.0f);
-
-	//---------------------------------------------------------
-	// UFO
-	//---------------------------------------------------------
-	v.x = 0;
 	m_pEffect->SetVector(m_hvId, &v);
 
-	// ワールド行列の生成
 	D3DXMatrixTranslation(&mL, m_pos.x, m_pos.y, m_pos.z);
 
-	switch (pass) {
-	case 0:// シャドウマップの作成
-		// ライトの空間への射影行列
+	if (pass == 0) // シャドウマップ用
+	{
+		m = mL * m_mLightVP;
+		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pMesh->Render(m_pd3dDevice);
+	}
+	else
+	{
+		m_pEffect->BeginPass(2);
+
+		m = mL * mVP;
+		m_pEffect->SetMatrix(m_hmWVP, &m);
+
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP, &m);
 
-		m_pMesh->Render(m_pd3dDevice);// 描画
-		break;
-	default:// シーンの描画
-		//m_pEffect->BeginPass(2);	// パス(２)の設定
-		m = mL * mVP;       // 通常の射影行列
-		m_pEffect->SetMatrix(m_hmWVP, &m);
-
-		m = mL * m_mLightVP;// ライトの空間への射影行列
-		m_pEffect->SetMatrix(m_hmWLP, &m);
-
-		m = m * mScaleBias; // テクスチャ空間への射影行列
+		m = m * mScaleBias;
 		m_pEffect->SetMatrix(m_hmWVPT, &m);
 
-		// ローカル座標系でのライトベクトル
+		// ローカル空間ライト方向の算出
 		D3DXMatrixInverse(&m, NULL, &mL);
 		D3DXVec3Transform(&v, &m_LighPos, &m);
 		D3DXVec4Normalize(&v, &v); v.w = 0;
 		m_pEffect->SetVector(m_hvDir, &v);
 
-		// メッシュ内部のそれぞれの部品を描画
+		// マテリアルごとに描画
 		pMtrl = m_pMesh->m_pMaterials;
-		for (i = 0; i < m_pMesh->m_dwNumMaterials; i++) {
+		for (i = 0; i < m_pMesh->m_dwNumMaterials; i++)
+		{
 			v.x = pMtrl->Diffuse.r;
 			v.y = pMtrl->Diffuse.g;
 			v.z = pMtrl->Diffuse.b;
 			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol, &v);        // 頂点色
-			m_pMesh->m_pLocalMesh->DrawSubset(i);	// 描画
+			m_pEffect->SetVector(m_hvCol, &v);
+
+			m_pMesh->m_pLocalMesh->DrawSubset(i);
 			pMtrl++;
 		}
-		break;
+
+		m_pEffect->EndPass();
 	}
-
-	//---------------------------------------------------------
-	// 地形
-	//---------------------------------------------------------
-	v.x = 0.5f;
-	v.y = 0.5f;
-	v.z = 0.5f;
-	v.w = 1.0f;
-	m_pEffect->SetVector(m_hvId, &v);       // 頂点色
-
-	// ワールド行列の生成
-	D3DXMatrixIdentity(&mL);
-	switch (pass) {
-	case 0:// シャドウマップの作成
-		// ライトの空間への射影行列
-		m = mL * m_mLightVP;
-		m_pEffect->SetMatrix(m_hmWLP, &m);
-		m_pMeshBg->Render(m_pd3dDevice);// 描画
-		break;
-	case 1:// シーンの描画
-		//m_pEffect->BeginPass(1);	// パス(２)の設定
-		m = mL * mVP;       // 通常の射影行列
-		m_pEffect->SetMatrix(m_hmWVP, &m);
-
-		m = mL * m_mLightVP;// ライトの空間への射影行列
-		m_pEffect->SetMatrix(m_hmWLP, &m);
-
-		m = m * mScaleBias; // テクスチャ空間への射影行列
-		m_pEffect->SetMatrix(m_hmWVPT, &m);
-
-		// ローカル座標系でのライトベクトル
-		D3DXMatrixInverse(&m, NULL, &mL);
-		D3DXVec3Transform(&v, &m_LighPos, &m);
-		D3DXVec4Normalize(&v, &v); v.w = 0;
-		m_pEffect->SetVector(m_hvDir, &v);
-
-		// メッシュ内部のそれぞれの部品を描画
-		pMtrl = m_pMeshBg->m_pMaterials;
-		for (i = 0; i < m_pMeshBg->m_dwNumMaterials; i++) {
-			v.x = pMtrl->Diffuse.r;
-			v.y = pMtrl->Diffuse.g;
-			v.z = pMtrl->Diffuse.b;
-			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol, &v);       // 頂点色
-			m_pEffect->SetTexture("DecaleMap", m_pMeshBg->m_pTextures[i]);
-			m_pMeshBg->m_pLocalMesh->DrawSubset(i); // 描画
-			pMtrl++;
-		}
-		break;
-	}
-
 }
 
+void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias)
+{
+	D3DXMATRIX mL, m;
+	D3DXVECTOR4 v(0.5f, 0.5f, 0.5f, 1.0f);
+	D3DMATERIAL9* pMtrl;
+	DWORD i;
+
+	m_pEffect->SetVector(m_hvId, &v);
+	D3DXMatrixIdentity(&mL);
+
+	if (pass == 0)
+	{
+		m = mL * m_mLightVP;
+		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pMeshBg->Render(m_pd3dDevice);
+	}
+	else
+	{
+		m_pEffect->BeginPass(1);
+
+		m = mL * mVP;
+		m_pEffect->SetMatrix(m_hmWVP, &m);
+
+		m = mL * m_mLightVP;
+		m_pEffect->SetMatrix(m_hmWLP, &m);
+
+		m = m * mScaleBias;
+		m_pEffect->SetMatrix(m_hmWVPT, &m);
+
+		// ライトベクトル（ローカル空間）
+		D3DXMatrixInverse(&m, NULL, &mL);
+		D3DXVec3Transform(&v, &m_LighPos, &m);
+		D3DXVec4Normalize(&v, &v); v.w = 0;
+		m_pEffect->SetVector(m_hvDir, &v);
+
+		pMtrl = m_pMeshBg->m_pMaterials;
+		for (i = 0; i < m_pMeshBg->m_dwNumMaterials; i++)
+		{
+			v.x = pMtrl->Diffuse.r;
+			v.y = pMtrl->Diffuse.g;
+			v.z = pMtrl->Diffuse.b;
+			v.w = pMtrl->Diffuse.a;
+			m_pEffect->SetVector(m_hvCol, &v);
+
+			m_pEffect->SetTexture("DecaleMap", m_pMeshBg->m_pTextures[i]);
+			m_pMeshBg->m_pLocalMesh->DrawSubset(i);
+			pMtrl++;
+		}
+
+		m_pEffect->EndPass();
+	}
+}
 
 //-------------------------------------------------------------
 // Name: Render()
@@ -551,15 +578,8 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			// シェーダの設定
 			//-------------------------------------------------
-			if (FAILED(m_pEffect->SetTechnique(m_hTechnique))) {
-				MessageBox(NULL, _T("SetTechnique failed"), _T("Error"), MB_OK);
-			}
-			UINT numPasses = 0;
-			HRESULT hr = m_pEffect->Begin(&numPasses, 0);
-			if (FAILED(hr)) {
-				MessageBox(NULL, _T("Effect->Begin failed"), _T("Error"), MB_OK);
-				return E_FAIL;
-			}
+			m_pEffect->SetTechnique(m_hTechnique);
+			m_pEffect->Begin(NULL, 0);
 
 			//-------------------------------------------------
 			// レンダリングターゲットの保存
@@ -585,63 +605,37 @@ HRESULT CMyD3DApplication::Render()
 				, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
 				, 0xFFFFFFFF, 1.0f, 0L);
 
-			for (UINT pass = 0; pass < numPasses; ++pass)
-			{
-				hr = m_pEffect->BeginPass(pass);
-				if (FAILED(hr)) {
+			//-------------------------------------------------
+			// 1パス目:シャドウマップの作成
+			//-------------------------------------------------
+			m_pEffect->BeginPass(0);	// パス(１)の設定
+			DrawModel(0);			// モデルの描画
+			m_pEffect->EndPass();
 
-					if (pass > 0) // 0パス目は成功しているが1パス目で失敗した場合
-					{
-						TCHAR strMsg[MAX_PATH];
-						wsprintf(strMsg, _T("BeginPass(%d) failed, EndPass関数呼び忘れている可能性有り"), pass);
-						MessageBox(NULL, strMsg, _T("Error"), MB_OK);
-					}
-					else
-					{
-						TCHAR strMsg[MAX_PATH];
-						wsprintf(strMsg, _T("BeginPass(%d) failed"), pass);
-						MessageBox(NULL, strMsg, _T("Error"), MB_OK);
-					}
-					return E_FAIL;
-				}
+			//-------------------------------------------------
+			// レンダリングターゲットを元に戻す
+			//-------------------------------------------------
+			m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
+			m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
+			m_pd3dDevice->SetViewport(&oldViewport);
+			pOldBackBuffer->Release();
+			pOldZBuffer->Release();
 
-				if (pass == 0)
-				{
-					//-------------------------------------------------
-					// 1パス目:シャドウマップの作成
-					//-------------------------------------------------
-					DrawModel(0);			// モデルの描画
+			//-------------------------------------------------
+			// 2パス目:シーンの描画
+			//-------------------------------------------------
+			// バッファのクリア
+			m_pd3dDevice->Clear(0L, NULL
+				, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+				, 0x00404080, 1.0f, 0L);
 
-					//-------------------------------------------------
-					// レンダリングターゲットを元に戻す
-					//-------------------------------------------------
-					m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
-					m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
-					m_pd3dDevice->SetViewport(&oldViewport);
-					pOldBackBuffer->Release();
-					pOldZBuffer->Release();
-				}
-				else if(pass == 1)
-				{
-					//-------------------------------------------------
-					// 2パス目:シーンの描画
-					//-------------------------------------------------
-					// バッファのクリア
-					m_pd3dDevice->Clear(0L, NULL
-						, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-						, 0x00404080, 1.0f, 0L);
-
-					//-------------------------------------------------
-					// 描画
-					//-------------------------------------------------
-					// テクスチャの設定
-					m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
-					DrawModel(1);			// モデルの描画
-					m_pd3dDevice->SetVertexDeclaration(m_pDecl);
-				}
-
-				m_pEffect->EndPass(); // これしないとPass切り替えが途中でエラーとなる
-			}
+			//-------------------------------------------------
+			// 描画
+			//-------------------------------------------------
+			// テクスチャの設定
+			m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
+			DrawModel(1);			// モデルの描画
+			m_pd3dDevice->SetVertexDeclaration(m_pDecl);
 
 			m_pEffect->End();
 		}
@@ -649,26 +643,26 @@ HRESULT CMyD3DApplication::Render()
 		// ヘルプの表示
 		RenderText();
 
-#if 1 // デバッグ用にテクスチャを表示する
-		{
-			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-			float scale = 128.0f;
-			TVERTEX Vertex[4] = {
-				// x  y  z rhw tu tv
-				{    0,    0,0, 1, 0, 0,},
-				{scale,    0,0, 1, 1, 0,},
-				{scale,scale,0, 1, 1, 1,},
-				{    0,scale,0, 1, 0, 1,},
-			};
-			m_pd3dDevice->SetTexture(0, m_pShadowMap);
-			m_pd3dDevice->SetVertexShader(NULL);
-			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
-			m_pd3dDevice->SetPixelShader(0);
-			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
-		}
-#endif		
+//#if 1 // デバッグ用にテクスチャを表示する
+//		{
+//			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+//			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+//			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+//			float scale = 128.0f;
+//			TVERTEX Vertex[4] = {
+//				// x  y  z rhw tu tv
+//				{    0,    0,0, 1, 0, 0,},
+//				{scale,    0,0, 1, 1, 0,},
+//				{scale,scale,0, 1, 1, 1,},
+//				{    0,scale,0, 1, 0, 1,},
+//			};
+//			m_pd3dDevice->SetTexture(0, m_pShadowMap);
+//			m_pd3dDevice->SetVertexShader(NULL);
+//			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+//			m_pd3dDevice->SetPixelShader(0);
+//			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+//		}
+//#endif		
 
 		// 描画の終了
 		m_pd3dDevice->EndScene();

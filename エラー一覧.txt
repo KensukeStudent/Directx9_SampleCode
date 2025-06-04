@@ -1,4 +1,4 @@
-'main': entrypoint not found
+1. 'main': entrypoint not found
 .fxをビルド対象に含めている影響の不具合。
 修正対応：
 ソリューションの中にドラックアンドドロップせずに、visual studio上に直でドロップする。
@@ -6,3 +6,6 @@
 エントリーポイントがmainであることは記載したあった。
 .fxファイルをソリューションの中にドラックアンドドロップ。
 .fxを右クリックしてプロパティを選択
+
+2. シェーダーでBeginPass 1以上の時に失敗する
+BeginPassとEndPassで囲っているかを確認する

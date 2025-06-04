@@ -20,6 +20,11 @@ struct UserInput
 	BOOL bRotateRight;
 	BOOL bZoomIn;
 	BOOL bZoomOut;
+
+	BOOL arrowW;
+	BOOL arrowS;
+	BOOL arrowD;
+	BOOL arrowA;
 };
 
 
@@ -68,8 +73,9 @@ class CMyD3DApplication : public CD3DApplication
 	FLOAT                   m_fWorldRotY;   // ‚xŽ²‰ñ“]
 	FLOAT                   m_fViewZoom;    // Ž‹“_‚Ì‹——£
 
-
-	VOID DrawModel(int pass);	// ŠeƒpƒX‚ÅŒÄ‚Î‚ê‚éƒ‚ƒfƒ‹‚Ì•`‰æ
+	VOID DrawModel(int pass);
+	void DrawUfo(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias);
+	void DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias);
 
 protected:
 	virtual HRESULT OneTimeSceneInit();

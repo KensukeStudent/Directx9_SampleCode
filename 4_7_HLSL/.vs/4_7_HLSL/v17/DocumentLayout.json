@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\main\\hlsl.fx||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:main\\hlsl.fx||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2FD1D1A9-BB39-445F-889E-1520BF40719C}|main\\main.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\main\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{2FD1D1A9-BB39-445F-889E-1520BF40719C}|main\\main.vcxproj|solutionrelative:main\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\main\\hlsl.fx||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:main\\hlsl.fx||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2FD1D1A9-BB39-445F-889E-1520BF40719C}|main\\main.vcxproj|C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\main\\main.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -38,8 +38,7 @@
               "RelativeToolTip": "main\\framework\\d3dapp.cpp",
               "ViewState": "AgIAACQFAAAAAAAAAAAnwDgFAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-20T10:28:01.266Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-20T10:28:01.266Z"
             },
             {
               "$type": "Document",
@@ -51,12 +50,11 @@
               "RelativeToolTip": "main\\main.h",
               "ViewState": "AgIAAA8AAAAAAAAAAAAAACgAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-19T16:54:02.89Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-19T16:54:02.89Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\main\\main.cpp",
               "RelativeDocumentMoniker": "main\\main.cpp",
@@ -75,7 +73,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "hlsl.fx",
               "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\4_7_HLSL\\main\\hlsl.fx",
               "RelativeDocumentMoniker": "main\\hlsl.fx",

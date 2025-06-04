@@ -21,7 +21,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 162,
+          "DockedWidth": 149,
           "SelectedChildIndex": 0,
           "Children": [
             {
@@ -32,11 +32,17 @@
               "RelativeDocumentMoniker": "main\\main.cpp",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_5_IDShadow\\main\\main.cpp",
               "RelativeToolTip": "main\\main.cpp",
-              "ViewState": "AgIAADgCAAAAAAAAAAAAAFECAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAAOICAAAAAAAAAAAUwAsDAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-01T05:21:52.735Z",
               "EditorCaption": ""
-            },
+            }
+          ]
+        },
+        {
+          "DockedWidth": 192,
+          "SelectedChildIndex": 0,
+          "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
@@ -45,17 +51,11 @@
               "RelativeDocumentMoniker": "main\\main.h",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_5_IDShadow\\main\\main.h",
               "RelativeToolTip": "main\\main.h",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAIwCYAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAACoAAAAAAAAAAADwv08AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-05-31T14:26:10.708Z",
+              "WhenOpened": "2025-06-04T14:24:54.861Z",
               "EditorCaption": ""
-            }
-          ]
-        },
-        {
-          "DockedWidth": 179,
-          "SelectedChildIndex": 0,
-          "Children": [
+            },
             {
               "$type": "Document",
               "DocumentIndex": 2,
@@ -64,7 +64,7 @@
               "RelativeDocumentMoniker": "main\\hlsl.fx",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_5_IDShadow\\main\\hlsl.fx",
               "RelativeToolTip": "main\\hlsl.fx",
-              "ViewState": "AgIAAIQAAAAAAAAAAAAAAJwAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAQwI8AAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-05-31T14:49:12.089Z",
               "EditorCaption": ""
