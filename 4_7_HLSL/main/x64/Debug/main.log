@@ -4,4 +4,5 @@ C:\Users\nagak\Downloads\Directx9_SampleCode\4_7_HLSL\main\resource.h(56,9): war
       C:\Users\nagak\Downloads\Directx9_SampleCode\4_7_HLSL\main\resource.h(11,9):
       'IDM_EXIT' の以前の定義を確認してください
   
+C:\Users\nagak\Downloads\Directx9_SampleCode\4_7_HLSL\main\main.cpp(67,31): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
   main.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\4_7_HLSL\x64\Debug\main.exe

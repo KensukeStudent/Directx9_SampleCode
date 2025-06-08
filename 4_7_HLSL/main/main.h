@@ -22,6 +22,12 @@ struct UserInput
     BOOL bX;
     BOOL bA;
     BOOL bS;
+
+    // ビュー行列
+    BOOL bviewL; // 上
+    BOOL bviewJ; // 右
+    BOOL bviewI; // 左
+    BOOL bviewK; // 下
 };
 
 
@@ -46,6 +52,9 @@ class CMyD3DApplication : public CD3DApplication
 
     FLOAT						m_fWorldRotX;	// Ｘ軸回転
     FLOAT						m_fWorldRotY;	// Ｙ軸回転
+
+    FLOAT						m_viewX;	// 視点X
+    FLOAT						m_viewY;	// 視点Y
 
     BOOL						m_bLoadingApp;	// ロード中？
     CD3DFont* m_pFont;		// フォント

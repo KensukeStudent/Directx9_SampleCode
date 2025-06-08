@@ -64,8 +64,11 @@ CMyD3DApplication::CMyD3DApplication()
     m_pDecl = NULL;
     m_pMesh = new CD3DMesh();
 
-    m_fWorldRotX = -0.5f;
-    m_fWorldRotY = D3DX_PI;
+    m_fWorldRotX = -20 * 3.14 / 180; // ラジアン変換
+    m_fWorldRotY = 0;
+
+    m_viewX = 0;
+	m_viewY = 0;
 
     m_dwCreationWidth = 500;
     m_dwCreationHeight = 375;
@@ -269,12 +272,72 @@ HRESULT CMyD3DApplication::FrameMove()
         m_fWorldRotX -= m_fElapsedTime;
 
     //---------------------------------------------------------
-    // 行列の更新
+    // ワールド行列の更新
     //---------------------------------------------------------
     D3DXMATRIX matRotX, matRotY;
     D3DXMatrixRotationX(&matRotX, m_fWorldRotX);
     D3DXMatrixRotationY(&matRotY, m_fWorldRotY);
     D3DXMatrixMultiply(&m_mWorld, &matRotY, &matRotX);
+
+    //---------------------------------------------------------
+    // ビュー行列の更新
+    //---------------------------------------------------------
+
+#pragma region カメラ平行移動
+    if (m_UserInput.bviewL) // 右
+    {
+        m_viewX += m_fElapsedTime * 2;
+    }
+    else if (m_UserInput.bviewJ) // 左
+    {
+        m_viewX -= m_fElapsedTime * 2;
+    }
+
+    if (m_UserInput.bviewI) // 上
+    {
+        m_viewY += m_fElapsedTime * 2;
+    }
+    else if (m_UserInput.bviewK) // 下
+    {
+        m_viewY -= m_fElapsedTime * 2;
+    }
+
+    D3DXVECTOR3 eye(m_viewX, m_viewY, -10.0);
+    D3DXVECTOR3 target(m_viewX, m_viewY, 0.0f);
+
+    // Y軸上方向を固定する（世界座標で常に上）
+    D3DXVECTOR3 up(0.0f, 1.0f, 0.0f);
+    D3DXMatrixLookAtLH(&m_mView, &eye, &target, &up);
+#pragma endregion
+
+#pragma region カメラ回転
+    //    // カメラの位置（固定）
+    //D3DXVECTOR3 eye(0.0f, 5.0f, -10.0f);
+
+    //// 初期視線方向（前方を見るベクトル）
+    //D3DXVECTOR3 lookDir(0.0f, 0.0f, 1.0f); // Z+方向
+
+    //// 時間または入力によって角度を変化
+    //static float angle = 0.0f;
+    //if (m_UserInput.bRotateRight) angle += m_fElapsedTime;
+    //if (m_UserInput.bRotateLeft)  angle -= m_fElapsedTime;
+
+    //// Y軸回転行列を作成（時計回りに回す）
+    //D3DXMATRIX rotY;
+    //D3DXMatrixRotationY(&rotY, angle);
+
+    //// 視線方向ベクトルを回転
+    //D3DXVec3TransformNormal(&lookDir, &lookDir, &rotY);
+
+    //// 注視点を算出（視線方向に進んだ位置）
+    //D3DXVECTOR3 target = eye + lookDir;
+
+    //// 上方向はY軸
+    //D3DXVECTOR3 up(0.0f, 1.0f, 0.0f);
+
+    //// ビュー行列生成
+    //D3DXMatrixLookAtLH(&m_mView, &eye, &target, &up);
+#pragma endregion
 
     return S_OK;
 }
@@ -296,6 +359,12 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
     pUserInput->bX = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
     pUserInput->bA = (m_bActive && (GetAsyncKeyState('A') & 0x8000) == 0x8000);
     pUserInput->bS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
+
+    // ビュー行列
+    pUserInput->bviewL = (m_bActive && (GetAsyncKeyState('L') & 0x8000) == 0x8000);
+    pUserInput->bviewJ = (m_bActive && (GetAsyncKeyState('J') & 0x8000) == 0x8000);
+    pUserInput->bviewI = (m_bActive && (GetAsyncKeyState('I') & 0x8000) == 0x8000);
+    pUserInput->bviewK = (m_bActive && (GetAsyncKeyState('K') & 0x8000) == 0x8000);
 }
 
 

@@ -71,7 +71,7 @@ CMyD3DApplication::CMyD3DApplication()
 {
 	m_pMesh = new CD3DMesh();
 	m_pMeshBg = new CD3DMesh();
-	m_pos = D3DXVECTOR3(1.5, 1, 2);
+	m_pos = D3DXVECTOR3(0, 0, 0);
 
 	m_pShadowMap = NULL;
 	m_pShadowMapSurf = NULL;
@@ -88,9 +88,9 @@ CMyD3DApplication::CMyD3DApplication()
 	m_htIdMap = NULL;
 	m_pDecl = NULL;
 
-	m_fWorldRotX = -0.76479256f;
-	m_fWorldRotY = 3.2536204f;
-	m_fViewZoom = 6.8188891f;
+	m_fWorldRotX = -30*3.14f/180;
+	m_fWorldRotY = 180*3.14/180;
+	m_fViewZoom = 10;
 	m_LighPos = D3DXVECTOR3(-6.0f, 6.0f, -2.0f);
 
 	m_dwCreationWidth = 500;
@@ -302,7 +302,7 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 	D3DXMatrixIdentity(&m_mWorld);
 
 	// ビュー行列
-	D3DXVECTOR3 vFromPt = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
+	D3DXVECTOR3 vFromPt = D3DXVECTOR3(0.0f, 0.0f, -10.0f);
 	D3DXVECTOR3 vLookatPt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
@@ -357,7 +357,7 @@ HRESULT CMyD3DApplication::FrameMove()
 
 	//m_pos.x = 1.5f * (FLOAT)cos(1.0f * this->m_fTime) + 1.0f;
 	//m_pos.z = 1.5f * (FLOAT)sin(1.0f * this->m_fTime);
-	m_pos.y = -3.0f;
+	m_pos.y = -2;
 
 	//---------------------------------------------------------
 	// 入力に応じて座標系を更新する
@@ -491,6 +491,12 @@ void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mVP, const D3DXMATRI
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pass"></param>
+/// <param name="mVP">回転・ビュー・射影行列</param>
+/// <param name="mScaleBias"></param>
 void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias)
 {
 	D3DXMATRIX mL, m;
@@ -507,23 +513,24 @@ void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMA
 		m_pEffect->SetMatrix(m_hmWLP, &m);
 		m_pMeshBg->Render(m_pd3dDevice);
 	}
-	else
+	else if (pass == 1)
 	{
 		m_pEffect->BeginPass(1);
 
-		m = mL * mVP;
-		m_pEffect->SetMatrix(m_hmWVP, &m);
+		//m = mL * mVP;
+		m_pEffect->SetMatrix(m_hmWVP, &mVP);
 
-		m = mL * m_mLightVP;
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		//m = mL * m_mLightVP;
+		m_pEffect->SetMatrix(m_hmWLP, &m_mLightVP);
 
-		m = m * mScaleBias;
+		m = m_mLightVP * mScaleBias;
 		m_pEffect->SetMatrix(m_hmWVPT, &m);
 
 		// ライトベクトル（ローカル空間）
 		D3DXMatrixInverse(&m, NULL, &mL);
 		D3DXVec3Transform(&v, &m_LighPos, &m);
-		D3DXVec4Normalize(&v, &v); v.w = 0;
+		D3DXVec4Normalize(&v, &v); 
+		v.w = 0;
 		m_pEffect->SetVector(m_hvDir, &v);
 
 		pMtrl = m_pMeshBg->m_pMaterials;
@@ -698,6 +705,10 @@ HRESULT CMyD3DApplication::RenderText()
 	fNextLine -= 20.0f;
 	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
 	lstrcpy(szMsg, m_strFrameStats);
+	fNextLine -= 20.0f;
+	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
+
+	lstrcpy(szMsg, TEXT("aaaaaaaaaa"));
 	fNextLine -= 20.0f;
 	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
 
