@@ -63,6 +63,7 @@ CMyD3DApplication::CMyD3DApplication()
     m_hmWVP = NULL;
     m_pDecl = NULL;
     m_pMesh = new CD3DMesh();
+    m_pMeshUfo = new CD3DMesh();
 
     m_fWorldRotX = -20 * 3.14 / 180; // ラジアン変換
     m_fWorldRotY = 0;
@@ -164,6 +165,19 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
     m_pMesh->UseMeshMaterials(FALSE);// テクスチャは自分で設定
     m_pMesh->SetFVF(m_pd3dDevice, D3DFVF_XYZ | D3DFVF_TEX1);
 
+    // メッシュの読み込み
+// ★★★追加：Xファイルの読み込み
+    if (FAILED(hr = m_pMeshUfo->Create(m_pd3dDevice, _T("ufo.x"))))
+    {
+        _com_error err(hr);
+        LPCTSTR errMsg = err.ErrorMessage();
+        MessageBox(nullptr, errMsg, _T("Error"), MB_OK);
+        return hr;
+    }
+
+    m_pMeshUfo->UseMeshMaterials(FALSE);// テクスチャは自分で設定
+    m_pMeshUfo->SetFVF(m_pd3dDevice, D3DFVF_XYZ | D3DFVF_TEX1);
+
     // 頂点宣言のオブジェクトの生成
     D3DVERTEXELEMENT9 decl[] =
     {
@@ -239,6 +253,7 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 
 
     m_pMesh->RestoreDeviceObjects(m_pd3dDevice);
+    m_pMeshUfo->RestoreDeviceObjects(m_pd3dDevice);
     if (m_pEffect != NULL) m_pEffect->OnResetDevice();// シェーダ
 
     m_pFont->RestoreDeviceObjects();	// フォント
@@ -417,6 +432,7 @@ HRESULT CMyD3DApplication::Render()
                 m_pd3dDevice->SetVertexDeclaration(m_pDecl);
 
                 m_pMesh->Render(m_pd3dDevice); // 描画
+                m_pMeshUfo->Render(m_pd3dDevice); // 描画
 
                 m_pEffect->EndPass();
             }
@@ -507,6 +523,7 @@ LRESULT CMyD3DApplication::MsgProc(HWND hWnd,
 HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 {
     m_pMesh->InvalidateDeviceObjects();				// メッシュ
+    m_pMeshUfo->InvalidateDeviceObjects();				// メッシュ
     if (m_pEffect != NULL) m_pEffect->OnLostDevice();	// シェーダ
 
     m_pFont->InvalidateDeviceObjects();	// フォント
@@ -524,6 +541,7 @@ HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 HRESULT CMyD3DApplication::DeleteDeviceObjects()
 {
     m_pMesh->Destroy();				// メッシュ
+    m_pMeshUfo->Destroy();				// メッシュ
     SAFE_RELEASE(m_pEffect);		// シェーダ
     SAFE_RELEASE(m_pDecl);		// 頂点宣言
 
@@ -542,6 +560,7 @@ HRESULT CMyD3DApplication::DeleteDeviceObjects()
 HRESULT CMyD3DApplication::FinalCleanup()
 {
     SAFE_DELETE(m_pMesh);	// メッシュ
+    SAFE_DELETE(m_pMeshUfo);	// メッシュ
 
     SAFE_DELETE(m_pFont);	// フォント
 

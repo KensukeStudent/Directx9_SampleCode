@@ -45,6 +45,7 @@ class CMyD3DApplication : public CD3DApplication
     LPDIRECT3DVERTEXDECLARATION9	m_pDecl;	// 頂点宣言
 
     CD3DMesh* m_pMesh;	// モデル
+    CD3DMesh* m_pMeshUfo;	// モデル
 
     D3DXMATRIX						m_mWorld;	// ワールド行列
     D3DXMATRIX						m_mView;	// ビュー行列
