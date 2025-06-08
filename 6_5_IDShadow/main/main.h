@@ -50,6 +50,15 @@ class CMyD3DApplication : public CD3DApplication
 	D3DXHANDLE       m_hvId;	// プライオリティ番号
 	D3DXHANDLE       m_hvDir;	// ライトの方向
 	D3DXHANDLE       m_htIdMap;// テクスチャ
+
+	D3DXHANDLE       m_hmWVP_ufo;	// ワールド×ビュー×射影行列
+	D3DXHANDLE       m_hmWLP_ufo;	// ライト方向からの変換行列
+	D3DXHANDLE       m_hmWVPT_ufo;	// ライト方向からの変換行列
+	D3DXHANDLE       m_hvCol_ufo;	// メッシュの色
+	D3DXHANDLE       m_hvId_ufo;	// プライオリティ番号
+	D3DXHANDLE       m_hvDir_ufo;	// ライトの方向
+	D3DXHANDLE       m_htIdMap_ufo;// テクスチャ
+
 	LPDIRECT3DVERTEXDECLARATION9	m_pDecl;	// 頂点宣言
 
 	// シャドウマップ
@@ -74,8 +83,8 @@ class CMyD3DApplication : public CD3DApplication
 	FLOAT                   m_fViewZoom;    // 視点の距離
 
 	VOID DrawModel(int pass);
-	void DrawUfo(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias);
-	void DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias);
+	void DrawUfo(int pass, const D3DXMATRIX& mScaleBias);
+	void DrawGround(int pass, const D3DXMATRIX& mScaleBias);
 
 protected:
 	virtual HRESULT OneTimeSceneInit();

@@ -61,6 +61,7 @@ CMyD3DApplication::CMyD3DApplication()
     m_pEffect = NULL;
     m_hTechnique = NULL;
     m_hmWVP = NULL;
+    m_hmWVP_Ufo = NULL;
     m_pDecl = NULL;
     m_pMesh = new CD3DMesh();
     m_pMeshUfo = new CD3DMesh();
@@ -206,6 +207,7 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
     else {
         m_hTechnique = m_pEffect->GetTechniqueByName("TShader");
         m_hmWVP = m_pEffect->GetParameterByName(NULL, "mWVP");
+        m_hmWVP_Ufo = m_pEffect->GetParameterByName(NULL, "mWVP_Ufo");
     }
     SAFE_RELEASE(pErr);
 
@@ -289,10 +291,10 @@ HRESULT CMyD3DApplication::FrameMove()
     //---------------------------------------------------------
     // ワールド行列の更新
     //---------------------------------------------------------
-    D3DXMATRIX matRotX, matRotY;
+    D3DXMATRIX mCamera, matRotX, matRotY;
     D3DXMatrixRotationX(&matRotX, m_fWorldRotX);
     D3DXMatrixRotationY(&matRotY, m_fWorldRotY);
-    D3DXMatrixMultiply(&m_mWorld, &matRotY, &matRotX);
+    D3DXMatrixMultiply(&mCamera, &matRotY, &matRotX);
 
     //---------------------------------------------------------
     // ビュー行列の更新
@@ -323,6 +325,9 @@ HRESULT CMyD3DApplication::FrameMove()
     // Y軸上方向を固定する（世界座標で常に上）
     D3DXVECTOR3 up(0.0f, 1.0f, 0.0f);
     D3DXMatrixLookAtLH(&m_mView, &eye, &target, &up);
+
+    m_mView = mCamera * m_mView;
+
 #pragma endregion
 
 #pragma region カメラ回転
@@ -354,6 +359,27 @@ HRESULT CMyD3DApplication::FrameMove()
     //D3DXMatrixLookAtLH(&m_mView, &eye, &target, &up);
 #pragma endregion
 
+    //---------------------------------------------------------
+    // UFOの座標更新
+    //---------------------------------------------------------
+	if (m_UserInput.bW) // 前進
+	{
+        m_ufoZ += m_fElapsedTime * 2;
+	}
+	else if (m_UserInput.bS) // 後退
+	{
+        m_ufoZ -= m_fElapsedTime * 2;
+	}
+
+    if (m_UserInput.bD) // 右
+    {
+        m_ufoX += m_fElapsedTime * 2;
+    }
+	else if (m_UserInput.bA) // 左
+	{
+        m_ufoX -= m_fElapsedTime * 2;
+	}
+
     return S_OK;
 }
 
@@ -370,8 +396,8 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
     pUserInput->bRotateDown = (m_bActive && (GetAsyncKeyState(VK_DOWN) & 0x8000) == 0x8000);
     pUserInput->bRotateLeft = (m_bActive && (GetAsyncKeyState(VK_LEFT) & 0x8000) == 0x8000);
     pUserInput->bRotateRight = (m_bActive && (GetAsyncKeyState(VK_RIGHT) & 0x8000) == 0x8000);
-    pUserInput->bZ = (m_bActive && (GetAsyncKeyState('Z') & 0x8000) == 0x8000);
-    pUserInput->bX = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
+    pUserInput->bW = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
+    pUserInput->bD = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
     pUserInput->bA = (m_bActive && (GetAsyncKeyState('A') & 0x8000) == 0x8000);
     pUserInput->bS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
 
@@ -393,6 +419,7 @@ HRESULT CMyD3DApplication::Render()
 {
     D3DXMATRIX m;
     D3DXVECTOR4 v;
+    D3DXMATRIX mWorld;
 
     // 画面をクリアする
     m_pd3dDevice->Clear(0L, NULL,
@@ -415,24 +442,33 @@ HRESULT CMyD3DApplication::Render()
             {
                 m_pEffect->BeginPass(i);
 
-                //-------------------------------------------------
-                // ★シェーダ定数の設定
-                //-------------------------------------------------
-                m = m_mWorld * m_mView * m_mProj;
-                m_pEffect->SetMatrix(m_hmWVP, &m);
-
-                m_pEffect->SetTexture("Tex", m_pMesh->m_pTextures[0]);
-
-                //-------------------------------------------------
-                // 描画
-                //-------------------------------------------------
-
                 // モデルのRender関数の前で宣言する
                 // モデルごとにhlslで必要な引数（POSITION, TEXCOORDが異なれば、都度切り替えて実装する）
                 m_pd3dDevice->SetVertexDeclaration(m_pDecl);
 
-                m_pMesh->Render(m_pd3dDevice); // 描画
-                m_pMeshUfo->Render(m_pd3dDevice); // 描画
+                if (i == 0)
+                {
+                    // 地面-----------------------------------------------------------------------------
+                    D3DXMATRIX mWorldGround;
+                    D3DXMatrixIdentity(&mWorldGround);
+                    D3DXMATRIX mWVP = mWorldGround * m_mView * m_mProj;
+
+                    m_pEffect->SetMatrix(m_hmWVP, &mWVP);
+                    m_pEffect->SetTexture("Tex", m_pMesh->m_pTextures[0]); // 地面用テクスチャ
+
+                    m_pMesh->Render(m_pd3dDevice);
+                }
+                else if (i == 1)
+                {
+                    // UFO-----------------------------------------------------------------------------
+                    D3DXMATRIX mWorldUfo;
+                    D3DXMatrixTranslation(&mWorldUfo, m_ufoX, 1.2f, m_ufoZ);
+                    D3DXMATRIX mWVP = mWorldUfo * m_mView * m_mProj;
+
+                    m_pEffect->SetMatrix(m_hmWVP_Ufo, &mWVP);
+
+                    m_pMeshUfo->Render(m_pd3dDevice);
+                }
 
                 m_pEffect->EndPass();
             }

@@ -18,10 +18,12 @@ struct UserInput
     BOOL bRotateDown;
     BOOL bRotateLeft;
     BOOL bRotateRight;
-    BOOL bZ;
-    BOOL bX;
-    BOOL bA;
+
+    // UFO移動
+    BOOL bW;
     BOOL bS;
+    BOOL bD;
+    BOOL bA;
 
     // ビュー行列
     BOOL bviewL; // 上
@@ -42,6 +44,8 @@ class CMyD3DApplication : public CD3DApplication
     LPD3DXEFFECT					m_pEffect;	// ★シェーダ
     D3DXHANDLE						m_hTechnique;// ★テクニック
     D3DXHANDLE						m_hmWVP;	// ★ワールド～射影行列
+
+    D3DXHANDLE						m_hmWVP_Ufo;	// ★ワールド～射影行列
     LPDIRECT3DVERTEXDECLARATION9	m_pDecl;	// 頂点宣言
 
     CD3DMesh* m_pMesh;	// モデル
@@ -56,6 +60,9 @@ class CMyD3DApplication : public CD3DApplication
 
     FLOAT						m_viewX;	// 視点X
     FLOAT						m_viewY;	// 視点Y
+
+    FLOAT						m_ufoX;	// UFO X
+    FLOAT						m_ufoZ;	// UFO Y
 
     BOOL						m_bLoadingApp;	// ロード中？
     CD3DFont* m_pFont;		// フォント

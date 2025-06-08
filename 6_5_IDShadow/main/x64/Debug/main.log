@@ -4,5 +4,4 @@ C:\Users\nagak\Downloads\Directx9_SampleCode\6_5_IDShadow\main\resource.h(56,9):
       C:\Users\nagak\Downloads\Directx9_SampleCode\6_5_IDShadow\main\resource.h(11,9):
       'IDM_EXIT' の以前の定義を確認してください
   
-C:\Users\nagak\Downloads\Directx9_SampleCode\6_5_IDShadow\main\main.cpp(92,25): warning C4305: '=': 'double' から 'FLOAT' へ切り詰めます。
   main.vcxproj -> C:\Users\nagak\Downloads\Directx9_SampleCode\6_5_IDShadow\x64\Debug\main.exe

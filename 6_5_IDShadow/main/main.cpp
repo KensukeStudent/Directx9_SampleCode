@@ -89,7 +89,7 @@ CMyD3DApplication::CMyD3DApplication()
 	m_pDecl = NULL;
 
 	m_fWorldRotX = -30*3.14f/180;
-	m_fWorldRotY = 180*3.14/180;
+	m_fWorldRotY = 0;
 	m_fViewZoom = 10;
 	m_LighPos = D3DXVECTOR3(-6.0f, 6.0f, -2.0f);
 
@@ -220,6 +220,14 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 		m_hvId = m_pEffect->GetParameterByName(NULL, "vId");
 		m_hvDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
 		m_htIdMap = m_pEffect->GetParameterByName(NULL, "IdMap");
+
+		m_hmWVP_ufo = m_pEffect->GetParameterByName(NULL, "mWVP_ufo");
+		m_hmWLP_ufo = m_pEffect->GetParameterByName(NULL, "mWLP_ufo");
+		m_hmWVPT_ufo = m_pEffect->GetParameterByName(NULL, "mWVPT_ufo");
+		m_hvCol_ufo = m_pEffect->GetParameterByName(NULL, "vCol_ufo");
+		m_hvId_ufo = m_pEffect->GetParameterByName(NULL, "vId_ufo");
+		m_hvDir_ufo = m_pEffect->GetParameterByName(NULL, "vLightDir_ufo");
+		m_htIdMap_ufo = m_pEffect->GetParameterByName(NULL, "IdMap_ufo");
 	}
 
 	// 頂点宣言のオブジェクトの生成(地形用)
@@ -366,6 +374,7 @@ HRESULT CMyD3DApplication::FrameMove()
 	// 回転
 	D3DXMATRIX matRotY;
 	D3DXMATRIX matRotX;
+	D3DXMATRIX mCamera;
 
 	if (m_UserInput.bRotateLeft && !m_UserInput.bRotateRight)
 		m_fWorldRotY += m_fElapsedTime;
@@ -382,7 +391,7 @@ HRESULT CMyD3DApplication::FrameMove()
 	D3DXMatrixRotationX(&matRotX, m_fWorldRotX);
 	D3DXMatrixRotationY(&matRotY, m_fWorldRotY);
 
-	D3DXMatrixMultiply(&m_mWorld, &matRotY, &matRotX);
+	D3DXMatrixMultiply(&mCamera, &matRotY, &matRotX);
 
 	//---------------------------------------------------------
 	// ビュー行列の設定
@@ -397,6 +406,7 @@ HRESULT CMyD3DApplication::FrameMove()
 	D3DXVECTOR3 vLookatPt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
+	m_mView = mCamera * m_mView;
 
 	return S_OK;
 }
@@ -422,8 +432,6 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 
 VOID CMyD3DApplication::DrawModel(int pass)
 {
-	D3DXMATRIX mVP = m_mWorld * m_mView * m_mProj;
-
 	float fOffsetX = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
 	float fOffsetY = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
 	D3DXMATRIX mScaleBias(
@@ -433,45 +441,44 @@ VOID CMyD3DApplication::DrawModel(int pass)
 		fOffsetX, fOffsetY, 0.0f, 1.0f
 	);
 
-	DrawUfo(pass, mVP, mScaleBias);
-	DrawGround(pass, mVP, mScaleBias);
+	DrawUfo(pass, mScaleBias);
+	DrawGround(pass, mScaleBias);
 }
 
-void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias)
+void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mScaleBias)
 {
-	D3DXMATRIX mL, m;
+	D3DXMATRIX mVP, mL, m;
 	D3DXVECTOR4 v(0, 0, 0, 1);
 	D3DMATERIAL9* pMtrl;
 	DWORD i;
 
-	m_pEffect->SetVector(m_hvId, &v);
+	m_pEffect->SetVector(m_hvId_ufo, &v);
 
+	mVP = m_mView * m_mProj;
 	D3DXMatrixTranslation(&mL, m_pos.x, m_pos.y, m_pos.z);
 
 	if (pass == 0) // シャドウマップ用
 	{
 		m = mL * m_mLightVP;
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pEffect->SetMatrix(m_hmWLP_ufo, &m);
 		m_pMesh->Render(m_pd3dDevice);
 	}
-	else
+	else if (pass == 3)
 	{
-		m_pEffect->BeginPass(2);
-
 		m = mL * mVP;
-		m_pEffect->SetMatrix(m_hmWVP, &m);
+		m_pEffect->SetMatrix(m_hmWVP_ufo, &m);
 
 		m = mL * m_mLightVP;
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pEffect->SetMatrix(m_hmWLP_ufo, &m);
 
 		m = m * mScaleBias;
-		m_pEffect->SetMatrix(m_hmWVPT, &m);
+		m_pEffect->SetMatrix(m_hmWVPT_ufo, &m);
 
 		// ローカル空間ライト方向の算出
 		D3DXMatrixInverse(&m, NULL, &mL);
 		D3DXVec3Transform(&v, &m_LighPos, &m);
 		D3DXVec4Normalize(&v, &v); v.w = 0;
-		m_pEffect->SetVector(m_hvDir, &v);
+		m_pEffect->SetVector(m_hvDir_ufo, &v);
 
 		// マテリアルごとに描画
 		pMtrl = m_pMesh->m_pMaterials;
@@ -481,42 +488,39 @@ void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mVP, const D3DXMATRI
 			v.y = pMtrl->Diffuse.g;
 			v.z = pMtrl->Diffuse.b;
 			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol, &v);
+			m_pEffect->SetVector(m_hvCol_ufo, &v);
 
 			m_pMesh->m_pLocalMesh->DrawSubset(i);
 			pMtrl++;
 		}
-
-		m_pEffect->EndPass();
 	}
 }
 
 /// <summary>
-/// 
+/// 地面
 /// </summary>
 /// <param name="pass"></param>
 /// <param name="mVP">回転・ビュー・射影行列</param>
 /// <param name="mScaleBias"></param>
-void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMATRIX& mScaleBias)
+void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mScaleBias)
 {
-	D3DXMATRIX mL, m;
+	D3DXMATRIX mVP, mL, m;
 	D3DXVECTOR4 v(0.5f, 0.5f, 0.5f, 1.0f);
 	D3DMATERIAL9* pMtrl;
 	DWORD i;
 
 	m_pEffect->SetVector(m_hvId, &v);
+	mVP = m_mView * m_mProj;
 	D3DXMatrixIdentity(&mL);
 
-	if (pass == 0)
+	if (pass == 1)
 	{
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP, &m);
 		m_pMeshBg->Render(m_pd3dDevice);
 	}
-	else if (pass == 1)
+	else if (pass == 2)
 	{
-		m_pEffect->BeginPass(1);
-
 		//m = mL * mVP;
 		m_pEffect->SetMatrix(m_hmWVP, &mVP);
 
@@ -546,8 +550,6 @@ void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mVP, const D3DXMA
 			m_pMeshBg->m_pLocalMesh->DrawSubset(i);
 			pMtrl++;
 		}
-
-		m_pEffect->EndPass();
 	}
 }
 
@@ -607,42 +609,38 @@ HRESULT CMyD3DApplication::Render()
 							, 0.0f,1.0f };     // 前面、後面
 			m_pd3dDevice->SetViewport(&viewport);
 
-			// シャドウマップのクリア
-			m_pd3dDevice->Clear(0L, NULL
-				, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-				, 0xFFFFFFFF, 1.0f, 0L);
+			UINT numPasses = 0;
+			m_pEffect->Begin(&numPasses, 0);
 
-			//-------------------------------------------------
-			// 1パス目:シャドウマップの作成
-			//-------------------------------------------------
-			m_pEffect->BeginPass(0);	// パス(１)の設定
-			DrawModel(0);			// モデルの描画
-			m_pEffect->EndPass();
+			for (UINT i = 0; i < numPasses; ++i)
+			{
+				m_pEffect->BeginPass(i);
 
-			//-------------------------------------------------
-			// レンダリングターゲットを元に戻す
-			//-------------------------------------------------
-			m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
-			m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
-			m_pd3dDevice->SetViewport(&oldViewport);
-			pOldBackBuffer->Release();
-			pOldZBuffer->Release();
+				// テクスチャの設定
+				m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
+				m_pd3dDevice->SetVertexDeclaration(m_pDecl);
 
-			//-------------------------------------------------
-			// 2パス目:シーンの描画
-			//-------------------------------------------------
-			// バッファのクリア
-			m_pd3dDevice->Clear(0L, NULL
-				, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-				, 0x00404080, 1.0f, 0L);
+				DrawModel(i);
 
-			//-------------------------------------------------
-			// 描画
-			//-------------------------------------------------
-			// テクスチャの設定
-			m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
-			DrawModel(1);			// モデルの描画
-			m_pd3dDevice->SetVertexDeclaration(m_pDecl);
+				if (i == 1)
+				{
+					//-------------------------------------------------
+					// レンダリングターゲットを元に戻す
+					//-------------------------------------------------
+					m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
+					m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
+					m_pd3dDevice->SetViewport(&oldViewport);
+					pOldBackBuffer->Release();
+					pOldZBuffer->Release();
+
+					// シャドウマップのクリア
+					m_pd3dDevice->Clear(0L, NULL
+						, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+						, 0xFFFFFFFF, 1.0f, 0L);
+				}
+
+				m_pEffect->EndPass();
+			}
 
 			m_pEffect->End();
 		}
