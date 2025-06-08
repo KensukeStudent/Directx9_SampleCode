@@ -346,7 +346,7 @@ HRESULT CMyD3DApplication::Render()
 		// 影の大きさ
 		FLOAT size = 0.6f * (m_pos.y - m_shadowH) + 0.4f;
 		// UFOが上にあれば影を大きくする
-// 影の色（濃さ）
+		// 影の色（濃さ）
 		FLOAT fc = 100.0f + 200.0f * (1.0f - size);
 		// サイズに比例して色を落とす
 		DWORD c = min(255, (DWORD)((0 < fc) ? fc : 0));

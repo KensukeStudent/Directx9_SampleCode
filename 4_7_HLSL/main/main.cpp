@@ -411,7 +411,11 @@ HRESULT CMyD3DApplication::Render()
                 //-------------------------------------------------
                 // 描画
                 //-------------------------------------------------
+
+                // モデルのRender関数の前で宣言する
+                // モデルごとにhlslで必要な引数（POSITION, TEXCOORDが異なれば、都度切り替えて実装する）
                 m_pd3dDevice->SetVertexDeclaration(m_pDecl);
+
                 m_pMesh->Render(m_pd3dDevice); // 描画
 
                 m_pEffect->EndPass();
