@@ -22,20 +22,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 171,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "hlsl.fx",
-              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\hlsl.fx",
-              "RelativeDocumentMoniker": "main\\hlsl.fx",
-              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\hlsl.fx",
-              "RelativeToolTip": "main\\hlsl.fx",
-              "ViewState": "AgIAADMAAAAAAAAAAAAAAF4AAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-05-31T15:23:10.702Z"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
@@ -44,7 +32,7 @@
               "RelativeDocumentMoniker": "main\\main.h",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\main.h",
               "RelativeToolTip": "main\\main.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAPAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-05-18T11:46:28.777Z"
             },
@@ -56,9 +44,28 @@
               "RelativeDocumentMoniker": "main\\main.cpp",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\main.cpp",
               "RelativeToolTip": "main\\main.cpp",
-              "ViewState": "AgIAALsBAAAAAAAAAAAmwO0BAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAABcBAAAAAAAAAAAAAC8BAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-05-18T11:44:46.147Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 171,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "hlsl.fx",
+              "DocumentMoniker": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\hlsl.fx",
+              "RelativeDocumentMoniker": "main\\hlsl.fx",
+              "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\hlsl.fx",
+              "RelativeToolTip": "main\\hlsl.fx",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAAEoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-05-31T15:23:10.702Z",
               "EditorCaption": ""
             }
           ]

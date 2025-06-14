@@ -365,7 +365,7 @@ HRESULT CMyD3DApplication::FrameMove()
 
 	//m_pos.x = 1.5f * (FLOAT)cos(1.0f * this->m_fTime) + 1.0f;
 	//m_pos.z = 1.5f * (FLOAT)sin(1.0f * this->m_fTime);
-	m_pos.y = -2;
+	m_pos.y = 2;
 
 	//---------------------------------------------------------
 	// 入力に応じて座標系を更新する
@@ -615,11 +615,7 @@ HRESULT CMyD3DApplication::Render()
 			for (UINT i = 0; i < numPasses; ++i)
 			{
 				m_pEffect->BeginPass(i);
-
-				// テクスチャの設定
-				m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
 				m_pd3dDevice->SetVertexDeclaration(m_pDecl);
-
 				DrawModel(i);
 
 				if (i == 1)
@@ -637,6 +633,9 @@ HRESULT CMyD3DApplication::Render()
 					m_pd3dDevice->Clear(0L, NULL
 						, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
 						, 0xFFFFFFFF, 1.0f, 0L);
+				
+					// テクスチャの設定
+					m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
 				}
 
 				m_pEffect->EndPass();
@@ -648,26 +647,26 @@ HRESULT CMyD3DApplication::Render()
 		// ヘルプの表示
 		RenderText();
 
-//#if 1 // デバッグ用にテクスチャを表示する
-//		{
-//			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-//			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-//			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-//			float scale = 128.0f;
-//			TVERTEX Vertex[4] = {
-//				// x  y  z rhw tu tv
-//				{    0,    0,0, 1, 0, 0,},
-//				{scale,    0,0, 1, 1, 0,},
-//				{scale,scale,0, 1, 1, 1,},
-//				{    0,scale,0, 1, 0, 1,},
-//			};
-//			m_pd3dDevice->SetTexture(0, m_pShadowMap);
-//			m_pd3dDevice->SetVertexShader(NULL);
-//			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
-//			m_pd3dDevice->SetPixelShader(0);
-//			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
-//		}
-//#endif		
+#if 1 // デバッグ用にテクスチャを表示する
+		{
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+			float scale = 128.0f;
+			TVERTEX Vertex[4] = {
+				// x  y  z rhw tu tv
+				{    0,    0,0, 1, 0, 0,},
+				{scale,    0,0, 1, 1, 0,},
+				{scale,scale,0, 1, 1, 1,},
+				{    0,scale,0, 1, 0, 1,},
+			};
+			m_pd3dDevice->SetTexture(0, m_pShadowMap);
+			m_pd3dDevice->SetVertexShader(NULL);
+			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+			m_pd3dDevice->SetPixelShader(0);
+			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+		}
+#endif		
 
 		// 描画の終了
 		m_pd3dDevice->EndScene();

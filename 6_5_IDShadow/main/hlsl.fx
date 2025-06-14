@@ -75,7 +75,7 @@ VS_OUTPUT VS_01(
     Out.Pos = mul(Pos, mWLP_ufo);
     
     // ID‚ğF‚Æ‚µ‚Äo—Í‚·‚é
-    Out.Diffuse = vId;
+    Out.Diffuse = vId_ufo;
 
     return Out;
 }
