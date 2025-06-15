@@ -448,39 +448,54 @@ HRESULT CMyD3DApplication::Render()
 		TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 		TSS(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 
+		// --- ビュー／射影行列の生成（個別に） ---
+		D3DXVECTOR3 lookAt = D3DXVECTOR3(0, 0, 0); // 地面中心 マップ全体の影を作る
+		D3DXVECTOR3 eye = D3DXVECTOR3(m_light.x, m_light.y, m_light.z); // 平行光風の方向
+		D3DXVECTOR3 up = D3DXVECTOR3(0, 1, 0);
+		D3DXMatrixLookAtLH(&mV, &eye, &lookAt, &up);
+
+		float orthoWidth = 30.0f;
+		float orthoHeight = 30.0f;
+		float nearZ = 0.1f;
+		float farZ = 1000.0f;
+		D3DXMatrixOrthoLH(&mP, orthoWidth, orthoHeight, nearZ, farZ); // 真上から見た状態で配置するイメージ
+
+		// 固定行列
+		m_pd3dDevice->SetTransform(D3DTS_VIEW, &mV);
+		m_pd3dDevice->SetTransform(D3DTS_PROJECTION, &mP);
+
+		D3DXMATRIX v_local, p_local, m_prime;
+		D3DXMATRIX VP_local, VP_fixed, VP_fixed_inv;
+
 		for (size_t i = 0; i < 3; i++)
 		{
-			// --- ビュー／射影行列の生成（個別に） ---
-			//D3DXVECTOR3 vEye = D3DXVECTOR3(m_light.x, m_light.y, m_light.z);
-			//D3DXVECTOR3 vLookat = D3DXVECTOR3(0, 0, 0); //m_positions[i];
-			//D3DXVECTOR3 vUp(0, 1, 0);
-			//D3DXMatrixLookAtLH(&mV, &vEye, &vLookat, &vUp);
-
-			D3DXVECTOR3 center = D3DXVECTOR3(0, 0, 0); // 地面中心
-			D3DXVECTOR3 lightDir = D3DXVECTOR3(1, -1, 1); // 平行光風の方向
-			D3DXVec3Normalize(&lightDir, &lightDir);
-
-			D3DXVECTOR3 lightPos = center - lightDir * 200.0f; // 影を作るために遠ざける
-
+			// --- ビュー 影を落とす座標を求める
+			D3DXVECTOR3 lookAt = m_positions[i];
+			D3DXVECTOR3 eye = D3DXVECTOR3(m_light.x, m_light.y, m_light.z); // 平行光風の方向
 			D3DXVECTOR3 up = D3DXVECTOR3(0, 1, 0);
-			D3DXMatrixLookAtLH(&mV, &lightPos, &center, &up);
+			D3DXMatrixLookAtLH(&v_local, &eye, &lookAt, &up);
 
-			//D3DXMatrixPerspectiveFovLH(&mP, D3DX_PI / 2, 1, 0.1f, 20.0f);
+			// フルワールド行列（回転・スケールも含む）
+			D3DXMATRIX matScale, matRot, matTrans, mL;
 
-			float orthoWidth = 30.0f;
-			float orthoHeight = 30.0f;
-			float nearZ = 0.1f;
-			float farZ = 1000.0f;
-			D3DXMatrixOrthoLH(&mP, orthoWidth, orthoHeight, nearZ, farZ);
+			// 必要に応じて設定（今はスケール1、回転なしと仮定）
+			D3DXMatrixScaling(&matScale, 1.0f, 1.0f, 1.0f);
+			D3DXMatrixRotationY(&matRot, 0.0f); // もし回転があるならここで設定
+			D3DXMatrixTranslation(&matTrans, m_positions[i].x, m_positions[i].y, m_positions[i].z);
 
+			// 合成（S → R → T の順で）
+			mL = matScale * matRot * matTrans;
+
+			p_local = mP;
+			VP_local = v_local * p_local; // 影を落とす座標 ローカル
+			VP_fixed = mV * mP; // 固定行列
+
+			D3DXMatrixInverse(&VP_fixed_inv, NULL, &VP_fixed);
+
+			m_prime = mL * VP_local * VP_fixed_inv; // 固定行列で表示するときのオブジェクトのワールド行列を逆算
 
 			// セット
-			m_pd3dDevice->SetTransform(D3DTS_VIEW, &mV);
-			m_pd3dDevice->SetTransform(D3DTS_PROJECTION, &mP);
-
-			// ワールド行列
-			D3DXMatrixTranslation(&mL, m_positions[i].x, m_positions[i].y, m_positions[i].z);
-			m_pd3dDevice->SetTransform(D3DTS_WORLD, &mL);
+			m_pd3dDevice->SetTransform(D3DTS_WORLD, &m_prime);
 
 			// 描画
 			m_pMeshs[i]->UseMeshMaterials(FALSE);
