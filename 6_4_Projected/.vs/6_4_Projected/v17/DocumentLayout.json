@@ -21,7 +21,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 171,
+          "DockedWidth": 191,
           "SelectedChildIndex": 1,
           "Children": [
             {
@@ -32,9 +32,10 @@
               "RelativeDocumentMoniker": "main\\main.h",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\main.h",
               "RelativeToolTip": "main\\main.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-05-18T11:46:28.777Z"
+              "WhenOpened": "2025-05-18T11:46:28.777Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -44,7 +45,7 @@
               "RelativeDocumentMoniker": "main\\main.cpp",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_4_Projected\\main\\main.cpp",
               "RelativeToolTip": "main\\main.cpp",
-              "ViewState": "AgIAAJ4BAAAAAAAAAAAAAMIBAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAABUBAAAAAAAAAAAAAD4BAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-05-18T11:44:46.147Z",
               "EditorCaption": ""
@@ -52,7 +53,7 @@
           ]
         },
         {
-          "DockedWidth": 171,
+          "DockedWidth": 151,
           "SelectedChildIndex": 0,
           "Children": [
             {

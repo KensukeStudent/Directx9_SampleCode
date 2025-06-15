@@ -21,6 +21,9 @@ struct UserInput
     BOOL bZ;
     BOOL bX;
 
+    BOOL bO; // y up
+    BOOL bL; // y down
+
     BOOL arrowW;
     BOOL arrowS;
     BOOL arrowD;

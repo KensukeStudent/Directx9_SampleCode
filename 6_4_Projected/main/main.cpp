@@ -315,9 +315,15 @@ HRESULT CMyD3DApplication::FrameMove()
 		m_pos.x -= 0.1f * 0.016f;
 	}
 
-	//m_pos.x = 1.5f * (FLOAT)cos(1.0f * this->m_fTime) + 1.0f;
-	//m_pos.z = 1.5f * (FLOAT)sin(1.0f * this->m_fTime);
-	m_pos.y = 1.3f;
+	// y軸方向
+	if (m_UserInput.bO)
+	{
+		m_pos.y += 0.1f * 0.016f;
+	}
+	else if (m_UserInput.bL)
+	{
+		m_pos.y -= 0.1f * 0.016f;
+	}
 
 	//---------------------------------------------------------
 	// 入力に応じて座標系を更新する
@@ -372,8 +378,15 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 	pUserInput->bRotateDown = (m_bActive && (GetAsyncKeyState(VK_DOWN) & 0x8000) == 0x8000);
 	pUserInput->bRotateLeft = (m_bActive && (GetAsyncKeyState(VK_LEFT) & 0x8000) == 0x8000);
 	pUserInput->bRotateRight = (m_bActive && (GetAsyncKeyState(VK_RIGHT) & 0x8000) == 0x8000);
+	
+	// zoom
 	pUserInput->bZ = (m_bActive && (GetAsyncKeyState('Z') & 0x8000) == 0x8000);
 	pUserInput->bX = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
+
+	// ufo
+	pUserInput->bO = (m_bActive && (GetAsyncKeyState('O') & 0x8000) == 0x8000);
+	pUserInput->bL = (m_bActive && (GetAsyncKeyState('L') & 0x8000) == 0x8000);
+
 	pUserInput->arrowW = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
 	pUserInput->arrowS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
 	pUserInput->arrowD = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
