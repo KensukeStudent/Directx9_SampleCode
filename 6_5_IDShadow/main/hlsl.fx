@@ -1,28 +1,28 @@
 // -------------------------------------------------------------
-// ƒvƒ‰ƒCƒIƒŠƒeƒBƒoƒbƒtƒ@ƒVƒƒƒhƒE
+// ãƒ—ãƒ©ã‚¤ã‚ªãƒªãƒ†ã‚£ãƒãƒƒãƒ•ã‚¡ã‚·ãƒ£ãƒ‰ã‚¦
 // 
 // Copyright (c) 2003 IMAGIRE Takashi. All rights reserved.
 // -------------------------------------------------------------
 
 // -------------------------------------------------------------
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 // -------------------------------------------------------------
-float4x4 mWVP;		// ƒ[ƒJƒ‹‚©‚çŽË‰e‹óŠÔ‚Ö‚ÌÀ•W•ÏŠ·
-float4x4 mWLP;		// ƒ[ƒJƒ‹‚©‚çŽË‰e‹óŠÔ‚Ö‚ÌÀ•W•ÏŠ·
-float4x4 mWVPT;		// ƒeƒNƒXƒ`ƒƒÀ•WŒn‚Ö‚ÌŽË‰e
-float4   vCol;		// ƒƒbƒVƒ…‚ÌF
-float4   vId;		// ƒvƒ‰ƒCƒIƒŠƒeƒB”Ô†
-float4	 vLightDir;	// ƒ‰ƒCƒg‚Ì•ûŒü
+float4x4 mWVP;		// ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰å°„å½±ç©ºé–“ã¸ã®åº§æ¨™å¤‰æ›
+float4x4 mWLP;		// ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰å°„å½±ç©ºé–“ã¸ã®åº§æ¨™å¤‰æ›
+float4x4 mWVPT;		// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ç³»ã¸ã®å°„å½±
+float4   vCol;		// ãƒ¡ãƒƒã‚·ãƒ¥ã®è‰²
+float4   vId;		// ãƒ—ãƒ©ã‚¤ã‚ªãƒªãƒ†ã‚£ç•ªå·
+float4	 vLightDir;	// ãƒ©ã‚¤ãƒˆã®æ–¹å‘
 
-float4x4 mWVP_ufo; // ƒ[ƒJƒ‹‚©‚çŽË‰e‹óŠÔ‚Ö‚ÌÀ•W•ÏŠ·
-float4x4 mWLP_ufo; // ƒ[ƒJƒ‹‚©‚çŽË‰e‹óŠÔ‚Ö‚ÌÀ•W•ÏŠ·
-float4x4 mWVPT_ufo; // ƒeƒNƒXƒ`ƒƒÀ•WŒn‚Ö‚ÌŽË‰e
-float4 vCol_ufo; // ƒƒbƒVƒ…‚ÌF
-float4 vId_ufo; // ƒvƒ‰ƒCƒIƒŠƒeƒB”Ô†
-float4 vLightDir_ufo; // ƒ‰ƒCƒg‚Ì•ûŒü
+float4x4 mWVP_ufo; // ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰å°„å½±ç©ºé–“ã¸ã®åº§æ¨™å¤‰æ›
+float4x4 mWLP_ufo; // ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰å°„å½±ç©ºé–“ã¸ã®åº§æ¨™å¤‰æ›
+float4x4 mWVPT_ufo; // ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ç³»ã¸ã®å°„å½±
+float4 vCol_ufo; // ãƒ¡ãƒƒã‚·ãƒ¥ã®è‰²
+float4 vId_ufo; // ãƒ—ãƒ©ã‚¤ã‚ªãƒªãƒ†ã‚£ç•ªå·
+float4 vLightDir_ufo; // ãƒ©ã‚¤ãƒˆã®æ–¹å‘
 
 // -------------------------------------------------------------
-// ƒeƒNƒXƒ`ƒƒ
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£
 // -------------------------------------------------------------
 texture IdMap;
 sampler IdMapSamp = sampler_state
@@ -48,7 +48,7 @@ sampler DecaleMapSamp = sampler_state
     AddressV = Clamp;
 };
 // -------------------------------------------------------------
-// ’¸“_ƒVƒF[ƒ_‚©‚çƒsƒNƒZƒ‹ƒVƒF[ƒ_‚É“n‚·ƒf[ƒ^
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ã‹ã‚‰ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã«æ¸¡ã™ãƒ‡ãƒ¼ã‚¿
 // -------------------------------------------------------------
 struct VS_OUTPUT
 {
@@ -62,87 +62,87 @@ struct VS_OUTPUT
 
 
 // -------------------------------------------------------------
-// 1ƒpƒX–ÚF’¸“_ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€ ƒVƒƒƒh[ƒ}ƒbƒv UFO
+// 1ãƒ‘ã‚¹ç›®ï¼šé ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ  ã‚·ãƒ£ãƒ‰ãƒ¼ãƒžãƒƒãƒ— UFO
 // -------------------------------------------------------------
 VS_OUTPUT VS_01(
-      float4 Pos : POSITION, // ƒ‚ƒfƒ‹‚Ì’¸“_
-      float3 Normal : NORMAL // ƒ‚ƒfƒ‹‚Ì–@ü
+      float4 Pos : POSITION, // ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹
+      float3 Normal : NORMAL // ãƒ¢ãƒ‡ãƒ«ã®æ³•ç·š
 )
 {
-    VS_OUTPUT Out = (VS_OUTPUT) 0; // o—Íƒf[ƒ^
+    VS_OUTPUT Out = (VS_OUTPUT) 0; // å‡ºåŠ›ãƒ‡ãƒ¼ã‚¿
     
-    // ˆÊ’uÀ•W
+    // ä½ç½®åº§æ¨™
     Out.Pos = mul(Pos, mWLP_ufo);
     
-    // ID‚ðF‚Æ‚µ‚Äo—Í‚·‚é
+    // IDã‚’è‰²ã¨ã—ã¦å‡ºåŠ›ã™ã‚‹
     Out.Diffuse = vId_ufo;
 
     return Out;
 }
 
 // -------------------------------------------------------------
-// 1ƒpƒX–ÚF’¸“_ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€ ƒVƒƒƒh[ƒ}ƒbƒv ’n–Ê
+// 1ãƒ‘ã‚¹ç›®ï¼šé ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ  ã‚·ãƒ£ãƒ‰ãƒ¼ãƒžãƒƒãƒ— åœ°é¢
 // -------------------------------------------------------------
 VS_OUTPUT VS_02(
-      float4 Pos    : POSITION,          // ƒ‚ƒfƒ‹‚Ì’¸“_
-      float3 Normal : NORMAL	         // ƒ‚ƒfƒ‹‚Ì–@ü
+      float4 Pos    : POSITION,          // ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹
+      float3 Normal : NORMAL	         // ãƒ¢ãƒ‡ãƒ«ã®æ³•ç·š
 ){
-    VS_OUTPUT Out = (VS_OUTPUT)0;        // o—Íƒf[ƒ^
+    VS_OUTPUT Out = (VS_OUTPUT)0;        // å‡ºåŠ›ãƒ‡ãƒ¼ã‚¿
     
-    // ˆÊ’uÀ•W
+    // ä½ç½®åº§æ¨™
     Out.Pos =  mul( Pos, mWLP );
     
-    // ID‚ðF‚Æ‚µ‚Äo—Í‚·‚é
+    // IDã‚’è‰²ã¨ã—ã¦å‡ºåŠ›ã™ã‚‹
     Out.Diffuse = vId;
 
     return Out;
 }
 
 // -------------------------------------------------------------
-// 1ƒpƒX–ÚFƒsƒNƒZƒ‹ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€
+// 1ãƒ‘ã‚¹ç›®ï¼šãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 // -------------------------------------------------------------
 float4 PS_pass0(VS_OUTPUT In) : COLOR
 {
-    return In.Diffuse; // ID’l‚ðF‚Æ‚µ‚Äo—Í
+    return In.Diffuse; // IDå€¤ã‚’è‰²ã¨ã—ã¦å‡ºåŠ›
 }
 
 
 
-// ’n–Ê
+// åœ°é¢
 
 
 // -------------------------------------------------------------
-// ’¸“_ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 // -------------------------------------------------------------
 VS_OUTPUT VS_1(
-      float4 Pos    : POSITION,          // ƒ‚ƒfƒ‹‚Ì’¸“_
-      float4 Normal : NORMAL,	         // ƒ‚ƒfƒ‹‚Ì–@ü
-      float2 Tex    : TEXCOORD0	         // ƒeƒNƒXƒ`ƒƒÀ•W
+      float4 Pos    : POSITION,          // ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹
+      float4 Normal : NORMAL,	         // ãƒ¢ãƒ‡ãƒ«ã®æ³•ç·š
+      float2 Tex    : TEXCOORD0	         // ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 ){
-    VS_OUTPUT Out = (VS_OUTPUT)0;        // o—Íƒf[ƒ^
+    VS_OUTPUT Out = (VS_OUTPUT)0;        // å‡ºåŠ›ãƒ‡ãƒ¼ã‚¿
 	float4	uv;
 	
-	// À•W•ÏŠ·
+	// åº§æ¨™å¤‰æ›
     Out.Pos = mul(Pos, mWVP);
-	// F
-	Out.Diffuse = vCol * max( dot(vLightDir, Normal), 0);// ŠgŽUF
-	Out.Ambient = vCol * 0.3f;							 // ŠÂ‹«F
+	// è‰²
+	Out.Diffuse = vCol * max( dot(vLightDir, Normal), 0);// æ‹¡æ•£è‰²
+	Out.Ambient = vCol * 0.3f;							 // ç’°å¢ƒè‰²
 	
-	// ƒeƒNƒXƒ`ƒƒÀ•W
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	uv = mul(Pos, mWVPT);
 	Out.ShadowMapUV = uv;
 
-	// ID ’l
+	// ID å€¤
 	Out.ID = vId;
 	
-	// ƒfƒJ[ƒ‹ƒeƒNƒXƒ`ƒƒ
+	// ãƒ‡ã‚«ãƒ¼ãƒ«ãƒ†ã‚¯ã‚¹ãƒãƒ£
 	Out.TexDecale = Tex;
 		
     return Out;
 }
 
 // -------------------------------------------------------------
-// 1ƒpƒX–ÚFƒsƒNƒZƒ‹ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€(ƒeƒNƒXƒ`ƒƒ‚ ‚è) ’n–Ê
+// 1ãƒ‘ã‚¹ç›®ï¼šãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ (ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Š) åœ°é¢
 // -------------------------------------------------------------
 float4 PS_pass1(VS_OUTPUT In) : COLOR
 {   
@@ -163,38 +163,38 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 // UFO
 
 // -------------------------------------------------------------
-// ’¸“_ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 // -------------------------------------------------------------
 VS_OUTPUT VS_2(
-      float4 Pos : POSITION, // ƒ‚ƒfƒ‹‚Ì’¸“_
-      float4 Normal : NORMAL, // ƒ‚ƒfƒ‹‚Ì–@ü
-      float2 Tex : TEXCOORD0 // ƒeƒNƒXƒ`ƒƒÀ•W
+      float4 Pos : POSITION, // ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹
+      float4 Normal : NORMAL, // ãƒ¢ãƒ‡ãƒ«ã®æ³•ç·š
+      float2 Tex : TEXCOORD0 // ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 )
 {
-    VS_OUTPUT Out = (VS_OUTPUT) 0; // o—Íƒf[ƒ^
+    VS_OUTPUT Out = (VS_OUTPUT) 0; // å‡ºåŠ›ãƒ‡ãƒ¼ã‚¿
     float4 uv;
 	
-	// À•W•ÏŠ·
+	// åº§æ¨™å¤‰æ›
     Out.Pos = mul(Pos, mWVP_ufo);
-	// F
-    Out.Diffuse = vCol_ufo * max(dot(vLightDir_ufo, Normal), 0); // ŠgŽUF
-    Out.Ambient = vCol_ufo * 0.3f; // ŠÂ‹«F
+	// è‰²
+    Out.Diffuse = vCol_ufo * max(dot(vLightDir_ufo, Normal), 0); // æ‹¡æ•£è‰²
+    Out.Ambient = vCol_ufo * 0.3f; // ç’°å¢ƒè‰²
 	
-	// ƒeƒNƒXƒ`ƒƒÀ•W
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
     uv = mul(Pos, mWVPT_ufo);
     Out.ShadowMapUV = uv;
 
-	// ID ’l
+	// ID å€¤
     Out.ID = vId_ufo;
 	
-	// ƒfƒJ[ƒ‹ƒeƒNƒXƒ`ƒƒ
+	// ãƒ‡ã‚«ãƒ¼ãƒ«ãƒ†ã‚¯ã‚¹ãƒãƒ£
     Out.TexDecale = Tex;
 		
     return Out;
 }
 
 // -------------------------------------------------------------
-// 2ƒpƒX–ÚFƒsƒNƒZƒ‹ƒVƒF[ƒ_ƒvƒƒOƒ‰ƒ€(ƒeƒNƒXƒ`ƒƒ‚È‚µ) UFO
+// 2ãƒ‘ã‚¹ç›®ï¼šãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ—ãƒ­ã‚°ãƒ©ãƒ (ãƒ†ã‚¯ã‚¹ãƒãƒ£ãªã—) UFO
 // -------------------------------------------------------------
 float4 PS_pass2(VS_OUTPUT In) : COLOR
 {   
@@ -211,31 +211,31 @@ float4 PS_pass2(VS_OUTPUT In) : COLOR
     return Color;
 }  
 // -------------------------------------------------------------
-// ƒeƒNƒjƒbƒN
+// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯
 // -------------------------------------------------------------
 technique TShader
 {
-    pass P0 // ufo ƒVƒƒƒh[ƒ}ƒbƒv
+    pass P0 // ufo ã‚·ãƒ£ãƒ‰ãƒ¼ãƒžãƒƒãƒ—
     {
-        // ƒVƒF[ƒ_
+        // ã‚·ã‚§ãƒ¼ãƒ€
         VertexShader = compile vs_1_1 VS_01();
-        PixelShader = compile ps_2_0 PS_pass0(); // © HLSL ”Å‚ÉØ‚è‘Ö‚¦
+        PixelShader = compile ps_2_0 PS_pass0(); // â† HLSL ç‰ˆã«åˆ‡ã‚Šæ›¿ãˆ
     }
-    pass P1 // ’n–Ê ƒVƒƒƒh[ƒ}ƒbƒv
+    pass P1 // åœ°é¢ ã‚·ãƒ£ãƒ‰ãƒ¼ãƒžãƒƒãƒ—
     {
-        // ƒVƒF[ƒ_
+        // ã‚·ã‚§ãƒ¼ãƒ€
         VertexShader = compile vs_1_1 VS_02();
-        PixelShader = compile ps_2_0 PS_pass0(); // © HLSL ”Å‚ÉØ‚è‘Ö‚¦
+        PixelShader = compile ps_2_0 PS_pass0(); // â† HLSL ç‰ˆã«åˆ‡ã‚Šæ›¿ãˆ
     }
-    pass P2 // ’n–Ê
+    pass P2 // åœ°é¢
     {
-        // ƒVƒF[ƒ_
+        // ã‚·ã‚§ãƒ¼ãƒ€
         VertexShader = compile vs_1_1 VS_1();
         PixelShader = compile ps_2_0 PS_pass1();
     }
     pass P3 // UFO
     {
-        // ƒVƒF[ƒ_
+        // ã‚·ã‚§ãƒ¼ãƒ€
         VertexShader = compile vs_1_1 VS_2();
         PixelShader = compile ps_2_0 PS_pass2();
     }

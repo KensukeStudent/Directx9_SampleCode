@@ -461,7 +461,7 @@ void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mScaleBias)
 	{
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP_ufo, &m);
-		m_pMesh->Render(m_pd3dDevice);
+		m_pMesh->Render(m_pd3dDevice); // シャドウマップに描画、本体はHLSLで描画
 	}
 	else if (pass == 3)
 	{
@@ -517,7 +517,7 @@ void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mScaleBias)
 	{
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP, &m);
-		m_pMeshBg->Render(m_pd3dDevice);
+		m_pMeshBg->Render(m_pd3dDevice); // シャドウマップに描画、本体はHLSLで描画
 	}
 	else if (pass == 2)
 	{
@@ -609,6 +609,9 @@ HRESULT CMyD3DApplication::Render()
 							, 0.0f,1.0f };     // 前面、後面
 			m_pd3dDevice->SetViewport(&viewport);
 
+			// シャドウマップの初期化（白色でクリア）
+			m_pd3dDevice->Clear(0L, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0L);
+
 			UINT numPasses = 0;
 			m_pEffect->Begin(&numPasses, 0);
 
@@ -629,10 +632,10 @@ HRESULT CMyD3DApplication::Render()
 					pOldBackBuffer->Release();
 					pOldZBuffer->Release();
 
-					// シャドウマップのクリア
-					m_pd3dDevice->Clear(0L, NULL
-						, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-						, 0xFFFFFFFF, 1.0f, 0L);
+					// 物体を描画するために画面をクリアする
+					m_pd3dDevice->Clear(0L, NULL,
+						D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+						0x4004080, 1.0f, 0L);
 				
 					// テクスチャの設定
 					m_pEffect->SetTexture(m_htIdMap, m_pShadowMap);
