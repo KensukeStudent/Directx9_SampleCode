@@ -447,24 +447,27 @@ VOID CMyD3DApplication::DrawModel(int pass)
 
 void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mScaleBias)
 {
-	D3DXMATRIX mVP, mL, m;
-	D3DXVECTOR4 v(0, 0, 0, 1);
-	D3DMATERIAL9* pMtrl;
-	DWORD i;
+	D3DXMATRIX mL, m;
 
-	m_pEffect->SetVector(m_hvId_ufo, &v);
-
-	mVP = m_mView * m_mProj;
 	D3DXMatrixTranslation(&mL, m_pos.x, m_pos.y, m_pos.z);
 
-	if (pass == 0) // シャドウマップ用
+	if (pass == 0) // シャドウマップ用 hlsl側でIdを埋め込む
 	{
+		D3DXVECTOR4 id(0, 0, 0, 1);
+		m_pEffect->SetVector(m_hvId_ufo, &id);
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP_ufo, &m);
 		m_pMesh->Render(m_pd3dDevice); // シャドウマップに描画、本体はHLSLで描画
 	}
 	else if (pass == 3)
 	{
+		D3DXMATRIX mVP;
+		D3DXVECTOR4 lightDir,matColor;
+		D3DMATERIAL9* pMtrl;
+		DWORD i;
+
+		mVP = m_mView * m_mProj;
+
 		m = mL * mVP;
 		m_pEffect->SetMatrix(m_hmWVP_ufo, &m);
 
@@ -476,19 +479,19 @@ void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mScaleBias)
 
 		// ローカル空間ライト方向の算出
 		D3DXMatrixInverse(&m, NULL, &mL);
-		D3DXVec3Transform(&v, &m_LighPos, &m);
-		D3DXVec4Normalize(&v, &v); v.w = 0;
-		m_pEffect->SetVector(m_hvDir_ufo, &v);
+		D3DXVec3Transform(&lightDir, &m_LighPos, &m);
+		D3DXVec4Normalize(&lightDir, &lightDir); lightDir.w = 0;
+		m_pEffect->SetVector(m_hvDir_ufo, &lightDir);
 
 		// マテリアルごとに描画
 		pMtrl = m_pMesh->m_pMaterials;
 		for (i = 0; i < m_pMesh->m_dwNumMaterials; i++)
 		{
-			v.x = pMtrl->Diffuse.r;
-			v.y = pMtrl->Diffuse.g;
-			v.z = pMtrl->Diffuse.b;
-			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol_ufo, &v);
+			matColor.x = pMtrl->Diffuse.r;
+			matColor.y = pMtrl->Diffuse.g;
+			matColor.z = pMtrl->Diffuse.b;
+			matColor.w = pMtrl->Diffuse.a;
+			m_pEffect->SetVector(m_hvCol_ufo, &matColor);
 
 			m_pMesh->m_pLocalMesh->DrawSubset(i);
 			pMtrl++;
@@ -504,23 +507,27 @@ void CMyD3DApplication::DrawUfo(int pass, const D3DXMATRIX& mScaleBias)
 /// <param name="mScaleBias"></param>
 void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mScaleBias)
 {
-	D3DXMATRIX mVP, mL, m;
-	D3DXVECTOR4 v(0.5f, 0.5f, 0.5f, 1.0f);
-	D3DMATERIAL9* pMtrl;
-	DWORD i;
+	D3DXMATRIX mL, m;
 
-	m_pEffect->SetVector(m_hvId, &v);
-	mVP = m_mView * m_mProj;
 	D3DXMatrixIdentity(&mL);
 
-	if (pass == 1)
+	if (pass == 1) // シャドウマップ用 hlsl側でIdを埋め込む
 	{
+		D3DXVECTOR4 id(0.5f, 0.5f, 0.5f, 1.0f);
+		m_pEffect->SetVector(m_hvId, &id);
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP, &m);
 		m_pMeshBg->Render(m_pd3dDevice); // シャドウマップに描画、本体はHLSLで描画
 	}
 	else if (pass == 2)
 	{
+		D3DXMATRIX mVP;
+		D3DXVECTOR4 lightDir, matColor;
+		D3DMATERIAL9* pMtrl;
+		DWORD i;
+
+		mVP = m_mView * m_mProj;
+
 		//m = mL * mVP;
 		m_pEffect->SetMatrix(m_hmWVP, &mVP);
 
@@ -532,19 +539,19 @@ void CMyD3DApplication::DrawGround(int pass, const D3DXMATRIX& mScaleBias)
 
 		// ライトベクトル（ローカル空間）
 		D3DXMatrixInverse(&m, NULL, &mL);
-		D3DXVec3Transform(&v, &m_LighPos, &m);
-		D3DXVec4Normalize(&v, &v); 
-		v.w = 0;
-		m_pEffect->SetVector(m_hvDir, &v);
+		D3DXVec3Transform(&lightDir, &m_LighPos, &m);
+		D3DXVec4Normalize(&lightDir, &lightDir);
+		lightDir.w = 0;
+		m_pEffect->SetVector(m_hvDir, &lightDir);
 
 		pMtrl = m_pMeshBg->m_pMaterials;
 		for (i = 0; i < m_pMeshBg->m_dwNumMaterials; i++)
 		{
-			v.x = pMtrl->Diffuse.r;
-			v.y = pMtrl->Diffuse.g;
-			v.z = pMtrl->Diffuse.b;
-			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol, &v);
+			matColor.x = pMtrl->Diffuse.r;
+			matColor.y = pMtrl->Diffuse.g;
+			matColor.z = pMtrl->Diffuse.b;
+			matColor.w = pMtrl->Diffuse.a;
+			m_pEffect->SetVector(m_hvCol, &matColor);
 
 			m_pEffect->SetTexture("DecaleMap", m_pMeshBg->m_pTextures[i]);
 			m_pMeshBg->m_pLocalMesh->DrawSubset(i);
