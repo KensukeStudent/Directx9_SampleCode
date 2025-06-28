@@ -56,6 +56,8 @@ struct VS_OUTPUT
 	float4 ShadowMapUV	: TEXCOORD0;
 	float4 Depth		: TEXCOORD1;
 	float2 DecaleTex	: TEXCOORD2;
+    
+    float4 Test : TEXCOORD3; // デバッグ用のテスト値（必要に応じて使用）
 };
 
 // -------------------------------------------------------------
@@ -97,6 +99,9 @@ VS_OUTPUT VS_Ufo1(
     
     // カメラ座標系での深度をテクスチャに入れる
     Out.ShadowMapUV = pos;
+    
+    // 試しに頂点シェーダーで深度値計算
+    // Out.Test = pos.z / pos.w; // デバッグ用のテスト値（必要に応じて使用）
 
     return Out;
 }
@@ -108,7 +113,14 @@ float4 PS_Common01(VS_OUTPUT In) : COLOR
 {   
     float4 Out;
     
+    // 深度値を計算（0.0〜1.0の範囲）
+    // 手前（カメラに近い）: 小さな値（暗い色、ほぼ黒）
+    // 奥（カメラから遠い）: 大きな値（明るい色、ほぼ白）
+    // 例：手前=0.1（暗い）、中間=0.5（グレー）、奥=0.9（明るい）
     Out = In.ShadowMapUV.z / In.ShadowMapUV.w;
+    
+    // 試しに頂点シェーダーで計算した深度値を返す -> 変なった
+    //Out = In.Test;
     
     return Out;
 }
@@ -144,9 +156,19 @@ VS_OUTPUT VS_Ground2(
 float4 PS_pass2(VS_OUTPUT In) : COLOR
 {   
     float4 Color;
-	float  shadow = tex2Dproj( ShadowMapSamp, In.ShadowMapUV ).x;
-	float4 decale = tex2D( DecaleMapSamp, In.DecaleTex );
     
+    // シャドウマップから深度値を取得（0.0〜1.0の範囲）
+    // tex2Dproj: 射影テクスチャサンプリング（In.ShadowMapUVのw成分で除算）
+    float  shadow = tex2Dproj( ShadowMapSamp, In.ShadowMapUV ).x;
+    
+    // デカールテクスチャをサンプリング
+    float4 decale = tex2D( DecaleMapSamp, In.DecaleTex );
+    
+    // 影の判定
+    // shadow * In.Depth.w: シャドウマップの深度値を現在の射影空間に変換
+    // In.Depth.z: 現在のピクセル位置の深度値
+    // 0.03f: 深度バイアス（Z-fightingを防ぐための微小なオフセット）
+    // シャドウマップの深度が現在のピクセルより手前にある場合、影として扱う
     Color = In.Ambient
 		 + ((shadow * In.Depth.w < In.Depth.z-0.03f) ? 0 : In.Diffuse);
 
