@@ -134,9 +134,12 @@ CMyD3DApplication::CMyD3DApplication()
 	m_pShadowBox = new CShadowVolume();
 
 	m_pEffect = NULL;
+	
 	m_hmWVP_smallBox = NULL;
 	m_hmWVP_largeBox = NULL;
-	m_hvPos = NULL;
+
+	m_hvPos_samllBox = NULL;
+	m_hvPos_largeBox = NULL;
 
 	// 選択されるシーンの設定
 	m_d3dEnumeration.AppUsesDepthBuffer = TRUE;
@@ -252,7 +255,8 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 	{
 		m_hmWVP_smallBox = m_pEffect->GetParameterByName(NULL, "mWVP_SmallBox");
 		m_hmWVP_largeBox = m_pEffect->GetParameterByName(NULL, "mWVP_LargeBox");
-		m_hvPos = m_pEffect->GetParameterByName(NULL, "vLightPos");
+		m_hvPos_samllBox = m_pEffect->GetParameterByName(NULL, "vLightPos_smallBox");
+		m_hvPos_largeBox = m_pEffect->GetParameterByName(NULL, "vLightPos_largeBox");
 	}
 
 	// 全画面描画ポリゴンの初期化
@@ -531,7 +535,7 @@ HRESULT CMyD3DApplication::Render()
 			m_pEffect->SetMatrix(m_hmWVP_smallBox, &m);
 			D3DXMatrixInverse(&m, NULL, &mW);
 			D3DXVec3Transform(&v, &m_LighPos, &m);
-			m_pEffect->SetVector(m_hvPos, &v);
+			m_pEffect->SetVector(m_hvPos_samllBox, &v);
 			m_pShadowBox->Render(m_pd3dDevice);
 
 			m_pEffect->EndPass();
@@ -549,7 +553,7 @@ HRESULT CMyD3DApplication::Render()
 			m_pEffect->SetMatrix(m_hmWVP_largeBox, &m);
 			D3DXMatrixInverse(&m, NULL, &mW);
 			D3DXVec3Transform(&v, &m_LighPos, &m);
-			m_pEffect->SetVector(m_hvPos, &v);
+			m_pEffect->SetVector(m_hvPos_largeBox, &v);
 			m_pShadowBox->Render(m_pd3dDevice);
 			
 			m_pEffect->EndPass();
@@ -739,7 +743,3 @@ HRESULT CMyD3DApplication::FinalCleanup()
 
 	return S_OK;
 }
-
-
-
-

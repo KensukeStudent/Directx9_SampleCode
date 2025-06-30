@@ -60,7 +60,8 @@ class CMyD3DApplication : public CD3DApplication
 	LPD3DXEFFECT			m_pEffect;		// エフェクト
 	D3DXHANDLE				m_hmWVP_smallBox;		// ワールド～射影行列
 	D3DXHANDLE				m_hmWVP_largeBox;		// ワールド～射影行列
-	D3DXHANDLE				m_hvPos;		// ライトの位置
+	D3DXHANDLE				m_hvPos_samllBox;		// ライトの位置
+	D3DXHANDLE				m_hvPos_largeBox;		// ライトの位置
 
 	BOOL					m_bLoadingApp;	// ロード中？
 	CD3DFont* m_pFont;		// フォント

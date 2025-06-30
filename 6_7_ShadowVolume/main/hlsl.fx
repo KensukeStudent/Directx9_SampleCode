@@ -1,17 +1,19 @@
 // -------------------------------------------------------------
-// �V���h�E�{�����[���ɂ��e
+// シャドウボリュームによる影
 // 
 // Copyright (c) 2002,2003 IMAGIRE Takashi. All rights reserved.
 // -------------------------------------------------------------
 
 // -------------------------------------------------------------
-// �O���[�o���ϐ�
+// グローバル変数
 // -------------------------------------------------------------
-float4x4 mWVP;		// ���[�J������ˉe��Ԃւ̍��W�ϊ�
-float4	 vLightPos;	// ���C�g�̈ʒu
+float4x4 mWVP_SmallBox;		// ローカルから射影空間への座標変換
+float4x4 mWVP_LargeBox;		// ローカルから射影空間への座標変換
+float4	 vLightPos_smallBox;	// ライトの位置
+float4	 vLightPos_largeBox;	// ライトの位置
 
 // -------------------------------------------------------------
-// ���_�V�F�[�_����s�N�Z���V�F�[�_�ɓn���f�[�^
+// 頂点シェーダからピクセルシェーダに渡すデータ
 // -------------------------------------------------------------
 struct VS_OUTPUT
 {
@@ -19,34 +21,60 @@ struct VS_OUTPUT
 };
 
 // -------------------------------------------------------------
-// ���_�V�F�[�_�v���O����
+// 頂点シェーダプログラム
 // -------------------------------------------------------------
-VS_OUTPUT VS (
-      float4 Pos    : POSITION,          // ���f���̒��_
-      float3 Normal : NORMAL	         // ���f���̖@��
+VS_OUTPUT VS_SmallBox (
+      float4 Pos    : POSITION,          // モデルの頂点
+      float4 Normal : NORMAL	         // モデルの法線
 ){
-    VS_OUTPUT Out = (VS_OUTPUT)0;        // �o�̓f�[�^
+    VS_OUTPUT Out = (VS_OUTPUT)0;        // 出力データ
 	
-    // ���̗��ɂȂ��Ă���ʂ����Ɉ����L�΂�
-	float4 dir = vLightPos - Pos;
+    // 光の裏になっている面を後ろに引き伸ばす
+    float4 dir = vLightPos_smallBox - Pos;
     float LN = dot( Normal, dir );
     float scale = (0<LN) ? 0.0f : 1.0f;
     
-    // ���W�ϊ�
-    Pos.xyz -= 0.001f*Pos;// �Ȃ������Ȃ��悤�ɏ����k�߂�
-    Out.Pos = mul( Pos - scale * dir, mWVP );
+    // 座標変換
+    Pos.xyz -= 0.001f*Pos;// 縞がおきないように少し縮める
+    Out.Pos = mul(Pos - scale * dir, mWVP_SmallBox);
     
     return Out;
 }
+
+VS_OUTPUT VS_LargeBox(
+      float4 Pos : POSITION, // モデルの頂点
+      float4 Normal : NORMAL // モデルの法線
+)
+{
+    VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
+	
+    // 光の裏になっている面を後ろに引き伸ばす
+    float4 dir = vLightPos_largeBox - Pos;
+    float LN = dot(Normal, dir);
+    float scale = (0 < LN) ? 0.0f : 1.0f;
+    
+    // 座標変換
+    Pos.xyz -= 0.001f * Pos; // 縞がおきないように少し縮める
+    Out.Pos = mul(Pos - scale * dir, mWVP_LargeBox);
+    
+    return Out;
+}
+
 // -------------------------------------------------------------
-// �e�N�j�b�N
+// テクニック
 // -------------------------------------------------------------
 technique TShader
 {
     pass P0
     {
-        // �V�F�[�_
-        VertexShader = compile vs_1_1 VS();
+        // シェーダ
+        VertexShader = compile vs_1_1 VS_SmallBox();
         PixelShader  = NULL;
+    }
+    pass P1
+    {
+        // シェーダ
+        VertexShader = compile vs_1_1 VS_LargeBox();
+        PixelShader = NULL;
     }
 }
