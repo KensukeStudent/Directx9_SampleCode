@@ -533,8 +533,8 @@ HRESULT CMyD3DApplication::Render()
 			mW = mS * mR * mT;
 			m = mW * m_mView * m_mProj;
 			m_pEffect->SetMatrix(m_hmWVP_smallBox, &m);
-			D3DXMatrixInverse(&m, NULL, &mW);
-			D3DXVec3Transform(&v, &m_LighPos, &m);
+			D3DXMatrixInverse(&m, NULL, &mW); // 箱のワールド行列をローカル行列に変換する
+			D3DXVec3Transform(&v, &m_LighPos, &m); // 箱のローカル座標系でのライトの位置を求める
 			m_pEffect->SetVector(m_hvPos_samllBox, &v);
 			m_pShadowBox->Render(m_pd3dDevice);
 

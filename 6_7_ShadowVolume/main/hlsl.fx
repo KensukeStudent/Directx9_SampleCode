@@ -31,12 +31,12 @@ VS_OUTPUT VS_SmallBox (
 	
     // 光の裏になっている面を後ろに引き伸ばす
     float4 dir = vLightPos_smallBox - Pos;
-    float LN = dot( Normal, dir );
+    float LN = dot( Normal, dir ); // 光の方向と逆を向いていれば引き延ばす
     float scale = (0<LN) ? 0.0f : 1.0f;
     
     // 座標変換
     Pos.xyz -= 0.001f*Pos;// 縞がおきないように少し縮める
-    Out.Pos = mul(Pos - scale * dir, mWVP_SmallBox);
+    Out.Pos = mul(Pos - scale * dir, mWVP_SmallBox); // 引き延ばした座標を射影空間に変換
     
     return Out;
 }
