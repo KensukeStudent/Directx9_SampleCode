@@ -1,7 +1,7 @@
-//-------------------------------------------------------------
+﻿//-------------------------------------------------------------
 // File: main.h
 //
-// Desc: �\�t�g�V���h�E
+// Desc: ソフトシャドウ
 //-------------------------------------------------------------
 #pragma once
 
@@ -9,9 +9,9 @@
 
 
 //-------------------------------------------------------------
-// ��`��萔
+// 定義や定数
 //-------------------------------------------------------------
-// ���݂̓��̓f�[�^��ۑ�����\����
+// 現在の入力データを保存する構造体
 struct UserInput
 {
 	BOOL bRotateUp;
@@ -27,51 +27,59 @@ struct UserInput
 
 //-------------------------------------------------------------
 // Name: class CMyD3DApplication
-// Desc: �A�v���P�[�V�����̃N���X
+// Desc: アプリケーションのクラス
 //-------------------------------------------------------------
 class CMyD3DApplication : public CD3DApplication
 {
 	CD3DMesh* m_pMeshCar;
 	CD3DMesh* m_pMeshBg;
 
-	// �V�F�[�_
-	LPD3DXEFFECT		    m_pEffect;		// �G�t�F�N�g
-	D3DXHANDLE				m_hTechnique;	// �e�N�j�b�N
-	D3DXHANDLE       m_hmWVP;	// ���[���h�~�r���[�~�ˉe�s��
-	D3DXHANDLE       m_hmWLP;	// ���C�g��������̕ϊ��s��
-	D3DXHANDLE       m_hmWLPB;	// ���C�g��������̕ϊ��s��
-	D3DXHANDLE       m_hvCol;	// ���b�V���̐F
-	D3DXHANDLE       m_hvDir;	// ���C�g�̕���
-	D3DXHANDLE       m_htShadowMap;// �e�N�X�`��
-	D3DXHANDLE       m_htSrcMap;// �e�N�X�`��
+	// シェーダ
+	LPD3DXEFFECT		    m_pEffect;		// エフェクト
+	D3DXHANDLE				m_hBoxBgTechnique;	// テクニック
+	D3DXHANDLE				m_hShadowTechnique;	// テクニック
+	
+	D3DXHANDLE       m_hmWVP_box;	// ワールド×ビュー×射影行列
+	D3DXHANDLE       m_hmWLP_box;	// ライト方向からの変換行列
+	D3DXHANDLE       m_hmWLPB_box;	// ライト方向からの変換行列
+	D3DXHANDLE       m_hvCol_box;	// メッシュの色
 
-	// �V���h�E�}�b�v
-	LPDIRECT3DSURFACE9		m_pShadowMapZ;		// �[�x�o�b�t�@
-	LPDIRECT3DTEXTURE9		m_pShadowMap;		// �e�N�X�`��
-	LPDIRECT3DSURFACE9		m_pShadowMapSurf;	// �T�[�t�F�X
-	LPDIRECT3DTEXTURE9		m_pEdgeMap;			// �e�N�X�`��
-	LPDIRECT3DSURFACE9		m_pEdgeMapSurf;		// �T�[�t�F�X
-	LPDIRECT3DTEXTURE9		m_pSoftMap[2];		// �e�N�X�`��
-	LPDIRECT3DSURFACE9		m_pSoftMapSurf[2];	// �T�[�t�F�X
+	D3DXHANDLE       m_hmWVP_bg;	// ワールド×ビュー×射影行列
+	D3DXHANDLE       m_hmWLP_bg;	// ライト方向からの変換行列
+	D3DXHANDLE       m_hmWLPB_bg;	// ライト方向からの変換行列
+	D3DXHANDLE       m_hvCol_bg;	// メッシュの色
 
-	// �ʏ�̍��W�ϊ��s��
+	D3DXHANDLE       m_hvDir;	// ライトの方向
+	D3DXHANDLE       m_htShadowMap;// テクスチャ
+	D3DXHANDLE       m_htSrcMap;// テクスチャ
+
+	// シャドウマップ
+	LPDIRECT3DSURFACE9		m_pShadowMapZ;		// 深度バッファ
+	LPDIRECT3DTEXTURE9		m_pShadowMap;		// テクスチャ
+	LPDIRECT3DSURFACE9		m_pShadowMapSurf;	// サーフェス
+	LPDIRECT3DTEXTURE9		m_pEdgeMap;			// テクスチャ
+	LPDIRECT3DSURFACE9		m_pEdgeMapSurf;		// サーフェス
+	LPDIRECT3DTEXTURE9		m_pSoftMap[2];		// テクスチャ
+	LPDIRECT3DSURFACE9		m_pSoftMapSurf[2];	// サーフェス
+
+	// 通常の座標変換行列
 	D3DXMATRIX				m_mWorld;
 	D3DXMATRIX				m_mView;
 	D3DXMATRIX				m_mProj;
 	D3DXMATRIX				m_mLightVP;
 
-	D3DXVECTOR3				m_LighPos;		// �����̕���
+	D3DXVECTOR3				m_LighPos;		// 光源の方向
 
-	BOOL					m_bLoadingApp;	// ���[�h���H
-	CD3DFont* m_pFont;		// �t�H���g
-	UserInput				m_UserInput;	// ���̓f�[�^
+	BOOL					m_bLoadingApp;	// ロード中？
+	CD3DFont* m_pFont;		// フォント
+	UserInput				m_UserInput;	// 入力データ
 
-	FLOAT                   m_fWorldRotX;   // �w����]
-	FLOAT                   m_fWorldRotY;   // �x����]
-	FLOAT                   m_fViewZoom;    // ���_�̋���
+	FLOAT                   m_fWorldRotX;   // Ｘ軸回転
+	FLOAT                   m_fWorldRotY;   // Ｙ軸回転
+	FLOAT                   m_fViewZoom;    // 視点の距離
 
 
-	VOID DrawModel(int pass);	// �e�p�X�ŌĂ΂�郂�f���̕`��
+	VOID DrawModel(int pass);	// 各パスで呼ばれるモデルの描画
 
 protected:
 	virtual HRESULT OneTimeSceneInit();

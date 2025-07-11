@@ -94,11 +94,20 @@ CMyD3DApplication::CMyD3DApplication()
 	m_pSoftMapSurf[1] = NULL;
 
 	m_pEffect = NULL;
-	m_hTechnique = NULL;
-	m_hmWVP = NULL;
-	m_hmWLP = NULL;
-	m_hmWLPB = NULL;
-	m_hvCol = NULL;
+	
+	m_hBoxBgTechnique = NULL;
+	m_hShadowTechnique = NULL;
+
+	m_hmWVP_box = NULL;
+	m_hmWLP_box = NULL;
+	m_hmWLPB_box = NULL;
+	m_hvCol_box = NULL;
+
+	m_hmWVP_bg = NULL;
+	m_hmWLP_bg = NULL;
+	m_hmWLPB_bg = NULL;
+	m_hvCol_bg = NULL;
+
 	m_hvDir = NULL;
 	m_htShadowMap = NULL;
 	m_htSrcMap = NULL;
@@ -226,11 +235,19 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 	}
 	else
 	{
-		m_hTechnique = m_pEffect->GetTechniqueByName("TShader");
-		m_hmWVP = m_pEffect->GetParameterByName(NULL, "mWVP");
-		m_hmWLP = m_pEffect->GetParameterByName(NULL, "mWLP");
-		m_hmWLPB = m_pEffect->GetParameterByName(NULL, "mWLPB");
-		m_hvCol = m_pEffect->GetParameterByName(NULL, "vCol");
+		m_hBoxBgTechnique = m_pEffect->GetTechniqueByName("BoxAndBgTShader");
+		m_hShadowTechnique = m_pEffect->GetTechniqueByName("ShadowTShader");
+
+		m_hmWVP_box = m_pEffect->GetParameterByName(NULL, "mWVP_box");
+		m_hmWLP_box = m_pEffect->GetParameterByName(NULL, "mWLP_box");
+		m_hmWLPB_box = m_pEffect->GetParameterByName(NULL, "mWLPB_box");
+		m_hvCol_box = m_pEffect->GetParameterByName(NULL, "vCol_box");
+
+		m_hmWVP_bg = m_pEffect->GetParameterByName(NULL, "mWVP_bg");
+		m_hmWLP_bg = m_pEffect->GetParameterByName(NULL, "mWLP_bg");
+		m_hmWLPB_bg = m_pEffect->GetParameterByName(NULL, "mWLPB_bg");
+		m_hvCol_bg = m_pEffect->GetParameterByName(NULL, "vCol_bg");
+
 		m_hvDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
 		m_htShadowMap = m_pEffect->GetParameterByName(NULL, "ShadowMap");
 		m_htSrcMap = m_pEffect->GetParameterByName(NULL, "SrcMap");
@@ -391,6 +408,7 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 //-------------------------------------------------------------
 VOID CMyD3DApplication::DrawModel(int pass)
 {
+	m_pEffect->SetTechnique(m_hBoxBgTechnique);
 	D3DXMATRIX m, mL, mS, mT, mR;
 	D3DXVECTOR3 vDir;
 	D3DXVECTOR4 v;
@@ -425,19 +443,19 @@ VOID CMyD3DApplication::DrawModel(int pass)
 	case 0:// シャドウマップの作成
 		// ライトの空間への射影行列
 		m = mL * m_mLightVP;
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pEffect->SetMatrix(m_hmWLP_box, &m);
 
 		m_pMeshCar->Render(m_pd3dDevice);// 描画
 		break;
-	default:// シーンの描画
+	case 2:// シーンの描画
 		m = mL * mVP;       // 通常の射影行列
-		m_pEffect->SetMatrix(m_hmWVP, &m);
+		m_pEffect->SetMatrix(m_hmWVP_box, &m);
 
 		m = mL * m_mLightVP;// ライトの空間への射影行列
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pEffect->SetMatrix(m_hmWLP_box, &m);
 
 		m = m * mScaleBias; // テクスチャ空間への射影行列
-		m_pEffect->SetMatrix(m_hmWLPB, &m);
+		m_pEffect->SetMatrix(m_hmWLPB_box, &m);
 
 		// ローカル座標系でのライトベクトル
 		D3DXMatrixInverse(&m, NULL, &mL);
@@ -452,7 +470,7 @@ VOID CMyD3DApplication::DrawModel(int pass)
 			v.y = pMtrl->Diffuse.g;
 			v.z = pMtrl->Diffuse.b;
 			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol, &v);        // 頂点色
+			m_pEffect->SetVector(m_hvCol_box, &v);        // 頂点色
 			m_pMeshCar->m_pLocalMesh->DrawSubset(i);	// 描画
 			pMtrl++;
 		}
@@ -465,21 +483,21 @@ VOID CMyD3DApplication::DrawModel(int pass)
 	// ワールド行列の生成
 	D3DXMatrixIdentity(&mL);
 	switch (pass) {
-	case 0:// シャドウマップの作成
+	case 1:// シャドウマップの作成
 		// ライトの空間への射影行列
 		m = mL * m_mLightVP;
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pEffect->SetMatrix(m_hmWLP_bg, &m);
 		m_pMeshBg->Render(m_pd3dDevice);// 描画
 		break;
-	case 1:// シーンの描画
+	case 3:// シーンの描画
 		m = mL * mVP;       // 通常の射影行列
-		m_pEffect->SetMatrix(m_hmWVP, &m);
+		m_pEffect->SetMatrix(m_hmWVP_bg, &m);
 
 		m = mL * m_mLightVP;// ライトの空間への射影行列
-		m_pEffect->SetMatrix(m_hmWLP, &m);
+		m_pEffect->SetMatrix(m_hmWLP_bg, &m);
 
 		m = m * mScaleBias; // テクスチャ空間への射影行列
-		m_pEffect->SetMatrix(m_hmWLPB, &m);
+		m_pEffect->SetMatrix(m_hmWLPB_bg, &m);
 
 		// ローカル座標系でのライトベクトル
 		D3DXMatrixInverse(&m, NULL, &mL);
@@ -494,7 +512,7 @@ VOID CMyD3DApplication::DrawModel(int pass)
 			v.y = pMtrl->Diffuse.g;
 			v.z = pMtrl->Diffuse.b;
 			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol, &v);       // 頂点色
+			m_pEffect->SetVector(m_hvCol_bg, &v);       // 頂点色
 			m_pMeshBg->m_pLocalMesh->DrawSubset(i); // 描画
 			pMtrl++;
 		}
@@ -538,7 +556,6 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			// シェーダの設定
 			//-------------------------------------------------
-			m_pEffect->SetTechnique(m_hTechnique);
 			m_pEffect->Begin(NULL, 0);
 
 			//-------------------------------------------------
@@ -570,12 +587,13 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			m_pEffect->BeginPass(0);	// パス(１)の設定
 			DrawModel(0);			// モデルの描画
+			DrawModel(1);			// モデルの描画
 
 			//-------------------------------------------------
 			// 2パス目:深度のエッジを作る
 			//-------------------------------------------------
 			m_pd3dDevice->SetRenderTarget(0, m_pEdgeMapSurf);
-			m_pEffect->BeginPass(1);	// パス(２)の設定
+			m_pEffect->BeginPass(0);	// パス(２)の設定
 
 			RS(D3DRS_ZENABLE, FALSE);
 			TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -637,8 +655,8 @@ HRESULT CMyD3DApplication::Render()
 			// テクスチャの設定
 			m_pEffect->SetTexture(m_htShadowMap, m_pShadowMap);
 			m_pEffect->SetTexture(m_htSrcMap, m_pSoftMap[1]);
-			m_pEffect->BeginPass(3);	// パス(２)の設定
-			DrawModel(1);			// モデルの描画
+			DrawModel(2);			// モデルの描画
+			DrawModel(3);			// モデルの描画
 
 			m_pEffect->End();
 		}
