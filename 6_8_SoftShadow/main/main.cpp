@@ -439,8 +439,7 @@ VOID CMyD3DApplication::DrawModel(int pass)
 	m_pEffect->Begin(NULL, 0);
 
 	// ワールド行列の生成
-	//D3DXMatrixTranslation(&mT, 1.0f, 0.6f, 0.0f);
-	D3DXMatrixTranslation(&mT, 0.0f, 0.0f, 0.0f);
+	D3DXMatrixTranslation(&mT, 1.0f, 0.6f, 0.0f);
 	D3DXMatrixRotationY(&mR, m_fTime);
 	mL = mT * mR; // trsローカル行列
 
@@ -453,8 +452,8 @@ VOID CMyD3DApplication::DrawModel(int pass)
 
 		m_pMeshCar->Render(m_pd3dDevice);// 描画
 		break;
-	case 2:// シーンの描画
-		m_pEffect->BeginPass(2);
+	case 1:// シーンの描画
+		m_pEffect->BeginPass(1);
 		m = mL * mVP;       // 通常の射影行列
 		m_pEffect->SetMatrix(m_hmWVP_box, &m);
 
@@ -526,11 +525,10 @@ VOID CMyD3DApplication::DrawModel(int pass)
 		// メッシュ内部のそれぞれの部品を描画
 		pMtrl = m_pMeshBg->m_pMaterials;
 		for (i = 0; i < m_pMeshBg->m_dwNumMaterials; i++) {
-			// デバッグ用に緑色を設定
-			v.x = 0.0f; // 緑色
-			v.y = 1.0f;
-			v.z = 0.0f;
-			v.w = 1.0f;
+			v.x = pMtrl->Diffuse.r;
+			v.y = pMtrl->Diffuse.g;
+			v.z = pMtrl->Diffuse.b;
+			v.w = pMtrl->Diffuse.a;
 			m_pEffect->SetVector(m_hvCol_bg, &v);       // 頂点色
 			m_pMeshBg->m_pLocalMesh->DrawSubset(i); // 描画
 			pMtrl++;
