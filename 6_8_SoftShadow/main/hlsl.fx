@@ -74,7 +74,7 @@ struct VS_OUTPUT_QUAD
 };
 
 // -------------------------------------------------------------
-// 1パス目：深度マップの作成 (シャドウマップ)
+// 1パス目：深度マップの作成 (シャドウマップ) technique: BoxAndBgTShader
 // -------------------------------------------------------------
 
 // -------------------------------------------------------------
@@ -196,7 +196,7 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 }
 
 // ----------------------------------------------------------------------------------------------------------------
-// 影の整形
+// 影の整形 technique: ShadowTShader
 // ----------------------------------------------------------------------------------------------------------------
 
 // -------------------------------------------------------------
@@ -208,7 +208,7 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 // -------------------------------------------------------------
 VS_OUTPUT_QUAD VS_shadow1(
       float4 Pos    : POSITION,          // モデルの頂点
-      float4 Tex    : TEXCOORD0	         // テクスチャ座標
+      float2 Tex    : TEXCOORD0	         // テクスチャ座標
 ){
     VS_OUTPUT_QUAD Out = (VS_OUTPUT_QUAD)0;        // 出力データ
     
@@ -245,7 +245,7 @@ float4 PS_shadow1(VS_OUTPUT_QUAD In) : COLOR
 // -------------------------------------------------------------
 VS_OUTPUT_QUAD VS_shadow2(
       float4 Pos    : POSITION,          // モデルの頂点
-      float4 Tex    : TEXCOORD0	         // テクスチャ座標
+      float2 Tex    : TEXCOORD0	         // テクスチャ座標
 ){
     VS_OUTPUT_QUAD Out = (VS_OUTPUT_QUAD)0;        // 出力データ
     
@@ -296,7 +296,7 @@ float4 PS_shadow2(VS_OUTPUT_QUAD In) : COLOR
 // -------------------------------------------------------------
 // テクニック BOXと地形のシャドウマップの作成と描画
 // -------------------------------------------------------------
-technique BoxAndBgTShader
+technique BoxOnlyTShader
 {
     // シャドウマップの作成
     pass Box_Shadow0
@@ -304,19 +304,24 @@ technique BoxAndBgTShader
         VertexShader = compile vs_1_1 VS_boxShadow();
         PixelShader = compile ps_2_0 PS_pass0();
     }
-    pass Bg_Shadow1
+
+    // 描画
+    pass Box_Draw1
+    {
+        VertexShader = compile vs_1_1 VS_boxDraw();
+        PixelShader = compile ps_2_0 PS_pass1();
+    }
+}
+
+technique BgOnlyTShader
+{
+    pass Bg_Shadow0
     {
         VertexShader = compile vs_1_1 VS_bgShadow();
         PixelShader = compile ps_2_0 PS_pass0();
     }
 
-    // 描画
-    pass Box_Draw2
-    {
-        VertexShader = compile vs_1_1 VS_boxDraw();
-        PixelShader = compile ps_2_0 PS_pass1();
-    }
-    pass Bg_Draw2
+    pass Bg_Draw1
     {
         VertexShader = compile vs_1_1 VS_bgDraw();
         PixelShader = compile ps_2_0 PS_pass1();
@@ -326,7 +331,7 @@ technique BoxAndBgTShader
 // 影の整形
 technique ShadowTShader
 {
-    pass P1 // エッジの抽出
+    pass P0 // エッジの抽出
     {
         // シェーダ
         VertexShader = compile vs_1_1 VS_shadow1();
@@ -334,7 +339,7 @@ technique ShadowTShader
         
 		Sampler[0] = (SrcSamp);
     }
-    pass P2 // ぼかし
+    pass P1 // ぼかし
     {
         // シェーダ
         VertexShader = compile vs_1_1 VS_shadow2();

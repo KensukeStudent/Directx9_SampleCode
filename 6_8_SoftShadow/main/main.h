@@ -36,7 +36,8 @@ class CMyD3DApplication : public CD3DApplication
 
 	// シェーダ
 	LPD3DXEFFECT		    m_pEffect;		// エフェクト
-	D3DXHANDLE				m_hBoxBgTechnique;	// テクニック
+	D3DXHANDLE				m_hBoxOnlyTechnique;	// テクニック
+	D3DXHANDLE				m_hBgOnlyTechnique;	// 地面専用テクニック
 	D3DXHANDLE				m_hShadowTechnique;	// テクニック
 	
 	D3DXHANDLE       m_hmWVP_box;	// ワールド×ビュー×射影行列
@@ -68,7 +69,7 @@ class CMyD3DApplication : public CD3DApplication
 	D3DXMATRIX				m_mProj;
 	D3DXMATRIX				m_mLightVP;
 
-	D3DXVECTOR3				m_LighPos;		// 光源の方向
+	D3DXVECTOR3				m_LightPos;		// 光源の方向
 
 	BOOL					m_bLoadingApp;	// ロード中？
 	CD3DFont* m_pFont;		// フォント
