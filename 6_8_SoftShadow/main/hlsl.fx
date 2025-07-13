@@ -18,7 +18,7 @@ float4x4 mWLP_bg; // ローカルから射影空間への座標変換
 float4x4 mWLPB_bg; // テクスチャ座標系への射影
 float4 vCol_bg; // メッシュの色
 
-float4	 vLightDir;	// ライトの方向
+float3	 vLightDir;	// ライトの方向
 
 static float MAP_SIZE = 512.0f;
 
@@ -136,7 +136,7 @@ float4 PS_pass0(VS_OUTPUT In) : COLOR
 // -------------------------------------------------------------
 VS_OUTPUT VS_boxDraw(
       float4 Pos : POSITION, // モデルの頂点
-      float4 Normal : NORMAL // モデルの法線
+      float3 Normal : NORMAL // モデルの法線
 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
@@ -159,7 +159,7 @@ VS_OUTPUT VS_boxDraw(
 
 VS_OUTPUT VS_bgDraw(
       float4 Pos : POSITION, // モデルの頂点
-      float4 Normal : NORMAL // モデルの法線
+      float3 Normal : NORMAL // モデルの法線
 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ

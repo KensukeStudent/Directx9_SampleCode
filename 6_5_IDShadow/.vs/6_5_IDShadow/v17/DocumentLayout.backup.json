@@ -24,7 +24,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 148,
+          "DockedWidth": 166,
           "SelectedChildIndex": 1,
           "Children": [
             {
@@ -47,7 +47,7 @@
               "RelativeDocumentMoniker": "main\\main.cpp",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_5_IDShadow\\main\\main.cpp",
               "RelativeToolTip": "main\\main.cpp",
-              "ViewState": "AgIAALkAAAAAAAAAAAAAANMAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAMABAAAAAAAAAAAAAHECAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-01T05:21:52.735Z",
               "EditorCaption": ""
@@ -55,7 +55,7 @@
           ]
         },
         {
-          "DockedWidth": 193,
+          "DockedWidth": 175,
           "SelectedChildIndex": 1,
           "Children": [
             {
@@ -76,7 +76,7 @@
               "RelativeDocumentMoniker": "main\\hlsl.fx",
               "ToolTip": "C:\\Users\\nagak\\Downloads\\Directx9_SampleCode\\6_5_IDShadow\\main\\hlsl.fx",
               "RelativeToolTip": "main\\hlsl.fx",
-              "ViewState": "AgIAAEIAAAAAAAAAAAAAAF8AAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-05-31T14:49:12.089Z",
               "EditorCaption": ""

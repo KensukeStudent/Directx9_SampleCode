@@ -445,7 +445,7 @@ VOID CMyD3DApplication::DrawModel(int pass)
 
 	switch (pass) {
 	case 0:// シャドウマップの作成
-		// ライトの空間への射影行列
+		 //ライトの空間への射影行列
 		m_pEffect->BeginPass(0);
 		m = mL * m_mLightVP;
 		m_pEffect->SetMatrix(m_hmWLP_box, &m);
@@ -476,8 +476,8 @@ VOID CMyD3DApplication::DrawModel(int pass)
 			v.y = pMtrl->Diffuse.g;
 			v.z = pMtrl->Diffuse.b;
 			v.w = pMtrl->Diffuse.a;
-			m_pEffect->SetVector(m_hvCol_box, &v);        // 頂点色
-			m_pMeshCar->m_pLocalMesh->DrawSubset(i);	// 描画
+			m_pEffect->SetVector(m_hvCol_box, &v);       // 頂点色
+			m_pMeshCar->m_pLocalMesh->DrawSubset(i); // 描画
 			pMtrl++;
 		}
 		break;
@@ -604,11 +604,13 @@ HRESULT CMyD3DApplication::Render()
 				//-------------------------------------------------
 				// 2パス目:深度のエッジを作る
 				//-------------------------------------------------
+
 				m_pEffect->SetTechnique(m_hShadowTechnique);
 				m_pEffect->Begin(NULL, 0);
 				m_pEffect->BeginPass(0);	// パス(０)の設定
 
 				m_pd3dDevice->SetRenderTarget(0, m_pEdgeMapSurf);
+
 				RS(D3DRS_ZENABLE, FALSE);
 				TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 				TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
@@ -645,6 +647,7 @@ HRESULT CMyD3DApplication::Render()
 				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex3, sizeof(TVERTEX3));
 
 				m_pEffect->EndPass(); // techniqueの終了
+				m_pEffect->End();
 			}
 
 			//-------------------------------------------------
@@ -680,30 +683,30 @@ HRESULT CMyD3DApplication::Render()
 		// ヘルプの表示
 		RenderText();
 
-//#if 1 // デバッグ用にテクスチャを表示する
-//		{
-//			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-//			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-//			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-//			m_pd3dDevice->SetVertexShader(NULL);
-//			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
-//			m_pd3dDevice->SetPixelShader(0);
-//			float scale = 128.0f;
-//			for (DWORD i = 0; i < 3; i++) {
-//				TVERTEX4 Vertex[4] = {
-//					// x  y  z rhw tu tv
-//					{    0,(i + 0) * scale,0, 1, 0, 0,},
-//					{scale,(i + 0) * scale,0, 1, 1, 0,},
-//					{scale,(i + 1) * scale,0, 1, 1, 1,},
-//					{    0,(i + 1) * scale,0, 1, 0, 1,},
-//				};
-//				if (0 == i) m_pd3dDevice->SetTexture(0, m_pShadowMap);
-//				if (1 == i) m_pd3dDevice->SetTexture(0, m_pEdgeMap);
-//				if (2 == i) m_pd3dDevice->SetTexture(0, m_pSoftMap[1]);
-//				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX4));
-//			}
-//		}
-//#endif		
+#if 1 // デバッグ用にテクスチャを表示する
+		{
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+			m_pd3dDevice->SetVertexShader(NULL);
+			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+			m_pd3dDevice->SetPixelShader(0);
+			float scale = 128.0f;
+			for (DWORD i = 0; i < 3; i++) {
+				TVERTEX4 Vertex[4] = {
+					// x  y  z rhw tu tv
+					{    0,(i + 0) * scale,0, 1, 0, 0,},
+					{scale,(i + 0) * scale,0, 1, 1, 0,},
+					{scale,(i + 1) * scale,0, 1, 1, 1,},
+					{    0,(i + 1) * scale,0, 1, 0, 1,},
+				};
+				if (0 == i) m_pd3dDevice->SetTexture(0, m_pShadowMap);
+				if (1 == i) m_pd3dDevice->SetTexture(0, m_pEdgeMap);
+				if (2 == i) m_pd3dDevice->SetTexture(0, m_pSoftMap[1]);
+				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX4));
+			}
+		}
+#endif		
 
 		// 描画の終了
 		m_pd3dDevice->EndScene();
