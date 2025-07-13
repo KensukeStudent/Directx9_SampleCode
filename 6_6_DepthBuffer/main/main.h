@@ -18,8 +18,14 @@ struct UserInput
 	BOOL bRotateDown;
 	BOOL bRotateLeft;
 	BOOL bRotateRight;
+
 	BOOL bZoomIn;
 	BOOL bZoomOut;
+
+	BOOL bA;
+	BOOL bD;
+	BOOL bW;
+	BOOL bS;
 };
 
 

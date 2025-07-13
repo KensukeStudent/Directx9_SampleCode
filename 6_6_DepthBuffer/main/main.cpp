@@ -395,6 +395,28 @@ HRESULT CMyD3DApplication::FrameMove()
 	D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
 
+	//---------------------------------------------------------
+	// ビュー行列の設定
+	//---------------------------------------------------------
+
+	if (m_UserInput.bA)
+	{
+		m_LighPos.x += m_fElapsedTime * 2.0f;
+	}
+	else if (m_UserInput.bD)
+	{
+		m_LighPos.x += -m_fElapsedTime * 2.0f;
+	}
+
+	if (m_UserInput.bW)
+	{
+		m_LighPos.z += m_fElapsedTime * 2.0f;
+	}
+	else if (m_UserInput.bS)
+	{
+		m_LighPos.z += -m_fElapsedTime * 2.0f;
+	}
+
 	return S_OK;
 }
 //-------------------------------------------------------------
@@ -410,6 +432,11 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 
 	pUserInput->bZoomIn = (m_bActive && (GetAsyncKeyState('Z') & 0x8000) == 0x8000);
 	pUserInput->bZoomOut = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
+
+	pUserInput->bA = (m_bActive && (GetAsyncKeyState('A') & 0x8000) == 0x8000);
+	pUserInput->bD = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
+	pUserInput->bW = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
+	pUserInput->bS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
 }
 
 void CMyD3DApplication::DrawShadowUFO()
