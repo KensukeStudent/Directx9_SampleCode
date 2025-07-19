@@ -115,6 +115,7 @@ CMyD3DApplication::CMyD3DApplication()
 	m_fWorldRotX = -0.41271535f;
 	m_fWorldRotY = 0.0f;
 	m_fViewZoom = 5.0f;
+	m_boxRotY = 0.0f;  // ボックスのY軸回転を初期化
 	m_LightPos = D3DXVECTOR3(-5.0f, 4.0f, -2.0f);
 
 	m_dwCreationWidth = 500;
@@ -322,6 +323,7 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 		return E_FAIL;
 	if (FAILED(m_pEdgeMap->GetSurfaceLevel(0, &m_pEdgeMapSurf)))
 		return E_FAIL;
+
 	// エッジをぼかしたマップ
 	if (FAILED(m_pd3dDevice->CreateTexture(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1,
 		D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_pSoftMap[0], NULL)))
@@ -389,6 +391,40 @@ HRESULT CMyD3DApplication::FrameMove()
 	D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
 
+	//---------------------------------------------------------
+    // ビュー行列の設定
+    //---------------------------------------------------------
+
+	if (m_UserInput.bA)
+	{
+		m_LightPos.x += m_fElapsedTime * 2.0f;
+	}
+	else if (m_UserInput.bD)
+	{
+		m_LightPos.x += -m_fElapsedTime * 2.0f;
+	}
+
+	if (m_UserInput.bW)
+	{
+		m_LightPos.z += m_fElapsedTime * 2.0f;
+	}
+	else if (m_UserInput.bS)
+	{
+		m_LightPos.z += -m_fElapsedTime * 2.0f;
+	}
+
+	//---------------------------------------------------------
+	// ビュー行列の設定
+	//---------------------------------------------------------
+	if (m_UserInput.bL) // 回転右
+	{
+		m_boxRotY += m_fElapsedTime * 2.0f;
+	}
+	else if (m_UserInput.bK) // 回転左
+	{
+		m_boxRotY -= m_fElapsedTime * 2.0f;
+	}
+
 	return S_OK;
 }
 //-------------------------------------------------------------
@@ -404,6 +440,14 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 
 	pUserInput->bZoomIn = (m_bActive && (GetAsyncKeyState('Z') & 0x8000) == 0x8000);
 	pUserInput->bZoomOut = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
+
+	pUserInput->bA = (m_bActive && (GetAsyncKeyState('A') & 0x8000) == 0x8000);
+	pUserInput->bD = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
+	pUserInput->bW = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
+	pUserInput->bS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
+
+	pUserInput->bL = (m_bActive && (GetAsyncKeyState('L') & 0x8000) == 0x8000);
+	pUserInput->bK = (m_bActive && (GetAsyncKeyState('K') & 0x8000) == 0x8000);
 }
 
 //-------------------------------------------------------------
@@ -439,9 +483,9 @@ VOID CMyD3DApplication::DrawModel(int pass)
 	m_pEffect->Begin(NULL, 0);
 
 	// ワールド行列の生成
-	D3DXMatrixTranslation(&mT, 1.0f, 0.6f, 0.0f);
-	D3DXMatrixRotationY(&mR, m_fTime);
-	mL = mT * mR; // trsローカル行列
+	D3DXMatrixTranslation(&mT, 0.0f, 0.6f, 0.0f);
+	D3DXMatrixRotationY(&mR, m_boxRotY);
+	mL = mT * mR; // ローカル行列: 回転してから平行移動でオブジェクトが自転する
 
 	switch (pass) {
 	case 0:// シャドウマップの作成
@@ -598,18 +642,19 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			// 1パス目:シャドウマップの作成
 			//-------------------------------------------------
-			DrawModel(0);			// モデルの描画
+			 DrawModel(0);			// モデルの描画
 
 			{
 				//-------------------------------------------------
-				// 2パス目:深度のエッジを作る
+				// 1パス目:深度のエッジを作る
 				//-------------------------------------------------
 
 				m_pEffect->SetTechnique(m_hShadowTechnique);
 				m_pEffect->Begin(NULL, 0);
-				m_pEffect->BeginPass(0);	// パス(０)の設定
 
 				m_pd3dDevice->SetRenderTarget(0, m_pEdgeMapSurf);
+
+				m_pEffect->BeginPass(0);	// パス(０)の設定
 
 				RS(D3DRS_ZENABLE, FALSE);
 				TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -629,8 +674,9 @@ HRESULT CMyD3DApplication::Render()
 				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex3, sizeof(TVERTEX3));
 
 				//-------------------------------------------------
-				// 3パス目:エッジをぼかす
+				// 2パス目:エッジをぼかす
 				//-------------------------------------------------
+
 				m_pd3dDevice->SetRenderTarget(0, m_pSoftMapSurf[0]);
 				m_pEffect->BeginPass(1);	// パス(１)の設定
 

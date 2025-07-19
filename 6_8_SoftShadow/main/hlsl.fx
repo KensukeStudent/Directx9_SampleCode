@@ -135,8 +135,9 @@ float4 PS_pass0(VS_OUTPUT In) : COLOR
 // 頂点シェーダプログラム
 // -------------------------------------------------------------
 VS_OUTPUT VS_boxDraw(
-      float4 Pos : POSITION, // モデルの頂点
-      float3 Normal : NORMAL // モデルの法線
+      float4 Pos : POSITION,  // モデルの頂点
+      float3 Normal : NORMAL, // モデルの法線
+      float2 Tex : TEXCOORD0  // テクスチャ座標
 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
@@ -144,15 +145,12 @@ VS_OUTPUT VS_boxDraw(
 	
 	// 座標変換
     Out.Pos = mul(Pos, mWVP_box);
-	// 色
     Out.Diffuse = vCol_box * max(dot(vLightDir, Normal), 0); // 拡散色
     Out.Ambient = vCol_box * 0.3f; // 環境色
 	
 	// テクスチャ座標
-    uv = mul(Pos, mWLPB_box);
-    Out.ShadowMapUV = uv;
-    uv = mul(Pos, mWLP_box);
-    Out.Depth = uv.zzzw;
+    Out.ShadowMapUV = mul(Pos, mWLPB_box);
+    Out.Depth = mul(Pos, mWLP_box);
 		
     return Out;
 }
@@ -163,19 +161,15 @@ VS_OUTPUT VS_bgDraw(
 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
-    float4 uv;
 	
 	// 座標変換
     Out.Pos = mul(Pos, mWVP_bg);
-	// 色
     Out.Diffuse = vCol_bg * max(dot(vLightDir, Normal), 0); // 拡散色
     Out.Ambient = vCol_bg * 0.3f; // 環境色
 	
 	// テクスチャ座標
-    uv = mul(Pos, mWLPB_bg);
-    Out.ShadowMapUV = uv;
-    uv = mul(Pos, mWLP_bg);
-    Out.Depth = uv.zzzw;
+    Out.ShadowMapUV = mul(Pos, mWLPB_bg);
+    Out.Depth = mul(Pos, mWLP_bg);
 		
     return Out;
 }
@@ -185,13 +179,14 @@ VS_OUTPUT VS_bgDraw(
 // -------------------------------------------------------------
 float4 PS_pass1(VS_OUTPUT In) : COLOR
 {
-    float4 Color = In.Ambient;
+    float4 Color;
     
     float shadow_map = tex2Dproj(ShadowMapSamp, In.ShadowMapUV).x;
     
-    Color += In.Diffuse * ((shadow_map < In.Depth.z / In.Depth.w - 0.01)
+    Color = In.Ambient
+          + In.Diffuse * ((shadow_map < In.Depth.z / In.Depth.w - 0.01f)
 					 ? tex2Dproj(SrcSamp, In.ShadowMapUV) : 1);
-
+    
     return Color;
 }
 
@@ -337,7 +332,7 @@ technique ShadowTShader
         VertexShader = compile vs_1_1 VS_shadow1();
         PixelShader = compile ps_2_0 PS_shadow1();
         
-		Sampler[0] = (SrcSamp);
+        Sampler[0] = (SrcSamp);
     }
     pass P1 // ぼかし
     {
@@ -345,6 +340,6 @@ technique ShadowTShader
         VertexShader = compile vs_1_1 VS_shadow2();
         PixelShader = compile ps_2_0 PS_shadow2();
         
-		Sampler[0] = (SrcSamp);
+        Sampler[0] = (SrcSamp);
     }
 }

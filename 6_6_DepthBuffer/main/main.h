@@ -26,6 +26,9 @@ struct UserInput
 	BOOL bD;
 	BOOL bW;
 	BOOL bS;
+
+	BOOL bUfoYRotLeft;  // ufo‚Ì‰ñ“]
+	BOOL bUfoYRotRight; // ufo‚Ì‰ñ“]
 };
 
 
@@ -82,6 +85,8 @@ class CMyD3DApplication : public CD3DApplication
 	FLOAT                   m_fWorldRotX;   // ‚wŽ²‰ñ“]
 	FLOAT                   m_fWorldRotY;   // ‚xŽ²‰ñ“]
 	FLOAT                   m_fViewZoom;    // Ž‹“_‚Ì‹——£
+
+	FLOAT 				    m_ufoRotY; // ufo‚Ì‰ñ“]Šp“x
 
 	/// <summary>
 	/// 0ƒpƒX–Ú

@@ -102,6 +102,8 @@ CMyD3DApplication::CMyD3DApplication()
 	m_fViewZoom = 7.0f;
 	m_LighPos = D3DXVECTOR3(-5.0f, 5.0f, -3.0f);
 
+	m_ufoRotY = 0.0f;
+
 	m_dwCreationWidth = 500;
 	m_dwCreationHeight = 375;
 	m_strWindowTitle = TEXT("main");
@@ -417,6 +419,15 @@ HRESULT CMyD3DApplication::FrameMove()
 		m_LighPos.z += -m_fElapsedTime * 2.0f;
 	}
 
+	if (m_UserInput.bUfoYRotRight)
+	{
+		m_ufoRotY += m_fElapsedTime * 2.0f;
+	}
+	else if (m_UserInput.bUfoYRotLeft)
+	{
+		m_ufoRotY -= m_fElapsedTime * 2.0f;
+	}
+
 	return S_OK;
 }
 //-------------------------------------------------------------
@@ -437,19 +448,24 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 	pUserInput->bD = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
 	pUserInput->bW = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
 	pUserInput->bS = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
+
+	pUserInput->bUfoYRotLeft = (m_bActive && (GetAsyncKeyState('K') & 0x8000) == 0x8000);
+	pUserInput->bUfoYRotRight = (m_bActive && (GetAsyncKeyState('L') & 0x8000) == 0x8000);
 }
 
 void CMyD3DApplication::DrawShadowUFO()
 {
-	D3DXMATRIX m, mW;
+	D3DXMATRIX m, mT,mR;
 
 	// ワールド行列の生成
-	D3DXMatrixTranslation(&mW, m_pos.x, m_pos.y, m_pos.z);
+	//D3DXMatrixTranslation(&mT, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mT, 0, m_pos.y, 0);
+	D3DXMatrixRotationY(&mR, m_ufoRotY);
 
 	m_pEffect->BeginPass(1);
 	
 	// ライトの空間への射影行列
-	m = mW * m_mLightVP;
+	m = mT * mR * m_mLightVP;
 	m_pEffect->SetMatrix(m_hmWLP_ufo, &m);
 
 	m_pMesh->Render(m_pd3dDevice);// 描画
@@ -459,7 +475,7 @@ void CMyD3DApplication::DrawShadowUFO()
 
 void CMyD3DApplication::DrawUFO()
 {
-	D3DXMATRIX m, mW;
+	D3DXMATRIX m, mT, mR;
 	D3DXVECTOR3 vDir;
 	D3DXVECTOR4 v;
 	D3DMATERIAL9* pMtrl;
@@ -468,6 +484,7 @@ void CMyD3DApplication::DrawUFO()
 	//---------------------------------------------------------
 	// 行列の生成
 	//---------------------------------------------------------
+	
 	// ローカル-射影行列
 	D3DXMATRIX mVP = m_mWorld * m_mView * m_mProj;
 
@@ -482,22 +499,27 @@ void CMyD3DApplication::DrawUFO()
 	//---------------------------------------------------------
 	// ＵＦＯ
 	//---------------------------------------------------------
+
 	// ワールド行列の生成
-	D3DXMatrixTranslation(&mW, m_pos.x, m_pos.y, m_pos.z);
+	// D3DXMatrixTranslation(&mT, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mT, 0, m_pos.y, 0);
+	D3DXMatrixRotationY(&mR, m_ufoRotY);
 
 	m_pEffect->BeginPass(3);
+
+	mT *= mR;
 	
-	m = mW * mVP;       // 通常の射影行列
+	m = mT * mVP;       // 通常の射影行列
 	m_pEffect->SetMatrix(m_hmWVP_ufo, &m);
 
-	m = mW * m_mLightVP;// ライトの空間への射影行列
+	m = mT * m_mLightVP;// ライトの空間への射影行列
 	m_pEffect->SetMatrix(m_hmWLP_ufo, &m);
 
 	m = m * mScaleBias; // テクスチャ空間への射影行列
 	m_pEffect->SetMatrix(m_hmWLPB_ufo, &m);
 
 	// ローカル座標系でのライトベクトル
-	D3DXMatrixInverse(&m, NULL, &mW);
+	D3DXMatrixInverse(&m, NULL, &mT);
 	D3DXVec3Transform(&v, &m_LighPos, &m);
 	D3DXVec4Normalize(&v, &v); v.w = 0;
 	m_pEffect->SetVector(m_hvDir_ufo, &v);
