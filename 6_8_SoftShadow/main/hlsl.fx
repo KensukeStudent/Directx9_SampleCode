@@ -122,9 +122,8 @@ VS_OUTPUT VS_bgShadow(
 // -------------------------------------------------------------
 float4 PS_pass0(VS_OUTPUT In) : COLOR
 {   
-    float4 Color = In.Depth / In.Depth.w;
-
-    return Color;
+    float depth = In.Depth.z / In.Depth.w;
+    return float4(saturate(depth), saturate(depth), saturate(depth), 1.0f); 
 }  
 
 // -------------------------------------------------------------

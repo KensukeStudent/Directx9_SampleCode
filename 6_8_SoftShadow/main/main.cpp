@@ -653,7 +653,7 @@ HRESULT CMyD3DApplication::Render()
 				m_pEffect->Begin(NULL, 0);
 
 				m_pd3dDevice->SetRenderTarget(0, m_pEdgeMapSurf);
-
+				
 				m_pEffect->BeginPass(0);	// パス(０)の設定
 
 				RS(D3DRS_ZENABLE, FALSE);
@@ -692,7 +692,7 @@ HRESULT CMyD3DApplication::Render()
 				m_pEffect->SetTexture(m_htSrcMap, m_pSoftMap[0]);
 				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex3, sizeof(TVERTEX3));
 
-				m_pEffect->EndPass(); // techniqueの終了
+				m_pEffect->EndPass();
 				m_pEffect->End();
 			}
 
