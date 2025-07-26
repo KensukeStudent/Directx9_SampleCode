@@ -4,6 +4,23 @@
 // Copyright (c) 2003 IMAGIRE Takashi. All rights reserved.
 // ------------------------------------------------------------
 
+
+//MinFilterやMagFilterが自前のフィルター処理と何が違うのか
+//
+//MinFilterやMagFilter
+//画面に出力されるときまたはhlslに渡すときに施される処理のこと
+//
+//自前のフィルター処理
+//渡されたものをどうカスタマイズするかが違いである
+//
+// AI生成の補足： 両者の連携
+//HLSLシェーダ内の tex2D(SrcSamp, In.Tex0)
+//のような呼び出しでは、まずSrcSamp に設定されたMinFilter やMagFilter のルールに基づいてテクスチャから色がサンプリングされます。
+//その後、 そのサンプリングされた色を、あなたの書いたシェーダコードがさらに加工する、 という流れになります。
+//したがって、 両者は排他的なものではなく、連携して最終的なレンダリング結果を生成します。 
+//MinFilter/MagFilter は基本的なフィルタリングを提供し、自前のシェーダコードはそれに加えてより複雑なフィルタリングや効果を実装するために使用されます。
+
+
 // ------------------------------------------------------------
 // グローバル変数
 // ------------------------------------------------------------
@@ -17,8 +34,8 @@ texture SrcMap;
 sampler SrcSamp = sampler_state
 {
     Texture = <SrcMap>;
-    MinFilter = LINEAR;
-    MagFilter = LINEAR;
+    MinFilter = LINEAR; // 画面に出力されるときまたはhlslに渡すときに施される処理のこと
+    MagFilter = LINEAR; // 自前のコードでは渡されたものをどうカスタマイズするかが違いである
     MipFilter = NONE;
 
     AddressU = Clamp;
@@ -50,10 +67,11 @@ VS_OUTPUT VS(
     // 位置座標
     Out.Pos = Pos;
     
-    Out.Tex0 = Tex + float2(-1.0f / WIDTH, -1.0f / HEIGHT);
-    Out.Tex1 = Tex + float2(+1.0f / WIDTH, -1.0f / HEIGHT);
-    Out.Tex2 = Tex + float2(-1.0f / WIDTH, +1.0f / HEIGHT);
-    Out.Tex3 = Tex + float2(+1.0f / WIDTH, +1.0f / HEIGHT);
+    float texPoint = 1.0f;
+    Out.Tex0 = Tex + float2(-texPoint / WIDTH, -texPoint / HEIGHT);
+    Out.Tex1 = Tex + float2(+texPoint / WIDTH, -texPoint / HEIGHT);
+    Out.Tex2 = Tex + float2(-texPoint / WIDTH, +texPoint / HEIGHT);
+    Out.Tex3 = Tex + float2(+texPoint / WIDTH, +texPoint / HEIGHT);
     
     return Out;
 }
