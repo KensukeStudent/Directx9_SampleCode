@@ -42,7 +42,7 @@ struct VS_OUTPUT
 // ------------------------------------------------------------
 VS_OUTPUT VS(
       float4 Pos : POSITION // モデルの頂点
-     , float4 Tex : TEXCOORD0 // テクスチャ座標
+     , float2 Tex : TEXCOORD0 // テクスチャ座標
 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
@@ -78,7 +78,7 @@ float4 PS(VS_OUTPUT In) : COLOR0
 // ------------------------------------------------------------
 VS_OUTPUT VS9(
       float4 Pos : POSITION // モデルの頂点
-     , float4 Tex : TEXCOORD0 // テクスチャ座標
+     , float2 Tex : TEXCOORD0 // テクスチャ座標
 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
