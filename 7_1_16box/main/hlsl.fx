@@ -34,8 +34,8 @@ texture SrcMap;
 sampler SrcSamp = sampler_state
 {
     Texture = <SrcMap>;
-    MinFilter = LINEAR; // 画面に出力されるときまたはhlslに渡すときに施される処理のこと
-    MagFilter = LINEAR; // 自前のコードでは渡されたものをどうカスタマイズするかが違いである
+    MinFilter = LINEAR; // LINEARをバイリニアサンプリングを設定, 受け取るテクスチャカラーの中心4点の平均化されたカラーを返すため
+    MagFilter = LINEAR;
     MipFilter = NONE;
 
     AddressU = Clamp;
@@ -81,8 +81,10 @@ VS_OUTPUT VS(
 // ------------------------------------------------------------
 float4 PS(VS_OUTPUT In) : COLOR0
 {
+    // 見た目上は4つのテクスチャサンプルだが、MinFilterやMagFilterの設定により、実際には合計16点の平均を取っている
+    
     // 4つのテクスチャサンプルを取得
-    float4 color0 = tex2D(SrcSamp, In.Tex0);
+    float4 color0 = tex2D(SrcSamp, In.Tex0); // 受け取るカラーは4点の平均化されたカラー
     float4 color1 = tex2D(SrcSamp, In.Tex1);
     float4 color2 = tex2D(SrcSamp, In.Tex2);
     float4 color3 = tex2D(SrcSamp, In.Tex3);
