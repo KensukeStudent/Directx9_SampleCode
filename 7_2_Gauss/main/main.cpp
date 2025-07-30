@@ -181,11 +181,14 @@ VOID CMyD3DApplication::UpdateWeight(FLOAT dispersion)
 
 	FLOAT total = 0;
 	for (i = 0; i < WEIGHT_MUN; i++) {
-		FLOAT pos = 1.0f + 2.0f * (FLOAT)i;
-		m_tbl[i] = expf(-0.5f * (FLOAT)(pos * pos) / dispersion);
-		total += 2.0f * m_tbl[i];
+		FLOAT pos = 1.0f + 2.0f * (FLOAT)i; // 左右対称となる位置 1,3,5,7
+		m_tbl[i] = expf(-0.5f * (FLOAT)(pos * pos) / dispersion); // ガウス分布の計算
+		total += 2.0f * m_tbl[i]; // 左右対称なので2倍する, 1であれば左右対称で左が1右が2となるようにi分計算
 	}
-	// 規格化
+
+	// m_tbl[i] は片側8個分の重み。
+	// シェーダーでは±の両側に使われ、計16個分の重みになるため、
+	// 合計が1になるよう16個分として正規化する。
 	for (i = 0; i < WEIGHT_MUN; i++) m_tbl[i] /= total;
 
 	if (m_pEffect) m_pEffect->SetFloatArray(m_hafWeight
@@ -629,14 +632,14 @@ HRESULT CMyD3DApplication::Render()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::RenderText()
 {
-	D3DCOLOR fontColor = D3DCOLOR_ARGB(255, 255, 255, 0);
+	D3DCOLOR fontColor = D3DCOLOR_ARGB(255, 0, 0, 0);
 	TCHAR szMsg[MAX_PATH] = TEXT("");
 
 	FLOAT fNextLine = 40.0f; // 表示する高さ
 
 	// 操作法やパラメータを表示する
 	fNextLine = (FLOAT)m_d3dsdBackBuffer.Height;
-	wsprintf(szMsg, _T("Use Page Up/Down keys to change dispersion (Now %f^2)"), m_dispersion_sq);
+	_stprintf_s(szMsg, MAX_PATH, _T("Use Page Up/Down keys to change dispersion (Now %.2f^2)"), m_dispersion_sq);
 	fNextLine -= 20.0f;
 	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
 	lstrcpy(szMsg, TEXT("Press 'F2' to configure display"));
