@@ -49,7 +49,7 @@ sampler NormalSamp = sampler_state
 };
 
 //-----------------------------------------------------------------------------
-// サンプラと SetTexture との対応
+// サンプラとアプリケーション側で定義しているSetTexture との対応
 //-----------------------------------------------------------------------------
 sampler s0 : register(s0);
 sampler s1 : register(s1);
@@ -57,8 +57,6 @@ sampler s2 : register(s2);
 sampler s3 : register(s3);
 sampler s4 : register(s4);
 sampler s5 : register(s5);
-sampler s6 : register(s6);
-sampler s7 : register(s7);
 
 // -------------------------------------------------------------
 // 頂点シェーダからピクセルシェーダに渡すデータ
@@ -117,9 +115,9 @@ float4 PS(VS_OUTPUT In) : COLOR
 	float3 R = reflect(-normalize(In.E), N);		// 反射ベクトル
 	float amb = -vLightDir.w;						// 環境光の強さ
 	
-    return In.Color * tex2D( DecaleSamp, In.Tex )	// 拡散光と環境光には、
-			   * (max(0, dot(N, L))+amb)			// 頂点色とテクスチャの色を合成する
-			 + 2.0f * pow(max(0,dot(R, L)), 64);		// Phong 鏡面反射光
+    return In.Color * tex2D(DecaleSamp, In.Tex) // 拡散光と環境光には、
+			   * (max(0, dot(N, L)) + amb) // 頂点色とテクスチャの色を合成する
+			 + 2.0f * pow(max(0, dot(R, L)), 64); // Phong 鏡面反射光
 }
 
 
@@ -248,6 +246,8 @@ technique DownScale4x4
     pass P0
     {
         PixelShader  = compile ps_2_0 DownScale4x4PS();
+        // 昔は浮動小数点フォーマットにLinerフィルタリングが使えない制約があったためPointとして定義
+        // 今ではサポートされているGPUやDirectxバージョンにも対応しているかも？
         MinFilter[0] = Point;
         AddressU[0] = Clamp;
         AddressV[0] = Clamp;

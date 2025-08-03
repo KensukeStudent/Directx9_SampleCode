@@ -285,7 +285,6 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 
     return S_OK;
 }
-
 //-------------------------------------------------------------
 // Name: RestoreDeviceObjects()
 // Desc: 画面のサイズが変更された時等に呼ばれます。
@@ -308,6 +307,7 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 
     //---------------------------------------------------------
     // 縮小バッファ
+    // ピクセル処理能力を削減するために、描画サイズを小さくして高速に処理できるようにする
     //---------------------------------------------------------
     // 縮小バッファの基本サイズ（FBを切捨てで４の倍数の大きさ）
     m_dwCropWidth = m_d3dsdBackBuffer.Width - m_d3dsdBackBuffer.Width % 4;
@@ -609,12 +609,16 @@ HRESULT CMyD3DApplication::GetTextureCoords(PDIRECT3DTEXTURE9 pTexSrc, RECT* pRe
 //-----------------------------------------------------------------------------
 // Name: Scene_To_SceneScaled()
 // Desc: m_pTexScene を 1/4 にして m_pTexSceneScaled に入れる
+//       この関数は、フル解像度でレンダリングされたシーンテクスチャ (m_pTexScene) を、
+//       1/4のサイズに縮小し、その結果を中間レンダリングターゲット (m_pTexSceneScaled) に出力します。
+//       具体的には、4x4のテクセルをサンプリングして平均色を計算するピクセルシェーダ (DownScale4x4PS) を使用し、
+//       元のシーンテクスチャからぼかされた（ダウンサンプリングされた）画像を生成します。
+//       この結果は、その後のポストエフェクト処理の入力として使用されます。
 //-----------------------------------------------------------------------------
 HRESULT CMyD3DApplication::Scene_To_SceneScaled()
 {
-    // はみ出した場合に中心部分をコピーする
-    CoordRect coords;
-    RECT rectSrc;
+    CoordRect coords; // はみ出した場合に中心部分をコピーする
+	RECT rectSrc; // レンダリングターゲットの矩形
     rectSrc.left = (m_d3dsdBackBuffer.Width - m_dwCropWidth) / 2;
     rectSrc.top = (m_d3dsdBackBuffer.Height - m_dwCropHeight) / 2;
     rectSrc.right = rectSrc.left + m_dwCropWidth;
@@ -627,8 +631,14 @@ HRESULT CMyD3DApplication::Scene_To_SceneScaled()
     int index = 0;
     D3DXVECTOR2 offsets[MAX_SAMPLES];
 
+	// シェーダー側で4x4のサンプリングを行い平均色を取るために16個の配列を作成する
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
+			// 以下計算結果、0.5になるのはピクセルの中心に合わせるための補正
+            // x が0の場合 : 0 - 1.5 = -1.5
+            // x が1の場合 : 1 - 1.5 = -0.5
+            // x が2の場合 : 2 - 1.5 = 0.5
+            // x が3の場合 : 3 - 1.5 = 1.5
             offsets[index].x = (x - 1.5f) / m_d3dsdBackBuffer.Width;
             offsets[index].y = (y - 1.5f) / m_d3dsdBackBuffer.Height;
             index++;
@@ -642,7 +652,9 @@ HRESULT CMyD3DApplication::Scene_To_SceneScaled()
     m_pEffect->Begin(NULL, 0);
     m_pEffect->BeginPass(0);
     m_pd3dDevice->SetTexture(0, m_pTexScene);
-    DrawFullScreenQuad(coords.u0, coords.v0, coords.u1, coords.v1);
+    // m_pSurfSceneScaledに描画する、全画面ぼけた表示
+	// 後続の処理で縮小バッファを使う
+	DrawFullScreenQuad(coords.u0, coords.v0, coords.u1, coords.v1);
 
     m_pEffect->EndPass();
     m_pEffect->End();
