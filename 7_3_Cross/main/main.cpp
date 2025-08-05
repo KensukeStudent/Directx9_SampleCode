@@ -715,6 +715,7 @@ HRESULT CMyD3DApplication::GetGaussBlur5x5(
             // 係数が小さくなる部分は除去
             if (2 < abs(x) + abs(y)) continue;
 
+            // (0,0)が一番重みが高く、中心を基準に重みが軽くなる計算式
             avTexCoordOffset[index] = D3DXVECTOR2(x * tu, y * tv);
             float fx = (FLOAT)x;
             float fy = (FLOAT)y;

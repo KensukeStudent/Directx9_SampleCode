@@ -149,9 +149,10 @@ float4 BrightPassFilterPS(in float2 uv : TEXCOORD0) : COLOR
 	float4 vSample = tex2D( s0, uv );
 	
 	// 暗い部分をさっぴく
-	vSample.rgb -= 1.5f;
+	vSample.rgb -= 1.5f; // HDRテクスチャーから読み取る場合はカラーの値が1を超えることがあるので-1.5を引いても全てが黒になるわけではない
 	
 	// 下限を０にする
+    // 明るい部分だけを残す
 	vSample = 3.0f*max(vSample, 0.0f);
 
 	return vSample;
