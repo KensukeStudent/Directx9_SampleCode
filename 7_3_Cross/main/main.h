@@ -52,7 +52,7 @@ class CMyD3DApplication : public CD3DApplication
 	PDIRECT3DSURFACE9		m_pSurfBrightPass;
 	PDIRECT3DTEXTURE9		m_pTexStarSource;   // 星の元になる画像
 	PDIRECT3DSURFACE9		m_pSurfStarSource;
-	PDIRECT3DTEXTURE9		m_apTexStar[NUM_STAR_TEXTURES];// 一時的に使う
+	PDIRECT3DTEXTURE9		m_apTexStar[NUM_STAR_TEXTURES];// 光芒効果の中間レンダリングバッファ
 	PDIRECT3DSURFACE9		m_apSurfStar[NUM_STAR_TEXTURES];
 
 	// シーンの描画用

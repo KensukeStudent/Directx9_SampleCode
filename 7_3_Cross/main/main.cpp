@@ -789,7 +789,7 @@ HRESULT CMyD3DApplication::BrightPass_To_StarSource()
 HRESULT CMyD3DApplication::RenderStar()
 {
     // エフェクトで使う定数の設定
-    static const int s_maxPasses = 3;
+    static const int s_maxPasses = 3; // *** それぞれのパスで光芒の長さや減衰、色などが調整されます ***
     static const int nSamples = 8;
     // 光芒の色
     static const D3DXCOLOR s_colorWhite(0.63f, 0.63f, 0.63f, 0.0f);
@@ -829,7 +829,7 @@ HRESULT CMyD3DApplication::RenderStar()
     float srcW = (FLOAT)desc.Width;
     float srcH = (FLOAT)desc.Height;
 
-    int nStarLines = 6;// 光芒の本数
+    int nStarLines = 6;// 光芒の本数（ 線の数 ）
     for (int d = 0; d < nStarLines; d++) {    // 方向に応じたループ
         PDIRECT3DTEXTURE9 pTexSource = m_pTexStarSource;
         float rad = radOffset + 2 * d * D3DX_PI / (FLOAT)nStarLines;// 角度
@@ -892,6 +892,7 @@ HRESULT CMyD3DApplication::RenderStar()
             attnPowScale *= nSamples;
 
             // レンダリングした出力を次のテクスチャにする
+            // このテクスチャを徐々に伸ばしていく
             pTexSource = m_apTexStar[iWorkTexture];
 
             iWorkTexture ^= 1;
