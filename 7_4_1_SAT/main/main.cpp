@@ -452,9 +452,15 @@ HRESULT CMyD3DApplication::Render()
 		m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
 		m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
 
+		// 縦と横の合計を計算
+		// 横の計算では画面解像度分縦に1本の線を引く、それを解像度回数分（今回で言うと512回）
+		// 縦の計算では画面解像度分横に1本の線を引く、それを解像度回数分（今回で言うと512回）
+
 		// 横方向に合計
 		m_pEffect->BeginPass(0);
 		for (i = 0; i < MAP_WIDTH; i++) {
+			// -1 + 2.0f * x....としているのは、ndc座標系に変換するため
+			// -1 ~ +1 の範囲にするため
 			FLOAT dx = (1.0f / MAP_WIDTH);
 			VERTEX Vertex[4] = {
 				//       x                y     z        tu       tv
