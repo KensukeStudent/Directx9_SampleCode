@@ -435,9 +435,9 @@ HRESULT CMyD3DApplication::Render()
 
 		m_pd3dDevice->EndScene();
 
-		//// ----------------------------------------------------
-		//// SAT 計算
-		//// ----------------------------------------------------
+		// ----------------------------------------------------
+		// SAT 計算
+		// ----------------------------------------------------
 		//RS(D3DRS_ZENABLE, FALSE);
 		//RS(D3DRS_LIGHTING, FALSE);
 
@@ -453,9 +453,9 @@ HRESULT CMyD3DApplication::Render()
 		//m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
 		//m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
 
-		//// 縦と横の合計を計算
-		//// 横の計算では画面解像度分縦に1本の線を引く、それを解像度回数分（今回で言うと512回）
-		//// 縦の計算では画面解像度分横に1本の線を引く、それを解像度回数分（今回で言うと512回）
+		// 縦と横の合計を計算
+		// 横の計算では画面解像度分縦に1本の線を引く、それを解像度回数分（今回で言うと512回）
+		// 縦の計算では画面解像度分横に1本の線を引く、それを解像度回数分（今回で言うと512回）
 
 		//// 横方向に合計
 		//m_pEffect->BeginPass(0);
@@ -474,7 +474,6 @@ HRESULT CMyD3DApplication::Render()
 		//}
 		//m_pEffect->EndPass();
 
-
 		//// 縦方向に合計
 		//m_pEffect->BeginPass(1);
 		//for (i = 0; i < MAP_HEIGHT; i++) {
@@ -491,9 +490,9 @@ HRESULT CMyD3DApplication::Render()
 		//m_pEffect->EndPass();
 		//m_pEffect->End();
 
-		////-----------------------------------------------------
-		//// レンダリングターゲットを元に戻す
-		////-----------------------------------------------------
+		//-----------------------------------------------------
+		// レンダリングターゲットを元に戻す
+		//-----------------------------------------------------
 		//m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
 		//m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
 		//m_pd3dDevice->SetViewport(&oldViewport);
@@ -536,37 +535,37 @@ HRESULT CMyD3DApplication::Render()
 //		//RS(D3DRS_ZENABLE, TRUE);
 //		//RS(D3DRS_LIGHTING, TRUE);
 //
-////#if 1 // デバッグ用にテクスチャを表示する
-////		{
-////			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-////			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-////			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-////			m_pd3dDevice->SetVertexShader(NULL);
-////			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
-////			m_pd3dDevice->SetPixelShader(0);
-////			float scale = 512.0f / 1;
-////			typedef struct { FLOAT p[4]; FLOAT tu, tv; } TVERTEX;
-////			for (DWORD i = 0; i < 1; i++) {
-////				TVERTEX Vertex[4] = {
-////					// x  y  z rhw tu tv
-////					{    0,(i + 0) * scale,0, 1, 0, 0,},
-////					{scale,(i + 0) * scale,0, 1, 1, 0,},
-////					{scale,(i + 1) * scale,0, 1, 1, 1,},
-////					{    0,(i + 1) * scale,0, 1, 0, 1,},
-////				};
-////				if (0 == i) m_pd3dDevice->SetTexture(0, m_pSatTex);
-////				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
-////			}
-////		}
-////
-////		// ヘルプの表示
-////		RenderText();
-////
-////#endif		
-//
-//		// 描画の終了
-//		m_pd3dDevice->EndScene();
-//	}
+#if 1 // デバッグ用にテクスチャを表示する
+		{
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+			m_pd3dDevice->SetVertexShader(NULL);
+			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+			m_pd3dDevice->SetPixelShader(0);
+			float scale = 800;
+			typedef struct { FLOAT p[4]; FLOAT tu, tv; } TVERTEX;
+			for (DWORD i = 0; i < 1; i++) {
+				TVERTEX Vertex[4] = {
+					// x  y  z rhw tu tv
+					{    0,(i + 0) * scale,0, 1, 0, 0,},
+					{scale,(i + 0) * scale,0, 1, 1, 0,},
+					{scale,(i + 1) * scale,0, 1, 1, 1,},
+					{    0,(i + 1) * scale,0, 1, 0, 1,},
+				};
+				if (0 == i) m_pd3dDevice->SetTexture(0, m_pSatTex);
+				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+			}
+		}
+
+		// ヘルプの表示
+		RenderText();
+
+#endif		
+
+		// 描画の終了
+		m_pd3dDevice->EndScene();
+//}
 
 	pOldBackBuffer->Release();
 	pOldZBuffer->Release();
