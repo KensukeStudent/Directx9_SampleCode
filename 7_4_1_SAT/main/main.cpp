@@ -394,14 +394,14 @@ HRESULT CMyD3DApplication::Render()
 		// レンダリングターゲットの変更
 		//-----------------------------------------------------
 		{
-			//m_pd3dDevice->SetRenderTarget(0, m_pSatSurf);
-			//m_pd3dDevice->SetDepthStencilSurface(m_pMapZ);
-			//// ビューポートの変更
-			//D3DVIEWPORT9 viewport = { 0,0 // 左上の座標
-			//				, MAP_WIDTH  // 幅
-			//				, MAP_HEIGHT // 高さ
-			//				, 0.0f,1.0f };// 前面、後面
-			//m_pd3dDevice->SetViewport(&viewport);
+			m_pd3dDevice->SetRenderTarget(0, m_pSatSurf);
+			m_pd3dDevice->SetDepthStencilSurface(m_pMapZ);
+			// ビューポートの変更
+			D3DVIEWPORT9 viewport = { 0,0 // 左上の座標
+							, MAP_WIDTH  // 幅
+							, MAP_HEIGHT // 高さ
+							, 0.0f,1.0f };// 前面、後面
+			m_pd3dDevice->SetViewport(&viewport);
 		}
 
 		// レンダリングターゲットのクリア
@@ -493,9 +493,9 @@ HRESULT CMyD3DApplication::Render()
 		//-----------------------------------------------------
 		// レンダリングターゲットを元に戻す
 		//-----------------------------------------------------
-		//m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
-		//m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
-		//m_pd3dDevice->SetViewport(&oldViewport);
+		m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
+		m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
+		m_pd3dDevice->SetViewport(&oldViewport);
 	}
 
 //	if (SUCCEEDED(m_pd3dDevice->BeginScene()))
