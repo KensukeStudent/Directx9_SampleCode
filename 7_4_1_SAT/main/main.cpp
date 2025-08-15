@@ -23,8 +23,8 @@
 #include "resource.h"
 #include "main.h"
 
-#define MAP_WIDTH	512
-#define MAP_HEIGHT	512
+#define MAP_WIDTH	1600
+#define MAP_HEIGHT	900
 
 // 長いから短縮形を作ってみた
 #define RS   m_pd3dDevice->SetRenderState
@@ -94,8 +94,8 @@ CMyD3DApplication::CMyD3DApplication()
 	m_fWorldRotY = 0.0f;
 	m_fViewZoom = 5.0f;
 
-	m_dwCreationWidth = 512;
-	m_dwCreationHeight = 512;
+	m_dwCreationWidth = MAP_WIDTH;
+	m_dwCreationHeight = MAP_HEIGHT;
 	m_strWindowTitle = TEXT("main");
 	m_d3dEnumeration.AppUsesDepthBuffer = TRUE;
 	m_bStartFullscreen = false;
@@ -394,14 +394,14 @@ HRESULT CMyD3DApplication::Render()
 		// レンダリングターゲットの変更
 		//-----------------------------------------------------
 		{
-			//m_pd3dDevice->SetRenderTarget(0, m_pSatSurf);
-			//m_pd3dDevice->SetDepthStencilSurface(m_pMapZ);
-			//// ビューポートの変更
-			//D3DVIEWPORT9 viewport = { 0,0 // 左上の座標
-			//				, MAP_WIDTH  // 幅
-			//				, MAP_HEIGHT // 高さ
-			//				, 0.0f,1.0f };// 前面、後面
-			//m_pd3dDevice->SetViewport(&viewport);
+			m_pd3dDevice->SetRenderTarget(0, m_pSatSurf);
+			m_pd3dDevice->SetDepthStencilSurface(m_pMapZ);
+			// ビューポートの変更
+			D3DVIEWPORT9 viewport = { 0,0 // 左上の座標
+							, MAP_WIDTH  // 幅
+							, MAP_HEIGHT // 高さ
+							, 0.0f,1.0f };// 前面、後面
+			m_pd3dDevice->SetViewport(&viewport);
 		}
 
 		// レンダリングターゲットのクリア
@@ -435,138 +435,144 @@ HRESULT CMyD3DApplication::Render()
 
 		m_pd3dDevice->EndScene();
 
-		//// ----------------------------------------------------
-		//// SAT 計算
-		//// ----------------------------------------------------
-		//RS(D3DRS_ZENABLE, FALSE);
-		//RS(D3DRS_LIGHTING, FALSE);
+		// ----------------------------------------------------
+		// SAT 計算
+		// ----------------------------------------------------
+		
+		// ポストプロセス適用を行うためにZテストを無効化して
+		// DrawPrimitiveUPで描画するピクセルに対してシェーダーが適用対象になるようにする
+		RS(D3DRS_ZENABLE, FALSE);
+		RS(D3DRS_LIGHTING, FALSE);
 
-		//TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-		//TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-		//TSS(1, D3DTSS_COLOROP, D3DTOP_ADD);
-		//TSS(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
-		//TSS(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-		//TSS(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		// stage0: テクスチャの色をそのまま採用
+		TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);   // Stage0: 色演算は Arg1 の値をそのまま採用
+		TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);     // Stage0 Arg1: テクスチャカラー（SrcMap）
 
-		//m_pEffect->SetTechnique(m_hTechnique);
-		//m_pEffect->Begin(NULL, 0);
-		//m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
-		//m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
+		// stage1: 前段の結果とテクスチャを加算
+		TSS(1, D3DTSS_COLOROP, D3DTOP_ADD);          // Stage1: 前段の結果とテクスチャを加算
+		TSS(1, D3DTSS_COLORARG1, D3DTA_CURRENT);     // Stage1 Arg1: 直前のパイプライン結果（Current）
+		TSS(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);     // Stage1 Arg2: テクスチャカラー（もう一方のサンプル）
 
-		//// 縦と横の合計を計算
-		//// 横の計算では画面解像度分縦に1本の線を引く、それを解像度回数分（今回で言うと512回）
-		//// 縦の計算では画面解像度分横に1本の線を引く、それを解像度回数分（今回で言うと512回）
+		// stage2: 無効化
+		TSS(2, D3DTSS_COLOROP, D3DTOP_DISABLE);      // Stage2 以降: 無効化（これ以上の色演算をしない）
 
-		//// 横方向に合計
-		//m_pEffect->BeginPass(0);
-		//for (i = 0; i < MAP_WIDTH; i++) {
-		//	// -1 + 2.0f * x....としているのは、ndc座標系に変換するため
-		//	// -1 ~ +1 の範囲にするため
-		//	FLOAT dx = (1.0f / MAP_WIDTH);
-		//	VERTEX Vertex[4] = {
-		//		//       x                y     z        tu       tv
-		//		{{ -1 + 2.0f * dx * (FLOAT)i, +1.0f, 0.1f}, dx * (FLOAT)i, 0,},
-		//		{{ -1 + 2.0f * dx * (FLOAT)i, -1.0f, 0.1f}, dx * (FLOAT)i, 1,},
-		//	};
-		//	m_pd3dDevice->BeginScene();
-		//	m_pd3dDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vertex, sizeof(VERTEX));
-		//	m_pd3dDevice->EndScene();
-		//}
-		//m_pEffect->EndPass();
+		m_pEffect->SetTechnique(m_hTechnique);
+		m_pEffect->Begin(NULL, 0);
+		m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
+		m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
 
+		 // 縦と横の合計を計算
+		 // 横の計算では画面解像度分縦に1本の線を引く、それを解像度回数分（今回で言うと512回）
+		 // 縦の計算では画面解像度分横に1本の線を引く、それを解像度回数分（今回で言うと512回）
 
-		//// 縦方向に合計
-		//m_pEffect->BeginPass(1);
-		//for (i = 0; i < MAP_HEIGHT; i++) {
-		//	FLOAT dy = (1.0f / MAP_HEIGHT);
-		//	VERTEX Vertex[4] = {
-		//		//   x            y              z     tu    tv
-		//		{{ -1.0f,  +1 - 2.0f * dy * (FLOAT)i, 0.1f}, 0, dy * (FLOAT)i },
-		//		{{ +1.0f,  +1 - 2.0f * dy * (FLOAT)i, 0.1f}, 1, dy * (FLOAT)i },
-		//	};
-		//	m_pd3dDevice->BeginScene();
-		//	m_pd3dDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vertex, sizeof(VERTEX));
-		//	m_pd3dDevice->EndScene();
-		//}
-		//m_pEffect->EndPass();
-		//m_pEffect->End();
+		// 横方向に合計
+		// ラインを描画しただけで色が載るのはhlsl側でm_pSatTex側で描画されたufoや地面からとってきているため
+		m_pEffect->BeginPass(0);
+		for (i = 0; i < MAP_WIDTH; i++) {
+			// -1 + 2.0f * x....としているのは、ndc座標系に変換するため
+			// -1 ~ +1 の範囲にするため
+			FLOAT dx = (1.0f / MAP_WIDTH);
+			VERTEX Vertex[4] = {
+				//       x                y     z        tu       tv
+				{{ -1 + 2.0f * dx * (FLOAT)i, +1.0f, 0.1f}, dx * (FLOAT)i, 0,},
+				{{ -1 + 2.0f * dx * (FLOAT)i, -1.0f, 0.1f}, dx * (FLOAT)i, 1,},
+			};
+			m_pd3dDevice->BeginScene();
+			m_pd3dDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vertex, sizeof(VERTEX));
+			m_pd3dDevice->EndScene();
+		}
+		m_pEffect->EndPass();
 
-		////-----------------------------------------------------
-		//// レンダリングターゲットを元に戻す
-		////-----------------------------------------------------
-		//m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
-		//m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
-		//m_pd3dDevice->SetViewport(&oldViewport);
+		// 縦方向に合計
+		m_pEffect->BeginPass(1);
+		for (i = 0; i < MAP_HEIGHT; i++) {
+			FLOAT dy = (1.0f / MAP_HEIGHT);
+			VERTEX Vertex[4] = {
+				//   x            y              z     tu    tv
+				{{ -1.0f,  +1 - 2.0f * dy * (FLOAT)i, 0.1f}, 0, dy * (FLOAT)i },
+				{{ +1.0f,  +1 - 2.0f * dy * (FLOAT)i, 0.1f}, 1, dy * (FLOAT)i },
+			};
+			m_pd3dDevice->BeginScene();
+			m_pd3dDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, Vertex, sizeof(VERTEX));
+			m_pd3dDevice->EndScene();
+		}
+		m_pEffect->EndPass();
+
+		//-----------------------------------------------------
+		// レンダリングターゲットを元に戻す
+		//-----------------------------------------------------
+		m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
+		m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
+		m_pd3dDevice->SetViewport(&oldViewport);
+
+		// バッファのクリア
+		m_pd3dDevice->Clear(0L, NULL
+		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+		, 0x00404080, 1.0f, 0L);
+
+		// デフォルトバックバッファに描画する
+		
+		if (m_pEffect != NULL)
+		{
+			//-------------------------------------------------
+			// テクスチャをぼかしつつ張る
+			//-------------------------------------------------
+			m_pEffect->BeginPass(2);
+
+			TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+			TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+			VERTEX Vertex[4] = {
+				//   x      y     z      tu tv
+				{{  1.0f, -1.0f, 0.1f},   1, 1,},
+				{{ -1.0f, -1.0f, 0.1f},   0, 1,},
+				{{ -1.0f,  1.0f, 0.1f},   0, 0,},
+				{{  1.0f,  1.0f, 0.1f},   1, 0,},
+			};
+			m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
+			m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
+			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
+				, 2, Vertex, sizeof(VERTEX));
+
+			m_pEffect->EndPass();
+			m_pEffect->End();
+		}
+
+		RS(D3DRS_ZENABLE, TRUE);
+		RS(D3DRS_LIGHTING, TRUE);
+
+#if 1 // デバッグ用にテクスチャを表示する
+		{
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+			m_pd3dDevice->SetVertexShader(NULL);
+			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+			m_pd3dDevice->SetPixelShader(0);
+			float scale = 800;
+			typedef struct { FLOAT p[4]; FLOAT tu, tv; } TVERTEX;
+			for (DWORD i = 0; i < 1; i++) {
+				TVERTEX Vertex[4] = {
+					// x  y  z rhw tu tv
+					{    0,(i + 0) * scale,0, 1, 0, 0,},
+					{scale,(i + 0) * scale,0, 1, 1, 0,},
+					{scale,(i + 1) * scale,0, 1, 1, 1,},
+					{    0,(i + 1) * scale,0, 1, 0, 1,},
+				};
+				if (0 == i) m_pd3dDevice->SetTexture(0, m_pSatTex);
+				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+			}
+		}
+
+		// ヘルプの表示
+		RenderText();
+
+#endif		
+
+		// 描画の終了
+		m_pd3dDevice->EndScene();
 	}
-
-//	if (SUCCEEDED(m_pd3dDevice->BeginScene()))
-//	{
-//		//// バッファのクリア
-//		//m_pd3dDevice->Clear(0L, NULL
-//		//	, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-//		//	, 0x00404080, 1.0f, 0L);
-//
-//		//if (m_pEffect != NULL)
-//		//{
-//		//	//-------------------------------------------------
-//		//	// テクスチャをぼかしつつ張る
-//		//	//-------------------------------------------------
-//		//	m_pEffect->BeginPass(2);
-//
-//		//	TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-//		//	TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-//		//	TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-//
-//		//	VERTEX Vertex[4] = {
-//		//		//   x      y     z      tu tv
-//		//		{{  1.0f, -1.0f, 0.1f},   1, 1,},
-//		//		{{ -1.0f, -1.0f, 0.1f},   0, 1,},
-//		//		{{ -1.0f,  1.0f, 0.1f},   0, 0,},
-//		//		{{  1.0f,  1.0f, 0.1f},   1, 0,},
-//		//	};
-//		//	m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
-//		//	m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
-//		//	m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
-//		//		, 2, Vertex, sizeof(VERTEX));
-//
-//		//	m_pEffect->EndPass();
-//		//	m_pEffect->End();
-//		//}
-//
-//		//RS(D3DRS_ZENABLE, TRUE);
-//		//RS(D3DRS_LIGHTING, TRUE);
-//
-////#if 1 // デバッグ用にテクスチャを表示する
-////		{
-////			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-////			m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-////			m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-////			m_pd3dDevice->SetVertexShader(NULL);
-////			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
-////			m_pd3dDevice->SetPixelShader(0);
-////			float scale = 512.0f / 1;
-////			typedef struct { FLOAT p[4]; FLOAT tu, tv; } TVERTEX;
-////			for (DWORD i = 0; i < 1; i++) {
-////				TVERTEX Vertex[4] = {
-////					// x  y  z rhw tu tv
-////					{    0,(i + 0) * scale,0, 1, 0, 0,},
-////					{scale,(i + 0) * scale,0, 1, 1, 0,},
-////					{scale,(i + 1) * scale,0, 1, 1, 1,},
-////					{    0,(i + 1) * scale,0, 1, 0, 1,},
-////				};
-////				if (0 == i) m_pd3dDevice->SetTexture(0, m_pSatTex);
-////				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
-////			}
-////		}
-////
-////		// ヘルプの表示
-////		RenderText();
-////
-////#endif		
-//
-//		// 描画の終了
-//		m_pd3dDevice->EndScene();
-//	}
 
 	pOldBackBuffer->Release();
 	pOldZBuffer->Release();

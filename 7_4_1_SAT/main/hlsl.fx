@@ -107,7 +107,7 @@ float4 PS_sat(VS_OUTPUT In) : COLOR
 	
     // エリア総和テーブルの値が飽和しないように-0.5する
     // 最終出力時に0.5を加算して0~1の範囲に戻す
-    return Color-0.5f;
+    return Color - 0.5f;
 }
 
 // -------------------------------------------------------------
@@ -152,13 +152,11 @@ float4 PS_out(VS_OUTPUT In) : COLOR
     
     // エリア総和テーブルで使える四角形の範囲内にあるテクセルカラーの平均をとれる公式
     // (A - B - C + D) / (a x b)：四角形のサイズで割る
-    Color  =( tex2D( SrcSamp, In.Tex0 )
-            - tex2D( SrcSamp, In.Tex1 )
-            - tex2D( SrcSamp, In.Tex2 )
-            + tex2D( SrcSamp, In.Tex3)) / (SIZE * SIZE);
+    Color  = ( tex2D( SrcSamp, In.Tex0 ) - tex2D( SrcSamp, In.Tex1 ) - tex2D( SrcSamp, In.Tex2 ) + tex2D( SrcSamp, In.Tex3) ) 
+    / (SIZE * SIZE);
 
     // 最後に0~1の範囲に戻すために0.5を加算
-    return Color+0.5f;
+    return Color + 0.5f;
 }
 
 // -------------------------------------------------------------
