@@ -23,8 +23,8 @@
 #include "resource.h"
 #include "main.h"
 
-#define MAP_WIDTH	512
-#define MAP_HEIGHT	512
+#define MAP_WIDTH	1600
+#define MAP_HEIGHT	900
 
 // 長いから短縮形を作ってみた
 #define RS   m_pd3dDevice->SetRenderState
@@ -94,8 +94,8 @@ CMyD3DApplication::CMyD3DApplication()
 	m_fWorldRotY = 0.0f;
 	m_fViewZoom = 5.0f;
 
-	m_dwCreationWidth = 512;
-	m_dwCreationHeight = 512;
+	m_dwCreationWidth = MAP_WIDTH;
+	m_dwCreationHeight = MAP_HEIGHT;
 	m_strWindowTitle = TEXT("main");
 	m_d3dEnumeration.AppUsesDepthBuffer = TRUE;
 	m_bStartFullscreen = false;
@@ -510,32 +510,34 @@ HRESULT CMyD3DApplication::Render()
 		, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
 		, 0x00404080, 1.0f, 0L);
 
-		//if (m_pEffect != NULL)
-		//{
-		//	//-------------------------------------------------
-		//	// テクスチャをぼかしつつ張る
-		//	//-------------------------------------------------
-		//	m_pEffect->BeginPass(2);
+		// デフォルトバックバッファに描画する
+		
+		if (m_pEffect != NULL)
+		{
+			//-------------------------------------------------
+			// テクスチャをぼかしつつ張る
+			//-------------------------------------------------
+			m_pEffect->BeginPass(2);
 
-		//	TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-		//	TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-		//	TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+			TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+			TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+			TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
-		//	VERTEX Vertex[4] = {
-		//		//   x      y     z      tu tv
-		//		{{  1.0f, -1.0f, 0.1f},   1, 1,},
-		//		{{ -1.0f, -1.0f, 0.1f},   0, 1,},
-		//		{{ -1.0f,  1.0f, 0.1f},   0, 0,},
-		//		{{  1.0f,  1.0f, 0.1f},   1, 0,},
-		//	};
-		//	m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
-		//	m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
-		//	m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
-		//		, 2, Vertex, sizeof(VERTEX));
+			VERTEX Vertex[4] = {
+				//   x      y     z      tu tv
+				{{  1.0f, -1.0f, 0.1f},   1, 1,},
+				{{ -1.0f, -1.0f, 0.1f},   0, 1,},
+				{{ -1.0f,  1.0f, 0.1f},   0, 0,},
+				{{  1.0f,  1.0f, 0.1f},   1, 0,},
+			};
+			m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX1);
+			m_pEffect->SetTexture(m_htSrcMap, m_pSatTex);
+			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
+				, 2, Vertex, sizeof(VERTEX));
 
-		//	m_pEffect->EndPass();
-		m_pEffect->End();
-		//}
+			m_pEffect->EndPass();
+			m_pEffect->End();
+		}
 
 		RS(D3DRS_ZENABLE, TRUE);
 		RS(D3DRS_LIGHTING, TRUE);
