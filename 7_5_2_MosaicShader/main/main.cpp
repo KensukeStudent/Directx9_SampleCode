@@ -483,16 +483,17 @@ HRESULT CMyD3DApplication::Render()
 		w = (FLOAT)oldViewport.Width;
 		h = (FLOAT)oldViewport.Height;
 
+		// tu1,tv1と tu2,tv2を同じ値にするとm_pOriginalMap全体を丸円画像の中にモザイクがかかった状態で表示される
 		typedef struct {
 			FLOAT       p[4];
 			FLOAT       t[2][2];
 		} T2VERTEX;
 		T2VERTEX Vertex2[4] = {
-			//x   y    z    rhw    tu    tv    
-			{ x0, y0, 0.1f, 1.0f, 0.0f, 0.0f, (x0 + 0.5f) / w, (y0 + 0.5f) / h,},
-			{ x1, y0, 0.1f, 1.0f, 1.0f, 0.0f, (x1 + 0.5f) / w, (y0 + 0.5f) / h,},
-			{ x1, y1, 0.1f, 1.0f, 1.0f, 1.0f, (x1 + 0.5f) / w, (y1 + 0.5f) / h,},
-			{ x0, y1, 0.1f, 1.0f, 0.0f, 1.0f, (x0 + 0.5f) / w, (y1 + 0.5f) / h,},
+			//x   y    z    rhw    tu1   tv1     tu2              tv2 
+			{ x0, y0, 0.1f, 1.0f, 0.0f, 0.0f, (x0 + 0.5f) / w, (y0 + 0.5f) / h },
+			{ x1, y0, 0.1f, 1.0f, 1.0f, 0.0f, (x1 + 0.5f) / w, (y0 + 0.5f) / h },
+			{ x1, y1, 0.1f, 1.0f, 1.0f, 1.0f, (x1 + 0.5f) / w, (y1 + 0.5f) / h },
+			{ x0, y1, 0.1f, 1.0f, 0.0f, 1.0f, (x0 + 0.5f) / w, (y1 + 0.5f) / h },
 		};
 
 		RS(D3DRS_ALPHABLENDENABLE, TRUE);
