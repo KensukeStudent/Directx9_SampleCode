@@ -324,10 +324,29 @@ HRESULT CMyD3DApplication::FrameMove()
 
 	m_pos[0] += m_fElapsedTime * m_vel[0];
 	m_pos[1] += m_fElapsedTime * m_vel[1];
-	if (m_pos[0] < m_Size / 2) { m_pos[0] = m_Size - m_pos[0]; m_vel[0] = -m_vel[0]; }
-	if (m_pos[1] < m_Size / 2) { m_pos[1] = m_Size - m_pos[1]; m_vel[1] = -m_vel[1]; }
-	if (viewport.Width - m_Size / 2 < m_pos[0]) { m_pos[0] = 2 * viewport.Width - m_Size - m_pos[0]; m_vel[0] = -m_vel[0]; }
-	if (viewport.Height - m_Size / 2 < m_pos[1]) { m_pos[1] = 2 * viewport.Height - m_Size - m_pos[1]; m_vel[1] = -m_vel[1]; }
+	if (m_pos[0] < m_Size / 2) 
+	{ 
+		m_pos[0] = m_Size - m_pos[0]; 
+		m_vel[0] = -m_vel[0]; 
+	}
+	
+	if (m_pos[1] < m_Size / 2) 
+	{ 
+		m_pos[1] = m_Size - m_pos[1];
+		m_vel[1] = -m_vel[1];
+	}
+	
+	if (viewport.Width - m_Size / 2 < m_pos[0]) 
+	{ 
+		m_pos[0] = 2 * viewport.Width - m_Size - m_pos[0]; 
+		m_vel[0] = -m_vel[0]; 
+	}
+	
+	if (viewport.Height - m_Size / 2 < m_pos[1]) 
+	{
+		m_pos[1] = 2 * viewport.Height - m_Size - m_pos[1];
+		m_vel[1] = -m_vel[1]; 
+	}
 
 	return S_OK;
 }
@@ -415,6 +434,7 @@ HRESULT CMyD3DApplication::Render()
 
 		//-------------------------------------------------
 		// 2パス目:縮小バッファへのコピー
+		// 1パス目で描画したマップの特定範囲を切り抜いて縮小バッファにコピー
 		//-------------------------------------------------
 		m_pd3dDevice->SetRenderTarget(0, m_pSmallSurf);
 
@@ -424,13 +444,31 @@ HRESULT CMyD3DApplication::Render()
 		TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 		TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
+		// モザイク領域処理後の縮小バッファの幅と高さ
 		FLOAT w = (FLOAT)MOSAIC_GRID_SIZE;
 		FLOAT h = (FLOAT)MOSAIC_GRID_SIZE;
+
+		// わかりやすい例 ------------------------------------------------------------------------------------------------------------
+		//定規の例:
+		//256cmの板を8等分すると、1区画は32cm。
+		//各区画の「中心」を測りたいなら、左端からまず16cm（=32/2）入った所が最初の中心。
+		//この「最初の中心へ半分ずらす」のが 0.5f * m_Size / w（= 16）です。
+
+		//カメラの例:
+		//大きなポスターを8×8のマスに分け、各マスの代表色を撮るには、マスの端ではなく「真ん中」にレンズを向けます。
+		//左端からマス半分だけ内側（半セル）に寄せて撮り始めるのが 0.5f * m_Size / w の役割。
+		//----------------------------------------------------------------------------------------------------------------------------
+
+		// m_pos[0] ± m_Size / 2: 縮小バッファの上下左右端
+		// m_Size / w: m_Sizeをw等分したときの領域幅
+		// 0.5f * m_Size / w: その領域幅の半分（中心）
+
 		FLOAT u0 = (m_pos[0] - m_Size / 2 + 0.5f * m_Size / w) / oldViewport.Width;
 		FLOAT u1 = (m_pos[0] + m_Size / 2 + 0.5f * m_Size / w) / oldViewport.Width;
 		FLOAT v0 = (m_pos[1] - m_Size / 2 + 0.5f * m_Size / h) / oldViewport.Height;
 		FLOAT v1 = (m_pos[1] + m_Size / 2 + 0.5f * m_Size / h) / oldViewport.Height;
 
+		// 上記でとったモザイクの上下左右の端から座標を入力
 		TVERTEX Vertex1[4] = {
 			//x  y   z    rhw    tu  tv
 			{ 0, 0, 0.1f, 1.0f, u0, v0,},
