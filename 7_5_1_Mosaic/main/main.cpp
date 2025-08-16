@@ -403,7 +403,7 @@ HRESULT CMyD3DApplication::Render()
 		// レンダリングターゲットのクリア
 		m_pd3dDevice->Clear(0L, NULL
 			, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-			, 0xffffffff, 1.0f, 0L);
+			, 1, 1.0f, 0L);
 
 		//-----------------------------------------------------
 		// 1パス目:レンダリングターゲットの作成
