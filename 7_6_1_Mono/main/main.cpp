@@ -472,6 +472,7 @@ HRESULT CMyD3DApplication::Render()
 			, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
 			, 0x00404080, 1.0f, 0L);
 
+		// バックバッファに戻したら必ずリセット
 		m_pd3dDevice->SetVertexShader(NULL);
 		m_pd3dDevice->SetPixelShader(NULL);
 
