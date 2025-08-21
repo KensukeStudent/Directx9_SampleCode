@@ -281,7 +281,6 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 		return E_FAIL;
 
 	m_pEffect->OnResetDevice();
-
 	return S_OK;
 }
 
@@ -439,17 +438,19 @@ HRESULT CMyD3DApplication::Render()
 			TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 			TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
+            // 半テクセルずらす
 			FLOAT du = 0.5f / MAP_WIDTH;
 			FLOAT dv = 0.5f / MAP_HEIGHT;
 
 			TVERTEX Vertex1[4] = {
 				//   x         y         z     w       tu    tv
-				{     0.0f,       0.0f, 0.1f, 1.0f,   0 + du, 0 + dv,},
-				{MAP_WIDTH,       0.0f, 0.1f, 1.0f,   1 + du, 0 + dv,},
-				{MAP_WIDTH, MAP_HEIGHT, 0.1f, 1.0f,   1 + du, 1 + dv,},
-				{     0.0f, MAP_HEIGHT, 0.1f, 1.0f,   0 + du, 1 + dv,},
+				{     0.0f,  0.0f,       0.1f, 1.0f,   0 + du, 0 + dv,},
+				{ MAP_WIDTH, 0.0f,       0.1f, 1.0f,   1 + du, 0 + dv,},
+				{ MAP_WIDTH, MAP_HEIGHT, 0.1f, 1.0f,   1 + du, 1 + dv,},
+				{     0.0f,  MAP_HEIGHT, 0.1f, 1.0f,   0 + du, 1 + dv,},
 			};
 			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+
 			m_pEffect->SetTexture(m_htSrcMap, m_pOriginalMap);
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex1, sizeof(TVERTEX));
@@ -470,6 +471,23 @@ HRESULT CMyD3DApplication::Render()
 		m_pd3dDevice->Clear(0L, NULL
 			, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
 			, 0x00404080, 1.0f, 0L);
+
+		m_pd3dDevice->SetVertexShader(NULL);
+		m_pd3dDevice->SetPixelShader(NULL);
+
+		// 念のためブレンド再有効化
+		RS(D3DRS_ALPHABLENDENABLE, TRUE);
+		RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		RS(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+		// テクスチャステージ０でカラー／アルファともテクスチャから取得
+		TSS(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+		TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+		TSS(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+		TSS(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+
+		// ステージ１は使わない
+		TSS(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
 		//-----------------------------------------------------
 		// そのまま張る

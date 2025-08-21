@@ -49,16 +49,16 @@ VS_OUTPUT VS (
 // ------------------------------------------------------------
 float4 PS(VS_OUTPUT In) : COLOR
 {   
-    float4 Out = (float4)0;
+    float4 OutColor = 0;
     float3 YCbCr;
     
     const float3 RGB2Y = {0.29900, 0.58700, 0.11400};
 
     float3 Color = tex2D( SrcSamp, In.Tex ).xyz; // 元になる色
     
-    Out.rgb = dot(Color, RGB2Y);    // Yをそのまま色へ
-    
-    return Out;
+    OutColor.rgb = dot(Color, RGB2Y); // Yをそのまま色へ
+    OutColor.a = 1.0f; // アルファ値は1.0に設定
+    return OutColor;
 }
 // ------------------------------------------------------------
 // テクニック
