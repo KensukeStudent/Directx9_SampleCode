@@ -200,7 +200,7 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 		// シェーダの読み込みの失敗
 		MessageBoxA(NULL, (LPCSTR)pErr->GetBufferPointer(), "Shader Load ERROR", MB_OK);
 	}
-	else 
+	else
 	{
 		m_hTechnique = m_pEffect->GetTechniqueByName("TShader");
 		m_htSrcMap = m_pEffect->GetParameterByName(NULL, "SrcMap");
@@ -449,6 +449,21 @@ HRESULT CMyD3DApplication::Render()
 				{MAP_WIDTH, MAP_HEIGHT, 0.1f, 1.0f,   1 + du, 1 + dv,},
 				{     0.0f, MAP_HEIGHT, 0.1f, 1.0f,   0 + du, 1 + dv,},
 			};
+
+			// 合成パラメータ
+			int time = ((int)(m_fTime * 100.0f)) & 1023;
+			float t = 0;
+			if (time < 100) {
+				t = (float)time / 100.0f;
+			}
+			else if (time < 500) {
+				t = 1.0f;
+			}
+			else if (time < 600) {
+				t = 1.0f - (float)(time - 500) / 100.0f;
+			}
+			m_pEffect->SetFloat("t", t);
+
 			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
 			m_pEffect->SetTexture(m_htSrcMap, m_pOriginalMap);
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
@@ -473,7 +488,7 @@ HRESULT CMyD3DApplication::Render()
 			, 0x00404080, 1.0f, 0L);
 
 		//-----------------------------------------------------
-		// そのまま張る
+		// 合成したものを張る
 		//-----------------------------------------------------
 		FLOAT w = (FLOAT)oldViewport.Width;
 		FLOAT h = (FLOAT)oldViewport.Width;
@@ -485,24 +500,10 @@ HRESULT CMyD3DApplication::Render()
 			{ 0, h, 0.1f, 1.0f, 0, 1,},
 		};
 		m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
-		m_pd3dDevice->SetTexture(0, m_pOriginalMap);
+		m_pd3dDevice->SetTexture(0, m_pPostMap);
 		m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 			, 2, Vertex1, sizeof(TVERTEX));
 
-		//-----------------------------------------------------
-		// ブラーしたものを張る
-		//-----------------------------------------------------
-
-		TVERTEX Vertex2[4] = {
-			//   x    y   z    rhw    tu    tv
-			{ 0.0f,   0, 0.1f, 1.0f, 0.0f, 0.0f,},
-			{ 0.5f * w, 0, 0.1f, 1.0f, 0.5f, 0.0f,},
-			{ 0.5f * w, h, 0.1f, 1.0f, 0.5f, 1.0f,},
-			{ 0.0f,   h, 0.1f, 1.0f, 0.0f, 1.0f,},
-		};
-		m_pd3dDevice->SetTexture(0, m_pPostMap);
-		m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
-			, 2, Vertex2, sizeof(TVERTEX));
 
 		RS(D3DRS_ZENABLE, TRUE);
 		RS(D3DRS_LIGHTING, TRUE);
