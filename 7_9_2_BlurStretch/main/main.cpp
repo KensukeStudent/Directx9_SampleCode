@@ -416,11 +416,12 @@ HRESULT CMyD3DApplication::Render()
             RS(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
             m_pEffect->SetMatrix(m_hmLastWV, &m_mLastWV);
             DrawSubset(1);
-            if (m_sleepTime > 0.1f) {
+            if (m_sleepTime > 0.25f) {
                 m_sleepTime = 0.0f;
                 m_mLastWV = m;
             }
 
+            // m_mLastWV = m; Sleep()関数をオンにして上のif分をオフにすると遅延したブラーが確認可能
 
             m_pEffect->End();
 
@@ -433,7 +434,7 @@ HRESULT CMyD3DApplication::Render()
         // 描画の終了
         m_pd3dDevice->EndScene();
     }
-    // Sleep(100);
+    //Sleep(100);
 
     return S_OK;
 }
