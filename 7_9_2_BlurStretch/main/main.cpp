@@ -313,6 +313,12 @@ HRESULT CMyD3DApplication::FrameMove()
         if (m_UserInput.bRotateDown && !m_UserInput.bRotateUp)
             m_fWorldRotX -= m_fElapsedTime;
 
+    if (m_UserInput.bRotateUfoUp && !m_UserInput.bRotateUfoDown)
+        m_fRotY += 3.0f * m_fElapsedTime;
+    else
+        if (m_UserInput.bRotateUfoDown && !m_UserInput.bRotateUfoUp)
+            m_fRotY -= 3.0f * m_fElapsedTime;
+
     D3DXMatrixRotationX(&matRotX, m_fWorldRotX);
     D3DXMatrixRotationY(&matRotY, m_fWorldRotY);
 
@@ -336,7 +342,7 @@ HRESULT CMyD3DApplication::FrameMove()
     // UFO座標の設定
     //---------------------------------------------------------
 	m_fUfoPos  = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-	m_fUfoRot  = D3DXVECTOR3(0.0f, 3.0f * m_fTime, 0.0f);
+	m_fUfoRot  = D3DXVECTOR3(0.0f, m_fRotY, 0.0f);
 	m_fUfoPos2 = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
 
     //---------------------------------------------------------
@@ -384,6 +390,9 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 
     pUserInput->bDispersionUp = (m_bActive && (GetAsyncKeyState(VK_PRIOR) & 0x8000) == 0x8000);
     pUserInput->bDispersionDown = (m_bActive && (GetAsyncKeyState(VK_NEXT) & 0x8000) == 0x8000);
+
+    pUserInput->bRotateUfoUp = (m_bActive && (GetAsyncKeyState('R') & 0x8000) == 0x8000);
+    pUserInput->bRotateUfoDown = (m_bActive && (GetAsyncKeyState('E') & 0x8000) == 0x8000);
 }
 
 
@@ -458,18 +467,20 @@ HRESULT CMyD3DApplication::Render()
 
             // 現在位置のモデル描画
             DrawSubset(0);
-            m_mLastWV = mL2 * m_mView;
-            m_pEffect->SetMatrix(m_hmWV2, &m_mLastWV);
-            DrawSubset(2);
+
+			// 過去位置のモデル描画したいとき------------
+            //m_mLastWV = mL2 * m_mView;
+            //m_pEffect->SetMatrix(m_hmWV2, &m_mLastWV);
+            //DrawSubset(2);
 
             // モーションブラーの描画
-            /*RS(D3DRS_ZWRITEENABLE, FALSE);
+            RS(D3DRS_ZWRITEENABLE, FALSE);
             RS(D3DRS_ALPHABLENDENABLE, TRUE);
             RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             RS(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
             m_mLastWV = mL2 * m_mView;
             m_pEffect->SetMatrix(m_hmLastWV, &m_mLastWV);
-            DrawSubset(1);*/
+            DrawSubset(1);
 
             //if (m_sleepTime > 0.2f) {
             //    m_sleepTime = 0.0f;

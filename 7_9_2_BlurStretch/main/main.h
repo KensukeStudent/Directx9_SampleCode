@@ -21,6 +21,9 @@ struct UserInput
     BOOL bZoomOut;
     BOOL bDispersionUp;
     BOOL bDispersionDown;
+
+	BOOL bRotateUfoUp;
+	BOOL bRotateUfoDown;
 };
 
 
@@ -62,14 +65,16 @@ class CMyD3DApplication : public CD3DApplication
 	FLOAT                   m_sleepTime;    // スリープ時間
 
     // ufo本体の座標
-	D3DXVECTOR3				    m_fUfoPos;
-	D3DXVECTOR3				    m_fUfoRot;
-	D3DXVECTOR3				    m_fUfoPos2;
+	D3DXVECTOR3				m_fUfoPos;
+	D3DXVECTOR3				m_fUfoRot;
+	D3DXVECTOR3				m_fUfoPos2;
+
+	FLOAT				    m_fRotY; // ufo本体 回転
 
     // Lerp用ufo本体の座標
-    D3DXVECTOR3				    m_fUfoPos_lerp;
-    D3DXVECTOR3				    m_fUfoRot_lerp;
-    D3DXVECTOR3				    m_fUfoPos2_lerp;
+    D3DXVECTOR3				m_fUfoPos_lerp;
+    D3DXVECTOR3				m_fUfoRot_lerp;
+    D3DXVECTOR3				m_fUfoPos2_lerp;
 
 protected:
     virtual HRESULT OneTimeSceneInit();
