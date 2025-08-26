@@ -23,6 +23,9 @@
 #include "resource.h"
 #include "main.h"
 
+#include <iostream>
+#include <algorithm>
+
 #define MAP_WIDTH	512
 #define MAP_HEIGHT	512
 
@@ -102,6 +105,14 @@ CMyD3DApplication::CMyD3DApplication()
     m_bLoadingApp = TRUE;
 
     ZeroMemory(&m_UserInput, sizeof(m_UserInput));
+
+    m_fUfoPos = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+    m_fUfoRot = D3DXVECTOR3(0.0f, 3.0f * m_fTime, 0.0f);
+    m_fUfoPos2 = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
+
+    m_fUfoPos_lerp = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+    m_fUfoRot_lerp = D3DXVECTOR3(0.0f, 3.0f * m_fTime, 0.0f);
+    m_fUfoPos2_lerp = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
 }
 
 
@@ -198,6 +209,7 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
     else {
         m_hTechnique = m_pEffect->GetTechniqueByName("TShader");
         m_hmWV = m_pEffect->GetParameterByName(NULL, "mWV");
+        m_hmWV2 = m_pEffect->GetParameterByName(NULL, "mWV2");
         m_hmVP = m_pEffect->GetParameterByName(NULL, "mVP");
         m_hmLastWV = m_pEffect->GetParameterByName(NULL, "mLastWV");
         m_hvLightDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
@@ -320,6 +332,40 @@ HRESULT CMyD3DApplication::FrameMove()
     D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
     D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
 
+    //---------------------------------------------------------
+    // UFO座標の設定
+    //---------------------------------------------------------
+	m_fUfoPos  = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	m_fUfoRot  = D3DXVECTOR3(0.0f, 3.0f * m_fTime, 0.0f);
+	m_fUfoPos2 = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
+
+    //---------------------------------------------------------
+    // 回転を m_fUfoRot_lerp → m_fUfoRot に向かって補間
+    //---------------------------------------------------------
+    // 現在の差分
+    float oldDiff = m_fUfoRot.y - m_fUfoRot_lerp.y;
+    // 目標の差分
+    const float targetDiff = 0.3f;
+
+    // 0除算防止 + α を [0,1] にクランプ
+    float alpha = 0.0f;
+    if (fabsf(oldDiff) > targetDiff && fabsf(oldDiff) > 1e-6f) {
+        // lerpを使用して目標地点との差分を計算: 公式
+        // newDiff = end − (start + α·(end − start))
+        // newDiff = (end − start) − α·(end − start)
+		// newDiff = (1 − α)·(end − start) 
+		// targetDiff = (1 - alpha)·oldDiff
+		// alpha = 1 - targetDiff / oldDiff
+        alpha = 1.0f - targetDiff / fabsf(oldDiff);
+        alpha = std::clamp(alpha, 0.0f, 1.0f);
+    }
+
+    // 補間実行
+    D3DXVec3Lerp(&m_fUfoRot_lerp,
+        &m_fUfoRot_lerp,
+        &m_fUfoRot,
+        alpha);
+
     return S_OK;
 }
 //-------------------------------------------------------------
@@ -347,7 +393,7 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::Render()
 {
-    D3DXMATRIX m, mT, mR, mL, mView, mProj;
+    D3DXMATRIX m, mT, mR, mL, mL2, mView, mProj;
     D3DXVECTOR4 v, light_pos;
 
     //---------------------------------------------------------
@@ -384,11 +430,15 @@ HRESULT CMyD3DApplication::Render()
             m_pEffect->SetTechnique(m_hTechnique);
             m_pEffect->Begin(NULL, 0);
 
-            // ローカル-ワールド行列
-            D3DXMatrixTranslation(&m, 1.0f, 0.0f, 0.0f);
-            D3DXMatrixRotationY(&mR, 3.0f * m_fTime);
-            D3DXMatrixTranslation(&mT, 1.0f, 1.0f, 0.0f);
+            // ローカル-ワールド行列: ufo
+            D3DXMatrixTranslation(&m, m_fUfoPos.x, m_fUfoPos.y, m_fUfoPos.z);
+            D3DXMatrixRotationY(&mR, m_fUfoRot.y);
+            D3DXMatrixTranslation(&mT, m_fUfoPos2.x, m_fUfoPos2.y, m_fUfoPos2.z);
             mL = m * mR * mT * m_mWorld;
+
+            // ローカル-ワールド行列: lerp ufo
+            D3DXMatrixRotationY(&mR, m_fUfoRot_lerp.y);
+			mL2 = m * mR * mT * m_mWorld;
 
             // ライトの方向
             D3DXMatrixInverse(&m, NULL, &mL);
@@ -408,18 +458,23 @@ HRESULT CMyD3DApplication::Render()
 
             // 現在位置のモデル描画
             DrawSubset(0);
+            m_mLastWV = mL2 * m_mView;
+            m_pEffect->SetMatrix(m_hmWV2, &m_mLastWV);
+            DrawSubset(2);
 
             // モーションブラーの描画
-            RS(D3DRS_ZWRITEENABLE, FALSE);
+            /*RS(D3DRS_ZWRITEENABLE, FALSE);
             RS(D3DRS_ALPHABLENDENABLE, TRUE);
             RS(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             RS(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+            m_mLastWV = mL2 * m_mView;
             m_pEffect->SetMatrix(m_hmLastWV, &m_mLastWV);
-            DrawSubset(1);
-            if (m_sleepTime > 0.25f) {
-                m_sleepTime = 0.0f;
-                m_mLastWV = m;
-            }
+            DrawSubset(1);*/
+
+            //if (m_sleepTime > 0.2f) {
+            //    m_sleepTime = 0.0f;
+            //    m_mLastWV = m;
+            //}
 
             // m_mLastWV = m; Sleep()関数をオンにして上のif分をオフにすると遅延したブラーが確認可能
 
@@ -484,6 +539,9 @@ HRESULT CMyD3DApplication::RenderText()
     m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
     lstrcpy(szMsg, m_strFrameStats);
     fNextLine -= 20.0f;
+    m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
+    fNextLine -= 20.0f;
+    _stprintf_s(szMsg, MAX_PATH, _T("ufo rotY: %.2f  ufo_lerpRotY: %.2f diff:%.2f"), m_fUfoRot.y, m_fUfoRot_lerp.y, m_fUfoRot.y - m_fUfoRot_lerp.y);
     m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
 
     return S_OK;

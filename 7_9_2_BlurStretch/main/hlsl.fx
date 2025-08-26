@@ -8,6 +8,7 @@
 // グローバル変数
 // -------------------------------------------------------------
 float4x4 mWV;
+float4x4 mWV2;
 float4x4 mLastWV;
 float4x4 mVP;
 float3 vEyePos;
@@ -44,6 +45,23 @@ OUTPUT VS(
 	
 	return Out;
 }
+OUTPUT VS2(
+      float4 Pos : POSITION, // モデルの頂点
+      float3 Normal : NORMAL // モデルの法線
+)
+{
+    OUTPUT Out = (OUTPUT) 0; // 出力データ
+	
+	// 座標変換
+    Out.Pos = mul(mul(Pos, mWV2), mVP);
+	
+	// 色
+    Out.Color = vCol * (0.7 * max(dot(vLightDir, Normal), 0) // 拡散色
+						+ 0.3); // 環境色
+	
+    return Out;
+}
+
 // -------------------------------------------------------------
 OUTPUT VS_Blur(
       float4 Pos    : POSITION,          // モデルの頂点
@@ -89,5 +107,9 @@ technique TShader
     {
         // モーションブラー
         VertexShader = compile vs_1_1 VS_Blur();
+    }
+    pass P3
+    {
+        VertexShader = compile vs_1_1 VS2();
     }
 }
