@@ -348,29 +348,11 @@ HRESULT CMyD3DApplication::FrameMove()
     //---------------------------------------------------------
     // 回転を m_fUfoRot_lerp → m_fUfoRot に向かって補間
     //---------------------------------------------------------
-    // 現在の差分
-    float oldDiff = m_fUfoRot.y - m_fUfoRot_lerp.y;
-    // 目標の差分
-    const float targetDiff = 0.3f;
-
-    // 0除算防止 + α を [0,1] にクランプ
-    float alpha = 0.0f;
-    if (fabsf(oldDiff) > targetDiff && fabsf(oldDiff) > 1e-6f) {
-        // lerpを使用して目標地点との差分を計算: 公式
-        // newDiff = end − (start + α·(end − start))
-        // newDiff = (end − start) − α·(end − start)
-		// newDiff = (1 − α)·(end − start) 
-		// targetDiff = (1 - alpha)·oldDiff
-		// alpha = 1 - targetDiff / oldDiff
-        alpha = 1.0f - targetDiff / fabsf(oldDiff);
-        alpha = std::clamp(alpha, 0.0f, 1.0f);
-    }
-
     // 補間実行
     D3DXVec3Lerp(&m_fUfoRot_lerp,
         &m_fUfoRot_lerp,
         &m_fUfoRot,
-        alpha);
+        10.0f * m_fElapsedTime);
 
     return S_OK;
 }
@@ -468,11 +450,6 @@ HRESULT CMyD3DApplication::Render()
             // 現在位置のモデル描画
             DrawSubset(0);
 
-			// 過去位置のモデル描画したいとき------------
-            //m_mLastWV = mL2 * m_mView;
-            //m_pEffect->SetMatrix(m_hmWV2, &m_mLastWV);
-            //DrawSubset(2);
-
             // モーションブラーの描画
             RS(D3DRS_ZWRITEENABLE, FALSE);
             RS(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -481,13 +458,6 @@ HRESULT CMyD3DApplication::Render()
             m_mLastWV = mL2 * m_mView;
             m_pEffect->SetMatrix(m_hmLastWV, &m_mLastWV);
             DrawSubset(1);
-
-            //if (m_sleepTime > 0.2f) {
-            //    m_sleepTime = 0.0f;
-            //    m_mLastWV = m;
-            //}
-
-            // m_mLastWV = m; Sleep()関数をオンにして上のif分をオフにすると遅延したブラーが確認可能
 
             m_pEffect->End();
 
