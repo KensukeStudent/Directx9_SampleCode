@@ -90,9 +90,9 @@ CMyD3DApplication::CMyD3DApplication()
     m_hvEyePos = NULL;
     m_hvCol = NULL;
 
-    m_fWorldRotX = -0.54f;
-    m_fWorldRotY = 1.41f;
-    m_fViewZoom = 4.0f;
+    m_fWorldRotX = -45.0f * 3.14f/180;
+    m_fWorldRotY = 0;
+    m_fViewZoom = 7.0f;
 
     m_dwCreationWidth = 512;
     m_dwCreationHeight = 512;
@@ -106,13 +106,13 @@ CMyD3DApplication::CMyD3DApplication()
 
     ZeroMemory(&m_UserInput, sizeof(m_UserInput));
 
-    m_fUfoPos = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+    m_fUfoPos = D3DXVECTOR3(1.0f, 1.5f, 0.0f);
     m_fUfoRot = D3DXVECTOR3(0.0f, 3.0f * m_fTime, 0.0f);
-    m_fUfoPos2 = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
+    //m_fUfoPos2 = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
 
-    m_fUfoPos_lerp = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+    m_fUfoPos_lerp = D3DXVECTOR3(1.0f, 1.5f, 0.0f);
     m_fUfoRot_lerp = D3DXVECTOR3(0.0f, 3.0f * m_fTime, 0.0f);
-    m_fUfoPos2_lerp = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
+    //m_fUfoPos2_lerp = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
 }
 
 
@@ -314,10 +314,10 @@ HRESULT CMyD3DApplication::FrameMove()
             m_fWorldRotX -= m_fElapsedTime;
 
     if (m_UserInput.bRotateUfoUp && !m_UserInput.bRotateUfoDown)
-        m_fRotY += 3.0f * m_fElapsedTime;
+        m_fUfoRot.y += 3.0f * m_fElapsedTime;
     else
         if (m_UserInput.bRotateUfoDown && !m_UserInput.bRotateUfoUp)
-            m_fRotY -= 3.0f * m_fElapsedTime;
+            m_fUfoRot.y -= 3.0f * m_fElapsedTime;
 
     D3DXMatrixRotationX(&matRotX, m_fWorldRotX);
     D3DXMatrixRotationY(&matRotY, m_fWorldRotY);
@@ -341,9 +341,20 @@ HRESULT CMyD3DApplication::FrameMove()
     //---------------------------------------------------------
     // UFO座標の設定
     //---------------------------------------------------------
-	m_fUfoPos  = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-	m_fUfoRot  = D3DXVECTOR3(0.0f, m_fRotY, 0.0f);
-	m_fUfoPos2 = D3DXVECTOR3(1.0f, 1.0f, 0.0f);
+
+	const float speed = 2.0f;
+    
+    // 左右
+    if (m_UserInput.bMoveRight && !m_UserInput.bMoveLeft)
+        m_fUfoPos.x += speed * m_fElapsedTime;
+    else if (m_UserInput.bMoveLeft && !m_UserInput.bMoveRight)
+        m_fUfoPos.x -= speed * m_fElapsedTime;
+
+	// 前後
+    if (m_UserInput.bMoveFront && !m_UserInput.bMoveBack)
+        m_fUfoPos.z += speed * m_fElapsedTime;
+    else if (m_UserInput.bMoveBack && !m_UserInput.bMoveFront)
+        m_fUfoPos.z -= speed * m_fElapsedTime;
 
     //---------------------------------------------------------
     // 回転を m_fUfoRot_lerp → m_fUfoRot に向かって補間
@@ -353,6 +364,11 @@ HRESULT CMyD3DApplication::FrameMove()
         &m_fUfoRot_lerp,
         &m_fUfoRot,
         10.0f * m_fElapsedTime);
+
+    D3DXVec3Lerp(&m_fUfoPos_lerp,
+        &m_fUfoPos_lerp,
+        &m_fUfoPos,
+        5.0f * m_fElapsedTime);
 
     return S_OK;
 }
@@ -375,6 +391,11 @@ void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 
     pUserInput->bRotateUfoUp = (m_bActive && (GetAsyncKeyState('R') & 0x8000) == 0x8000);
     pUserInput->bRotateUfoDown = (m_bActive && (GetAsyncKeyState('E') & 0x8000) == 0x8000);
+
+    pUserInput->bMoveLeft = (m_bActive && (GetAsyncKeyState('A') & 0x8000) == 0x8000);
+    pUserInput->bMoveRight = (m_bActive && (GetAsyncKeyState('D') & 0x8000) == 0x8000);
+    pUserInput->bMoveFront = (m_bActive && (GetAsyncKeyState('W') & 0x8000) == 0x8000);
+    pUserInput->bMoveBack = (m_bActive && (GetAsyncKeyState('S') & 0x8000) == 0x8000);
 }
 
 
@@ -424,12 +445,12 @@ HRESULT CMyD3DApplication::Render()
             // ローカル-ワールド行列: ufo
             D3DXMatrixTranslation(&m, m_fUfoPos.x, m_fUfoPos.y, m_fUfoPos.z);
             D3DXMatrixRotationY(&mR, m_fUfoRot.y);
-            D3DXMatrixTranslation(&mT, m_fUfoPos2.x, m_fUfoPos2.y, m_fUfoPos2.z);
-            mL = m * mR * mT * m_mWorld;
+            mL = mR * m * m_mWorld;
 
             // ローカル-ワールド行列: lerp ufo
+            D3DXMatrixTranslation(&m, m_fUfoPos_lerp.x, m_fUfoPos_lerp.y, m_fUfoPos_lerp.z);
             D3DXMatrixRotationY(&mR, m_fUfoRot_lerp.y);
-			mL2 = m * mR * mT * m_mWorld;
+			mL2 = mR * m * m_mWorld;
 
             // ライトの方向
             D3DXMatrixInverse(&m, NULL, &mL);

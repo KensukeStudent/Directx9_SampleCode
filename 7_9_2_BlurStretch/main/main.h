@@ -24,6 +24,11 @@ struct UserInput
 
 	BOOL bRotateUfoUp;
 	BOOL bRotateUfoDown;
+
+    BOOL bMoveLeft;
+    BOOL bMoveRight;
+    BOOL bMoveFront;
+    BOOL bMoveBack;
 };
 
 
@@ -67,14 +72,10 @@ class CMyD3DApplication : public CD3DApplication
     // ufo本体の座標
 	D3DXVECTOR3				m_fUfoPos;
 	D3DXVECTOR3				m_fUfoRot;
-	D3DXVECTOR3				m_fUfoPos2;
-
-	FLOAT				    m_fRotY; // ufo本体 回転
 
     // Lerp用ufo本体の座標
     D3DXVECTOR3				m_fUfoPos_lerp;
     D3DXVECTOR3				m_fUfoRot_lerp;
-    D3DXVECTOR3				m_fUfoPos2_lerp;
 
 protected:
     virtual HRESULT OneTimeSceneInit();

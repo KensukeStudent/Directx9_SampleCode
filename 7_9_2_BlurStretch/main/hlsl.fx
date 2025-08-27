@@ -71,7 +71,7 @@ OUTPUT VS_Blur(
 	
 	// 座標変換
 	float4 x1 = mul(Pos, mWV);			// 今回のビュー座標
-	float4 x0 = mul(Pos, mLastWV);		// １フレーム前のビュー座標
+	float4 x0 = mul(Pos, mLastWV);		// 数フレーム前のビュー座標
 	float4 v = x1-x0;					// 速度
 	float3 n = mul(Normal, mWV);		// ビュー座標系での法線
 	
@@ -86,6 +86,7 @@ OUTPUT VS_Blur(
 	
 	// 進行方向を向いていれば不透明、反対なら透明
 	Out.Color.a = bFront ? 1 : 0;
+	//Out.Color.a = 1;
 	
 	// ポリゴンを描画するときにA,B,Cがあり
 	// Aは進行方向で不透明
