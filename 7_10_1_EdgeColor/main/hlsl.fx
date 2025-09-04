@@ -62,6 +62,9 @@ struct VS_OUTPUT
     float4 Pos			: POSITION;
     float4 Color		: COLOR0;
 	float2 Tex0			: TEXCOORD0;
+	float2 Tex1			: TEXCOORD1;
+	float2 Tex2			: TEXCOORD2;
+	float2 Tex3			: TEXCOORD3;
 };
 
 // ------------------------------------------------------------
@@ -159,23 +162,22 @@ VS_OUTPUT VS_pass2(
 // ------------------------------------------------------------
 float4 PS_NormalEdge(VS_OUTPUT In) : COLOR0
 {
-    float2 uv = In.Tex0;
-    float2 off = 1/512;
+    // 参考書のアセンブラをHLSLに移植したもの
+    // ロバーツフィルタ斜め方向の差から求める計算公式
+    float4 tl = tex2D(OriginalSamp, In.Tex0);
+    float4 br = tex2D(OriginalSamp, In.Tex1);
+    float4 bl = tex2D(OriginalSamp, In.Tex2);
+    float4 tr = tex2D(OriginalSamp, In.Tex3);
 
-    // 4近傍サンプル（左上・右下・左下・右上）
-    float4 tl = tex2D(OriginalSamp, uv + float2(-off.x, -off.y));
-    float4 br = tex2D(OriginalSamp, uv + float2(off.x, off.y));
-    float4 bl = tex2D(OriginalSamp, uv + float2(-off.x, off.y));
-    float4 tr = tex2D(OriginalSamp, uv + float2(off.x, -off.y));
+    int k = 2; // 差を強調する係数
+    float3 d1 = k * (tl.rgb - br.rgb);
+    float3 d2 = k * (bl.rgb - tr.rgb);
+    
+    int d = 2; // 差を強調する係数
+    float diff = d * dot(d1, d1) + d * dot(d2, d2); // diffの値を入れると輪郭が白く抽出できる
 
-    // 差分の二乗（輝度差の近似）
-    float diff1 = dot(tl - br, tl - br);
-    float diff2 = dot(bl - tr, bl - tr);
-
-    // 1 - (diff1 + diff2) → エッジ部分だけ黒く、それ以外は白
-    float edge = saturate(1.0 - diff1 - diff2);
-
-    return float4(edge, edge, edge, 1.0);
+    float edge = saturate(1.0 - diff);
+    return float4(1, 1, 1, edge);
 }
 
 // ------------------------------------------------------------

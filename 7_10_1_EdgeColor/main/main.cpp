@@ -23,8 +23,8 @@
 #include "resource.h"
 #include "main.h"
 
-#define MAP_WIDTH	512
-#define MAP_HEIGHT	512
+#define MAP_WIDTH	1600
+#define MAP_HEIGHT	900
 
 
 // 長いから短縮形を作ってみた
@@ -103,8 +103,8 @@ CMyD3DApplication::CMyD3DApplication()
 
 	m_LighPos = D3DXVECTOR3(-5.0f, 5.0f, -2.0f);
 
-	m_dwCreationWidth = 512;
-	m_dwCreationHeight = 512;
+	m_dwCreationWidth = 1600;
+	m_dwCreationHeight = 900;
 	m_strWindowTitle = TEXT("main");
 	m_d3dEnumeration.AppUsesDepthBuffer = TRUE;
 	m_bStartFullscreen = false;
