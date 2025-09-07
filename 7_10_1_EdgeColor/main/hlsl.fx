@@ -180,6 +180,35 @@ float4 PS_NormalEdge(VS_OUTPUT In) : COLOR0
     return float4(1, 1, 1, edge);
 }
 
+float4 PS_LumEdge(VS_OUTPUT In) : COLOR0
+{
+	// 輝度の重み(色の強さRGB2Yへの変換)
+    float3 lumW = float3(0.299f, 0.587f, 0.114f);
+
+	// サンプル（左上, 右下, 左下, 右上）
+    float4 tl = tex2D(OriginalSamp, In.Tex0);
+    float4 br = tex2D(OriginalSamp, In.Tex1);
+    float4 bl = tex2D(OriginalSamp, In.Tex2);
+    float4 tr = tex2D(OriginalSamp, In.Tex3);
+
+    float Lt = dot(tl.rgb, lumW);
+    float Lb = dot(br.rgb, lumW);
+    float Ll = dot(bl.rgb, lumW);
+    float Lr = dot(tr.rgb, lumW);
+
+	// Roberts クロス演算（斜め方向の差分）
+    float d1 = Lr - Ll; // 右上 - 左下
+    float d2 = Lt - Lb; // 左上 - 右下
+
+	// 元のアセンブラの定数に合わせたスケーリング
+    float d = 64;
+    float diff = d * (d1 * d1 + d2 * d2);
+    float e = 4;
+    float edge = saturate(e * (1.0f - diff));
+
+    return float4(1, 1, 1, edge);
+};
+
 // ------------------------------------------------------------
 // テクニック
 // ------------------------------------------------------------
@@ -200,5 +229,10 @@ technique TShader
     pass P2 // 法線エッジ
     {
         PixelShader = compile ps_2_0 PS_NormalEdge();
+    }
+
+    pass P3 // エッジ抽出
+    {
+        PixelShader = compile ps_2_0 PS_LumEdge();
     }
 }

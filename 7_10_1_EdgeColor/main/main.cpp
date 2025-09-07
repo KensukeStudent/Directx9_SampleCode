@@ -503,7 +503,7 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			m_pEffect->SetTechnique(m_hTechnique);
 			m_pEffect->Begin(NULL, 0);
-			m_pEffect->BeginPass(2);
+			m_pEffect->BeginPass(3);
 
 			RS(D3DRS_ALPHABLENDENABLE, TRUE);
 			RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
