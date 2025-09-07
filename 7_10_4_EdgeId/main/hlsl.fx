@@ -98,6 +98,7 @@ float4 PS_pass0(VS_OUTPUT In) : COLOR
 	
 	// êF
     Out = tex2D(FloorSamp, In.Tex0);
+    Out.a = m_hfId0;
 	
     return Out;
 }
@@ -136,6 +137,7 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 	
 	// êF
     Out = In.Color * tex2D(SrcSamp, In.Tex0);
+    Out.a = m_hfId1;
 	
     return Out;
 }
