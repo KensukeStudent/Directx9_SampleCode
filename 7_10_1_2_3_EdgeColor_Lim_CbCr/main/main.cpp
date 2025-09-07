@@ -509,6 +509,8 @@ HRESULT CMyD3DApplication::Render()
 			RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
 			RS(D3DRS_DESTBLEND, D3DBLEND_SRCALPHA);
 
+			// 0.5のサンプリングポイントに幅を付けると広い範囲での比較ができる
+			// 1.5などにすると、輪郭も太くなる
 			FLOAT du = 0.5f / MAP_WIDTH;
 			FLOAT dv = 0.5f / MAP_HEIGHT;
 
