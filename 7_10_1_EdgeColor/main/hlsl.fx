@@ -2,6 +2,9 @@
 // 輪郭抽出
 // 
 // Copyright (c) 2003 IMAGIRE Takashi. All rights reserved.
+// 
+// 画像フィルタの考え方
+// http://rs.aoyaman.com/img_pro/b6.html
 // ------------------------------------------------------------
 
 // ------------------------------------------------------------
@@ -169,14 +172,13 @@ float4 PS_NormalEdge(VS_OUTPUT In) : COLOR0
     float4 bl = tex2D(OriginalSamp, In.Tex2);
     float4 tr = tex2D(OriginalSamp, In.Tex3);
 
-    int k = 2; // 差を強調する係数
-    float3 d1 = k * (tl.rgb - br.rgb);
-    float3 d2 = k * (bl.rgb - tr.rgb);
+    float3 d1 = tl.rgb - br.rgb;
+    float3 d2 = bl.rgb - tr.rgb;
     
-    int d = 2; // 差を強調する係数
-    float diff = d * dot(d1, d1) + d * dot(d2, d2); // diffの値を入れると輪郭が白く抽出できる
+    int d = 8; // 差を強調する係数
+    float diff = d * sqrt(d1 * d1 + d2 * d2); // diffの値を入れると輪郭が白く抽出できる
 
-    float edge = saturate(1.0 - diff);
+    float edge = saturate(4 * (1.0 - diff));
     return float4(1, 1, 1, edge);
 }
 
@@ -201,8 +203,9 @@ float4 PS_LumEdge(VS_OUTPUT In) : COLOR0
     float d2 = Lt - Lb; // 左上 - 右下
 
 	// 元のアセンブラの定数に合わせたスケーリング
-    float d = 64;
-    float diff = d * (d1 * d1 + d2 * d2);
+    float d = 8;
+    float diff = d * sqrt(d1 * d1 + d2 * d2);
+    
     float e = 4;
     float edge = saturate(e * (1.0f - diff));
 
