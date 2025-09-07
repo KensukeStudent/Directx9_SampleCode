@@ -177,11 +177,15 @@ float4 PS_NormalEdge(VS_OUTPUT In) : COLOR0
     
     int d = 8; // 差を強調する係数
     float diff = d * sqrt(d1 * d1 + d2 * d2); // diffの値を入れると輪郭が白く抽出できる
+    //float diff = d * 2.0f * (dot(d1, d1) + dot(d2, d2)); // 2乗和だとエッジが軽くなるので係数で調整する
 
     float edge = saturate(4 * (1.0 - diff));
     return float4(1, 1, 1, edge);
 }
 
+// ------------------------------------------------------------
+// 輝度エッジピクセルシェーダプログラム(Y)
+// ------------------------------------------------------------
 float4 PS_LumEdge(VS_OUTPUT In) : COLOR0
 {
 	// 輝度の重み(色の強さRGB2Yへの変換)
@@ -204,13 +208,41 @@ float4 PS_LumEdge(VS_OUTPUT In) : COLOR0
 
 	// 元のアセンブラの定数に合わせたスケーリング
     float d = 8;
-    float diff = d * sqrt(d1 * d1 + d2 * d2);
+    //float diff = d * sqrt(d1 * d1 + d2 * d2);
+    float diff = d * 10 * (dot(d1, d1) + dot(d2, d2)); // 2乗和だとエッジが軽くなるので係数で調整する
     
     float e = 4;
     float edge = saturate(e * (1.0f - diff));
+    //float edge = saturate(1.0f - e * diff);
 
     return float4(1, 1, 1, edge);
 };
+
+// ------------------------------------------------------------
+// 色相エッジピクセルシェーダプログラム(CbCr)
+// ------------------------------------------------------------
+float4 PS_CbCrEdge(VS_OUTPUT In) : COLOR
+{    
+    float3 d0 = tex2D(OriginalSamp, In.Tex0).rgb - tex2D(OriginalSamp, In.Tex1).rgb;
+    float3 d1 = tex2D(OriginalSamp, In.Tex2).rgb - tex2D(OriginalSamp, In.Tex3).rgb;
+	
+	// レンダリングターゲット２：CbCr
+    float3x3 RGB2CrCb =
+    {
+        { 0, 0, 0 }, // Y(=0)
+        { 0.50000, -0.41869, -0.08131 }, // Cr
+        { -0.16874, -0.33126, +0.50000 }, // Cb
+    };
+    d0 = mul(RGB2CrCb, d0);
+    d1 = mul(RGB2CrCb, d1);
+	
+    float diff = dot(d0, d0) + dot(d1, d1);
+    // 本来の勾配ノルム計算式は以下だけど、sqrtは重いので2乗和で代用する
+    // float diff = sqrt(dot(d0, d0) + dot(d1, d1));
+	
+    float edge = saturate(1.0 - 100.0 * diff);
+    return float4(1, 1, 1, edge);
+}
 
 // ------------------------------------------------------------
 // テクニック
@@ -234,8 +266,13 @@ technique TShader
         PixelShader = compile ps_2_0 PS_NormalEdge();
     }
 
-    pass P3 // エッジ抽出
+    pass P3 // 輝度エッジ抽出
     {
         PixelShader = compile ps_2_0 PS_LumEdge();
+    }
+
+    pass P3 // 色相エッジ抽出
+    {
+        PixelShader = compile ps_2_0 PS_CbCrEdge();
     }
 }
