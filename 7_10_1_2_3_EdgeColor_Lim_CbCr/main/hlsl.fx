@@ -5,6 +5,9 @@
 // 
 // 画像フィルタの考え方
 // http://rs.aoyaman.com/img_pro/b6.html
+// 
+// 良い感じの画像でシュミレーション
+// https://www.keyence.co.jp/ss/products/vision/visionbasics/basic/soft/filter.jsp
 // ------------------------------------------------------------
 
 // ------------------------------------------------------------

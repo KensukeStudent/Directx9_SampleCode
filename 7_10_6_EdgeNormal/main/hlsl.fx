@@ -10,8 +10,8 @@
 float4x4 mWVP0;
 float4x4 mWVP1;
 
-float m_hfId0;
-float m_hfId1;
+float fNear = 1.0f;
+float fFar = 7.0f;
 
 float4 vCol;
 float4 vLightDir; // ライトの方向
@@ -83,7 +83,10 @@ VS_OUTPUT VS_pass0(
     
 	// 位置座標
     Out.Pos = mul(Pos, mWVP0);
-	
+		
+    // 深度値
+    Out.Color.w = (Out.Pos.w - fNear) / (fFar - fNear);
+    
 	// テクスチャ座標
     Out.Tex0 = Tex0;
 
@@ -98,7 +101,7 @@ float4 PS_pass0(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = tex2D(FloorSamp, In.Tex0);
-    Out.a = m_hfId0;
+    Out.a = In.Color.w;
 	
     return Out;
 }
@@ -122,6 +125,7 @@ VS_OUTPUT VS_pass1(
     float diffuse = max(dot(vLightDir.xyz, Normal.xyz), 0); //拡散色
     float ambient = vLightDir.w; //環境色
     Out.Color = vCol * (diffuse + ambient);
+    Out.Color.w = (Out.Pos.w - fNear) / (fFar - fNear);
 	
 	// テクスチャ座標
     Out.Tex0 = Tex0;
@@ -137,7 +141,7 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = In.Color * tex2D(SrcSamp, In.Tex0);
-    Out.a = m_hfId1;
+    Out.a = In.Color;
 	
     return Out;
 }
@@ -203,16 +207,16 @@ technique TShader
     pass P0 // 照明計算なし
     {
         VertexShader = compile vs_1_1 VS_pass0();
-        PixelShader  = compile ps_2_0 PS_pass0();
+        PixelShader = compile ps_2_0 PS_pass0();
     }
     pass P1 // 照明計算あり
     {
         VertexShader = compile vs_1_1 VS_pass1();
-        PixelShader  = compile ps_2_0 PS_pass1();
+        PixelShader = compile ps_2_0 PS_pass1();
     }
     pass P2 // 法線エッジ
     {
         // シェーダ
         PixelShader = compile ps_2_0 PS_IdEdge();
-	}
+    }
 }

@@ -1,16 +1,16 @@
 //-------------------------------------------------------------
 // File: main.h
 //
-// Desc: è¼ªéƒ­æŠ½å‡º
+// Desc: —ÖŠs’Šo
 //-------------------------------------------------------------
 #pragma once
 
 
 
 //-------------------------------------------------------------
-// å®šç¾©ã‚„å®šæ•°
+// ’è‹`‚â’è”
 //-------------------------------------------------------------
-// ç¾åœ¨ã®å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚’ä¿å­˜ã™ã‚‹æ§‹é€ ä½“
+// Œ»Ý‚Ì“ü—Íƒf[ƒ^‚ð•Û‘¶‚·‚é\‘¢‘Ì
 struct UserInput
 {
     BOOL bRotateUp;
@@ -26,45 +26,43 @@ struct UserInput
 
 //-------------------------------------------------------------
 // Name: class CMyD3DApplication
-// Desc: ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¯ãƒ©ã‚¹
+// Desc: ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒNƒ‰ƒX
 //-------------------------------------------------------------
 class CMyD3DApplication : public CD3DApplication
 {
     CD3DMesh* m_pMesh;
     CD3DMesh* m_pMeshBg;
 
-    // ã‚·ã‚§ãƒ¼ãƒ€
-    LPD3DXEFFECT		    m_pEffect;		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
-    D3DXHANDLE				m_hTechnique;	// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯
-    D3DXHANDLE				m_hmWVP0;		// å¤‰æ›è¡Œåˆ—
-    D3DXHANDLE				m_hmWVP1;		// å¤‰æ›è¡Œåˆ—
-    D3DXHANDLE				m_hvCol;		// é ‚ç‚¹è‰²
-    D3DXHANDLE				m_hvDir;		// å…‰æºã®æ–¹å‘
-    D3DXHANDLE				m_hfId0;		// IDå€¤ èƒŒæ™¯
-    D3DXHANDLE				m_hfId1;		// IDå€¤ ãƒœãƒƒã‚¯ã‚¹
-    D3DXHANDLE				m_htSrcTex;		// ãƒ†ã‚¯ã‚¹ãƒãƒ£
-    D3DXHANDLE				m_htFloorTex;   // åºŠãƒ†ã‚¯ã‚¹ãƒãƒ£
-    D3DXHANDLE				m_htOriginalTex;// ç”»é¢ãƒ†ã‚¯ã‚¹ãƒãƒ£
+    // ƒVƒF[ƒ_
+    LPD3DXEFFECT		    m_pEffect;		// ƒGƒtƒFƒNƒg
+    D3DXHANDLE				m_hTechnique;	// ƒeƒNƒjƒbƒN
+    D3DXHANDLE				m_hmWVP0;		// •ÏŠ·s—ñ
+    D3DXHANDLE				m_hmWVP1;		// •ÏŠ·s—ñ
+    D3DXHANDLE				m_hvCol;		// ’¸“_F
+    D3DXHANDLE				m_hvDir;		// ŒõŒ¹‚Ì•ûŒü
+    D3DXHANDLE				m_htSrcTex;		// ƒeƒNƒXƒ`ƒƒ
+    D3DXHANDLE				m_htFloorTex;   // °ƒeƒNƒXƒ`ƒƒ
+    D3DXHANDLE				m_htOriginalTex;// ‰æ–ÊƒeƒNƒXƒ`ƒƒ
 
-    // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
-    LPDIRECT3DSURFACE9		m_pMapZ;		// æ·±åº¦ãƒãƒƒãƒ•ã‚¡
-    LPDIRECT3DTEXTURE9		m_pOriginalTex;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£
-    LPDIRECT3DSURFACE9		m_pOriginalSurf;// ã‚µãƒ¼ãƒ•ã‚§ã‚¹
+    // ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg
+    LPDIRECT3DSURFACE9		m_pMapZ;		// [“xƒoƒbƒtƒ@
+    LPDIRECT3DTEXTURE9		m_pOriginalTex;	// ƒeƒNƒXƒ`ƒƒ
+    LPDIRECT3DSURFACE9		m_pOriginalSurf;// ƒT[ƒtƒFƒX
 
-    // é€šå¸¸ã®åº§æ¨™å¤‰æ›è¡Œåˆ—
+    // ’Êí‚ÌÀ•W•ÏŠ·s—ñ
     D3DXMATRIX				m_mWorld;
     D3DXMATRIX				m_mView;
     D3DXMATRIX				m_mProj;
 
-    D3DXVECTOR3				m_LighPos;		// å…‰æºã®æ–¹å‘
+    D3DXVECTOR3				m_LighPos;		// ŒõŒ¹‚Ì•ûŒü
 
-    BOOL					m_bLoadingApp;	// ãƒ­ãƒ¼ãƒ‰ä¸­ï¼Ÿ
-    CD3DFont* m_pFont;		// ãƒ•ã‚©ãƒ³ãƒˆ
-    UserInput				m_UserInput;	// å…¥åŠ›ãƒ‡ãƒ¼ã‚¿
+    BOOL					m_bLoadingApp;	// ƒ[ƒh’†H
+    CD3DFont* m_pFont;		// ƒtƒHƒ“ƒg
+    UserInput				m_UserInput;	// “ü—Íƒf[ƒ^
 
-    FLOAT                   m_fWorldRotX;   // ï¼¸è»¸å›žè»¢
-    FLOAT                   m_fWorldRotY;   // ï¼¹è»¸å›žè»¢
-    FLOAT                   m_fViewZoom;    // è¦–ç‚¹ã®è·é›¢
+    FLOAT                   m_fWorldRotX;   // ‚wŽ²‰ñ“]
+    FLOAT                   m_fWorldRotY;   // ‚xŽ²‰ñ“]
+    FLOAT                   m_fViewZoom;    // Ž‹“_‚Ì‹——£
 
 protected:
     virtual HRESULT OneTimeSceneInit();

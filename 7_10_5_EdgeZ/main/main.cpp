@@ -1,4 +1,4 @@
-//-------------------------------------------------------------
+﻿//-------------------------------------------------------------
 // File: main.cpp
 //
 // Desc: 輪郭抽出
@@ -37,19 +37,19 @@
 // 頂点の構造体
 //-------------------------------------------------------------
 typedef struct {
-    FLOAT       p[4];
-    FLOAT       tu, tv;
+	FLOAT       p[4];
+	FLOAT       tu, tv;
 } TVERTEX;
 
 typedef struct {
-    FLOAT       p[4];
-    FLOAT       t[4][2];
+	FLOAT       p[4];
+	FLOAT       t[4][2];
 } T4VERTEX;
 
 //-------------------------------------------------------------
 // グローバル変数
 //-------------------------------------------------------------
-CMyD3DApplication* g_pApp  = NULL;
+CMyD3DApplication* g_pApp = NULL;
 HINSTANCE          g_hInst = NULL;
 
 
@@ -57,18 +57,18 @@ HINSTANCE          g_hInst = NULL;
 // Name: WinMain()
 // Desc: メイン関数
 //-------------------------------------------------------------
-INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, INT )
+INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, INT)
 {
-    CMyD3DApplication d3dApp;
+	CMyD3DApplication d3dApp;
 
-    g_pApp  = &d3dApp;
-    g_hInst = hInst;
+	g_pApp = &d3dApp;
+	g_hInst = hInst;
 
-    InitCommonControls();
-    if( FAILED( d3dApp.Create( hInst ) ) )
-        return 0;
+	InitCommonControls();
+	if (FAILED(d3dApp.Create(hInst)))
+		return 0;
 
-    return d3dApp.Run();
+	return d3dApp.Run();
 }
 
 
@@ -91,8 +91,6 @@ CMyD3DApplication::CMyD3DApplication()
 	m_hTechnique = NULL;
 	m_hmWVP0 = NULL;
 	m_hmWVP1 = NULL;
-	m_hfId0 = NULL;
-	m_hfId1 = NULL;
 	m_hvCol = NULL;
 	m_hvDir = NULL;
 	m_htSrcTex = NULL;
@@ -140,12 +138,12 @@ CMyD3DApplication::~CMyD3DApplication()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::OneTimeSceneInit()
 {
-    // ローディングメッセージを表示する
-    SendMessage( m_hWnd, WM_PAINT, 0, 0 );
+	// ローディングメッセージを表示する
+	SendMessage(m_hWnd, WM_PAINT, 0, 0);
 
-    m_bLoadingApp = FALSE;
+	m_bLoadingApp = FALSE;
 
-    return S_OK;
+	return S_OK;
 }
 
 
@@ -155,24 +153,24 @@ HRESULT CMyD3DApplication::OneTimeSceneInit()
 // Name: ConfirmDevice()
 // Desc: 初期化の時に呼ばれます。必要な能力をチェックします。
 //-------------------------------------------------------------
-HRESULT CMyD3DApplication::ConfirmDevice( D3DCAPS9* pCaps,
-                     DWORD dwBehavior,    D3DFORMAT Format )
+HRESULT CMyD3DApplication::ConfirmDevice(D3DCAPS9* pCaps,
+	DWORD dwBehavior, D3DFORMAT Format)
 {
-    UNREFERENCED_PARAMETER( Format );
-    UNREFERENCED_PARAMETER( dwBehavior );
-    UNREFERENCED_PARAMETER( pCaps );
-    
+	UNREFERENCED_PARAMETER(Format);
+	UNREFERENCED_PARAMETER(dwBehavior);
+	UNREFERENCED_PARAMETER(pCaps);
+
 
 	// ピクセルシェーダバージョンチェック
-    if( pCaps->PixelShaderVersion < D3DPS_VERSION(1,1) )
+	if (pCaps->PixelShaderVersion < D3DPS_VERSION(1, 1))
 		return E_FAIL;
 
-    // 頂点シェーダバージョンが上位かソフトウェア頂点処理
-    if( pCaps->VertexShaderVersion < D3DVS_VERSION(1,1)
-    &&  0==(dwBehavior & D3DCREATE_SOFTWARE_VERTEXPROCESSING) )
-			return E_FAIL;
+	// 頂点シェーダバージョンが上位かソフトウェア頂点処理
+	if (pCaps->VertexShaderVersion < D3DVS_VERSION(1, 1)
+		&& 0 == (dwBehavior & D3DCREATE_SOFTWARE_VERTEXPROCESSING))
+		return E_FAIL;
 
-    return S_OK;
+	return S_OK;
 }
 
 
@@ -187,7 +185,7 @@ HRESULT CMyD3DApplication::ConfirmDevice( D3DCAPS9* pCaps,
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::InitDeviceObjects()
 {
-    HRESULT hr;
+	HRESULT hr;
 
 	// 車の読み込み
 	if (FAILED(hr = m_pMesh->Create(m_pd3dDevice, _T("6box.x"))))
@@ -209,7 +207,7 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 		return hr;
 	}
 	m_pMeshBg->UseMeshMaterials(FALSE);// レンダリング時にテクスチャの設定をしない
-        
+
 	// シェーダの読み込み
 	LPD3DXBUFFER pErr;
 	if (FAILED(hr = D3DXCreateEffectFromFile(m_pd3dDevice, _T("hlsl.fx"), NULL, NULL, D3DXSHADER_DEBUG, NULL, &m_pEffect, &pErr))) {
@@ -220,8 +218,6 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 		m_hTechnique = m_pEffect->GetTechniqueByName("TShader");
 		m_hmWVP0 = m_pEffect->GetParameterByName(NULL, "mWVP0");
 		m_hmWVP1 = m_pEffect->GetParameterByName(NULL, "mWVP1");
-		m_hfId0 = m_pEffect->GetParameterByName(NULL, "m_hfId0");
-		m_hfId1 = m_pEffect->GetParameterByName(NULL, "m_hfId1");
 		m_hvCol = m_pEffect->GetParameterByName(NULL, "vCol");
 		m_hvDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
 		m_htSrcTex = m_pEffect->GetParameterByName(NULL, "SrcTex");
@@ -230,9 +226,9 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 	}
 
 	// フォント
-    m_pFont->InitDeviceObjects( m_pd3dDevice );
+	m_pFont->InitDeviceObjects(m_pd3dDevice);
 
-    return S_OK;
+	return S_OK;
 }
 
 //-------------------------------------------------------------
@@ -243,46 +239,46 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 HRESULT CMyD3DApplication::RestoreDeviceObjects()
 {
 	// メッシュ
-	m_pMesh  ->RestoreDeviceObjects( m_pd3dDevice );
-	m_pMeshBg->RestoreDeviceObjects( m_pd3dDevice );
+	m_pMesh->RestoreDeviceObjects(m_pd3dDevice);
+	m_pMeshBg->RestoreDeviceObjects(m_pd3dDevice);
 
-    // レンダリング状態の設定
-    RS( D3DRS_DITHERENABLE,   FALSE );
-    RS( D3DRS_SPECULARENABLE, FALSE );
-    RS( D3DRS_ZENABLE,        TRUE );
-    RS( D3DRS_AMBIENT,        0x000F0F0F );
-    
-    TSS( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE );
-    TSS( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-    TSS( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-    TSS( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
-    TSS( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
-    SAMP( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
-    SAMP( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
-    SAMP( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP );
-    SAMP( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP );
+	// レンダリング状態の設定
+	RS(D3DRS_DITHERENABLE, FALSE);
+	RS(D3DRS_SPECULARENABLE, FALSE);
+	RS(D3DRS_ZENABLE, TRUE);
+	RS(D3DRS_AMBIENT, 0x000F0F0F);
 
-    // ワールド行列
-    D3DXMATRIX matIdentity;
-    D3DXMatrixIdentity( &m_mWorld );
+	TSS(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	TSS(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	TSS(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	TSS(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	TSS(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+	SAMP(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	SAMP(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	SAMP(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+	SAMP(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+
+	// ワールド行列
+	D3DXMATRIX matIdentity;
+	D3DXMatrixIdentity(&m_mWorld);
 
 	// ビュー行列
-    D3DXVECTOR3 vFromPt   = D3DXVECTOR3( 0.0f, 0.2f, -5.0f );
-    D3DXVECTOR3 vLookatPt = D3DXVECTOR3( 0.0f, 0.5f, 0.0f );
-    D3DXVECTOR3 vUpVec    = D3DXVECTOR3( 0.0f, 1.0f, 0.0f );
-    D3DXMatrixLookAtLH( &m_mView, &vFromPt, &vLookatPt, &vUpVec );
+	D3DXVECTOR3 vFromPt = D3DXVECTOR3(0.0f, 0.2f, -5.0f);
+	D3DXVECTOR3 vLookatPt = D3DXVECTOR3(0.0f, 0.5f, 0.0f);
+	D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
 
-    // 射影行列
-    FLOAT fAspect = ((FLOAT)m_d3dsdBackBuffer.Width) / m_d3dsdBackBuffer.Height;
-    D3DXMatrixPerspectiveFovLH( &m_mProj, D3DX_PI/4, fAspect, 1.0f, 100.0f );
+	// 射影行列
+	FLOAT fAspect = ((FLOAT)m_d3dsdBackBuffer.Width) / m_d3dsdBackBuffer.Height;
+	D3DXMatrixPerspectiveFovLH(&m_mProj, D3DX_PI / 4, fAspect, 1.0f, 100.0f);
 
-    // フォント
-    m_pFont->RestoreDeviceObjects();
+	// フォント
+	m_pFont->RestoreDeviceObjects();
 
 	// レンダリングターゲットの生成
 	// 深度バッファ
 	if (FAILED(m_pd3dDevice->CreateDepthStencilSurface(
-		MAP_WIDTH, MAP_HEIGHT, 
+		MAP_WIDTH, MAP_HEIGHT,
 		D3DFMT_D16, D3DMULTISAMPLE_NONE, 0, TRUE, &m_pMapZ, NULL)))
 		return E_FAIL;
 	// 色情報
@@ -307,46 +303,46 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::FrameMove()
 {
-    // 入力データの更新
-    UpdateInput( &m_UserInput );
+	// 入力データの更新
+	UpdateInput(&m_UserInput);
 
 	//---------------------------------------------------------
 	// 入力に応じて座標系を更新する
 	//---------------------------------------------------------
 	// 回転
-    D3DXMATRIX matRotY;
-    D3DXMATRIX matRotX;
+	D3DXMATRIX matRotY;
+	D3DXMATRIX matRotX;
 
-    if( m_UserInput.bRotateLeft && !m_UserInput.bRotateRight )
-        m_fWorldRotY += m_fElapsedTime;
-    else
-    if( m_UserInput.bRotateRight && !m_UserInput.bRotateLeft )
-        m_fWorldRotY -= m_fElapsedTime;
+	if (m_UserInput.bRotateLeft && !m_UserInput.bRotateRight)
+		m_fWorldRotY += m_fElapsedTime;
+	else
+		if (m_UserInput.bRotateRight && !m_UserInput.bRotateLeft)
+			m_fWorldRotY -= m_fElapsedTime;
 
-    if( m_UserInput.bRotateUp && !m_UserInput.bRotateDown )
-        m_fWorldRotX += m_fElapsedTime;
-    else
-    if( m_UserInput.bRotateDown && !m_UserInput.bRotateUp )
-        m_fWorldRotX -= m_fElapsedTime;
+	if (m_UserInput.bRotateUp && !m_UserInput.bRotateDown)
+		m_fWorldRotX += m_fElapsedTime;
+	else
+		if (m_UserInput.bRotateDown && !m_UserInput.bRotateUp)
+			m_fWorldRotX -= m_fElapsedTime;
 
-    D3DXMatrixRotationX( &matRotX, m_fWorldRotX );
-    D3DXMatrixRotationY( &matRotY, m_fWorldRotY );
+	D3DXMatrixRotationX(&matRotX, m_fWorldRotX);
+	D3DXMatrixRotationY(&matRotY, m_fWorldRotY);
 
-    D3DXMatrixMultiply( &m_mWorld, &matRotY, &matRotX );
-	
+	D3DXMatrixMultiply(&m_mWorld, &matRotY, &matRotX);
+
 	//---------------------------------------------------------
 	// ビュー行列の設定
 	//---------------------------------------------------------
 	// ズーム
-    if( m_UserInput.bZoomIn && !m_UserInput.bZoomOut )
-        m_fViewZoom += m_fElapsedTime;
-    else if( m_UserInput.bZoomOut && !m_UserInput.bZoomIn )
-        m_fViewZoom -= m_fElapsedTime;
+	if (m_UserInput.bZoomIn && !m_UserInput.bZoomOut)
+		m_fViewZoom += m_fElapsedTime;
+	else if (m_UserInput.bZoomOut && !m_UserInput.bZoomIn)
+		m_fViewZoom -= m_fElapsedTime;
 
-    D3DXVECTOR3 vFromPt   = D3DXVECTOR3( 0.0f, 0.2f, -m_fViewZoom );
-    D3DXVECTOR3 vLookatPt = D3DXVECTOR3( 0.0f, 0.5f, 0.0f );
-    D3DXVECTOR3 vUpVec    = D3DXVECTOR3( 0.0f, 1.0f, 0.0f );
-    D3DXMatrixLookAtLH( &m_mView, &vFromPt, &vLookatPt, &vUpVec );
+	D3DXVECTOR3 vFromPt = D3DXVECTOR3(0.0f, 0.2f, -m_fViewZoom);
+	D3DXVECTOR3 vLookatPt = D3DXVECTOR3(0.0f, 0.5f, 0.0f);
+	D3DXVECTOR3 vUpVec = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXMatrixLookAtLH(&m_mView, &vFromPt, &vLookatPt, &vUpVec);
 
 	return S_OK;
 }
@@ -354,15 +350,15 @@ HRESULT CMyD3DApplication::FrameMove()
 // Name: UpdateInput()
 // Desc: 入力データを更新する
 //-------------------------------------------------------------
-void CMyD3DApplication::UpdateInput( UserInput* pUserInput )
+void CMyD3DApplication::UpdateInput(UserInput* pUserInput)
 {
-    pUserInput->bRotateUp    = ( m_bActive && (GetAsyncKeyState( VK_UP )    & 0x8000) == 0x8000 );
-    pUserInput->bRotateDown  = ( m_bActive && (GetAsyncKeyState( VK_DOWN )  & 0x8000) == 0x8000 );
-    pUserInput->bRotateLeft  = ( m_bActive && (GetAsyncKeyState( VK_LEFT )  & 0x8000) == 0x8000 );
-    pUserInput->bRotateRight = ( m_bActive && (GetAsyncKeyState( VK_RIGHT ) & 0x8000) == 0x8000 );
-    
-	pUserInput->bZoomIn      = ( m_bActive && (GetAsyncKeyState( 'Z'     )  & 0x8000) == 0x8000 );
-    pUserInput->bZoomOut     = ( m_bActive && (GetAsyncKeyState( 'X'      ) & 0x8000) == 0x8000 );
+	pUserInput->bRotateUp = (m_bActive && (GetAsyncKeyState(VK_UP) & 0x8000) == 0x8000);
+	pUserInput->bRotateDown = (m_bActive && (GetAsyncKeyState(VK_DOWN) & 0x8000) == 0x8000);
+	pUserInput->bRotateLeft = (m_bActive && (GetAsyncKeyState(VK_LEFT) & 0x8000) == 0x8000);
+	pUserInput->bRotateRight = (m_bActive && (GetAsyncKeyState(VK_RIGHT) & 0x8000) == 0x8000);
+
+	pUserInput->bZoomIn = (m_bActive && (GetAsyncKeyState('Z') & 0x8000) == 0x8000);
+	pUserInput->bZoomOut = (m_bActive && (GetAsyncKeyState('X') & 0x8000) == 0x8000);
 }
 
 //-------------------------------------------------------------
@@ -423,7 +419,6 @@ HRESULT CMyD3DApplication::Render()
 
 			m = m_mWorld * m_mView * m_mProj;
 			m_pEffect->SetMatrix(m_hmWVP0, &m);
-			m_pEffect->SetFloat(m_hfId0, 0);
 
 			// 背景の描画
 			pMtrl = m_pMeshBg->m_pMaterials;
@@ -444,7 +439,6 @@ HRESULT CMyD3DApplication::Render()
 			mW = mT * m_mWorld;
 			m = mW * m_mView * m_mProj;
 			m_pEffect->SetMatrix(m_hmWVP1, &m);
-			m_pEffect->SetFloat(m_hfId1, 1);
 
 			// 光源の設定
 			D3DXMatrixInverse(&m, NULL, &mW);
@@ -591,25 +585,25 @@ HRESULT CMyD3DApplication::Render()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::RenderText()
 {
-    D3DCOLOR fontColor        = D3DCOLOR_ARGB(255,255,255,0);
-    TCHAR szMsg[MAX_PATH] = TEXT("");
+	D3DCOLOR fontColor = D3DCOLOR_ARGB(255, 255, 255, 0);
+	TCHAR szMsg[MAX_PATH] = TEXT("");
 
-    FLOAT fNextLine = 40.0f; // 表示する高さ
+	FLOAT fNextLine = 40.0f; // 表示する高さ
 
-    // 操作法やパラメータを表示する
-    fNextLine = (FLOAT) m_d3dsdBackBuffer.Height; 
+	// 操作法やパラメータを表示する
+	fNextLine = (FLOAT)m_d3dsdBackBuffer.Height;
 
-    lstrcpy( szMsg, TEXT("Press 'F2' to configure display") );
-    fNextLine -= 20.0f;
-    m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
+	lstrcpy(szMsg, TEXT("Press 'F2' to configure display"));
+	fNextLine -= 20.0f;
+	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
 
-    lstrcpy( szMsg, m_strDeviceStats );
-    fNextLine -= 20.0f;
-    m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
-    lstrcpy( szMsg, m_strFrameStats );
-    fNextLine -= 20.0f;
-    m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
-	
+	lstrcpy(szMsg, m_strDeviceStats);
+	fNextLine -= 20.0f;
+	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
+	lstrcpy(szMsg, m_strFrameStats);
+	fNextLine -= 20.0f;
+	m_pFont->DrawText(2, fNextLine, fontColor, szMsg);
+
 	return S_OK;
 }
 
@@ -620,31 +614,31 @@ HRESULT CMyD3DApplication::RenderText()
 // Name: MsgProc()
 // Desc: WndProc をオーバーライドしたもの
 //-------------------------------------------------------------
-LRESULT CMyD3DApplication::MsgProc( HWND hWnd, UINT msg,
-                                 WPARAM wParam, LPARAM lParam )
+LRESULT CMyD3DApplication::MsgProc(HWND hWnd, UINT msg,
+	WPARAM wParam, LPARAM lParam)
 {
-    switch( msg )
-    {
-        case WM_PAINT:
-        {
-            if( m_bLoadingApp )
-            {
-                // ロード中
-                HDC hDC = GetDC( hWnd );
-                TCHAR strMsg[MAX_PATH];
-                wsprintf(strMsg, TEXT("Loading... Please wait"));
-                RECT rct;
-                GetClientRect( hWnd, &rct );
-                DrawText( hDC, strMsg, -1, &rct
-                		, DT_CENTER|DT_VCENTER|DT_SINGLELINE );
-                ReleaseDC( hWnd, hDC );
-            }
-            break;
-        }
+	switch (msg)
+	{
+	case WM_PAINT:
+	{
+		if (m_bLoadingApp)
+		{
+			// ロード中
+			HDC hDC = GetDC(hWnd);
+			TCHAR strMsg[MAX_PATH];
+			wsprintf(strMsg, TEXT("Loading... Please wait"));
+			RECT rct;
+			GetClientRect(hWnd, &rct);
+			DrawText(hDC, strMsg, -1, &rct
+				, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+			ReleaseDC(hWnd, hDC);
+		}
+		break;
+	}
 
-    }
+	}
 
-    return CD3DApplication::MsgProc( hWnd, msg, wParam, lParam );
+	return CD3DApplication::MsgProc(hWnd, msg, wParam, lParam);
 }
 
 
@@ -661,15 +655,15 @@ HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 	SAFE_RELEASE(m_pOriginalTex);
 	SAFE_RELEASE(m_pMapZ);
 
-	m_pMesh  ->InvalidateDeviceObjects(); // メッシュ
+	m_pMesh->InvalidateDeviceObjects(); // メッシュ
 	m_pMeshBg->InvalidateDeviceObjects();
 
-    m_pFont->InvalidateDeviceObjects();	// フォント
+	m_pFont->InvalidateDeviceObjects();	// フォント
 
 	// シェーダ
-    if( m_pEffect != NULL ) m_pEffect->OnLostDevice();
+	if (m_pEffect != NULL) m_pEffect->OnLostDevice();
 
-    return S_OK;
+	return S_OK;
 }
 
 
@@ -681,17 +675,17 @@ HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::DeleteDeviceObjects()
 {
-    // シェーダ
-	SAFE_RELEASE( m_pEffect );
-	
+	// シェーダ
+	SAFE_RELEASE(m_pEffect);
+
 	// メッシュ
-	m_pMesh  ->Destroy();
+	m_pMesh->Destroy();
 	m_pMeshBg->Destroy();
 
-    // フォント
-    m_pFont->DeleteDeviceObjects();
+	// フォント
+	m_pFont->DeleteDeviceObjects();
 
-    return S_OK;
+	return S_OK;
 }
 
 
@@ -703,12 +697,12 @@ HRESULT CMyD3DApplication::DeleteDeviceObjects()
 //-------------------------------------------------------------
 HRESULT CMyD3DApplication::FinalCleanup()
 {
-    SAFE_DELETE( m_pMeshBg ); // メッシュ
-	SAFE_DELETE( m_pMesh );
+	SAFE_DELETE(m_pMeshBg); // メッシュ
+	SAFE_DELETE(m_pMesh);
 
-    SAFE_DELETE( m_pFont );	// フォント
+	SAFE_DELETE(m_pFont);	// フォント
 
-    return S_OK;
+	return S_OK;
 }
 
 
