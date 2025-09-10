@@ -48,6 +48,8 @@ class CMyD3DApplication : public CD3DApplication
     LPDIRECT3DSURFACE9		m_pMapZ;		// 深度バッファ
     LPDIRECT3DTEXTURE9		m_pOriginalTex;	// テクスチャ
     LPDIRECT3DSURFACE9		m_pOriginalSurf;// サーフェス
+    LPDIRECT3DTEXTURE9		m_pNormalTex;	// 法線マップ
+    LPDIRECT3DSURFACE9		m_pNormalSurf;	// サーフェス
 
     // 通常の座標変換行列
     D3DXMATRIX				m_mWorld;

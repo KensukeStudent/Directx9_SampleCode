@@ -86,6 +86,8 @@ CMyD3DApplication::CMyD3DApplication()
 	m_pMapZ = NULL;
 	m_pOriginalTex = NULL;
 	m_pOriginalSurf = NULL;
+	m_pNormalTex = NULL;
+	m_pNormalSurf = NULL;
 
 	m_pEffect = NULL;
 	m_hTechnique = NULL;
@@ -288,6 +290,13 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 		return E_FAIL;
 	if (FAILED(m_pOriginalTex->GetSurfaceLevel(0, &m_pOriginalSurf)))
 		return E_FAIL;
+	// 法線マップ
+	if (FAILED(m_pd3dDevice->CreateTexture(
+		MAP_WIDTH, MAP_HEIGHT, 1, D3DUSAGE_RENDERTARGET,
+		D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_pNormalTex, NULL)))
+		return E_FAIL;
+	if (FAILED(m_pNormalTex->GetSurfaceLevel(0, &m_pNormalSurf)))
+		return E_FAIL;
 
 	m_pEffect->OnResetDevice();
 
@@ -397,7 +406,8 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			// レンダリングターゲットの変更
 			//-------------------------------------------------
-			m_pd3dDevice->SetRenderTarget(0, m_pOriginalSurf);
+			m_pd3dDevice->SetRenderTarget(0, m_pOriginalSurf); // hlslのCOLOR0に対応
+			m_pd3dDevice->SetRenderTarget(1, m_pNormalSurf); // hlslのCOLOR1に対応
 			m_pd3dDevice->SetDepthStencilSurface(m_pMapZ);
 			// ビューポートの変更
 			D3DVIEWPORT9 viewport = { 0,0      // 左上の座標
@@ -468,6 +478,7 @@ HRESULT CMyD3DApplication::Render()
 		// レンダリングターゲットを元に戻す
 		//-----------------------------------------------------
 		m_pd3dDevice->SetRenderTarget(0, pOldBackBuffer);
+		m_pd3dDevice->SetRenderTarget(1, NULL);
 		m_pd3dDevice->SetDepthStencilSurface(pOldZBuffer);
 		m_pd3dDevice->SetViewport(&oldViewport);
 		pOldBackBuffer->Release();
@@ -531,7 +542,7 @@ HRESULT CMyD3DApplication::Render()
 										, 0.0f - du, 1.0f + dv
 										, 0.0f + du, 1.0f - dv, },
 			};
-			m_pEffect->SetTexture(m_htOriginalTex, m_pOriginalTex);
+			m_pEffect->SetTexture(m_htOriginalTex, m_pNormalTex);
 			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX4);
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex, sizeof(T4VERTEX));
@@ -651,6 +662,8 @@ LRESULT CMyD3DApplication::MsgProc(HWND hWnd, UINT msg,
 HRESULT CMyD3DApplication::InvalidateDeviceObjects()
 {
 	// レンダリングターゲット
+	SAFE_RELEASE(m_pNormalSurf);
+	SAFE_RELEASE(m_pNormalTex);
 	SAFE_RELEASE(m_pOriginalSurf);
 	SAFE_RELEASE(m_pOriginalTex);
 	SAFE_RELEASE(m_pMapZ);
