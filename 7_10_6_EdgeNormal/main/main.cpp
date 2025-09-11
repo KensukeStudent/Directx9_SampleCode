@@ -520,6 +520,7 @@ HRESULT CMyD3DApplication::Render()
 			RS(D3DRS_SRCBLEND, D3DBLEND_ZERO);
 			RS(D3DRS_DESTBLEND, D3DBLEND_SRCALPHA);
 
+			// サンプリング範囲を1.5で大きめにしてエッジを太くする
 			FLOAT du = 1.5f / MAP_WIDTH;
 			FLOAT dv = 1.5f / MAP_HEIGHT;
 
