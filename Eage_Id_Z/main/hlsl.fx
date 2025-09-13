@@ -11,6 +11,9 @@
 float4x4 mWVP;
 float m_hfId;
 
+float fNear = 1.0f;
+float fFar = 7.0f;
+
 float4 vCol;
 float4 vLightDir; // ライトの方向
 
@@ -120,6 +123,7 @@ VS_OUTPUT VS_pass1(
     float diffuse = max(dot(vLightDir.xyz, Normal.xyz), 0); //拡散色
     float ambient = vLightDir.w; //環境色
     Out.Color = vCol * (diffuse + ambient);
+    Out.Color.w = (Out.Pos.w - fNear) / (fFar - fNear); // 深度
 	
 	// テクスチャ座標
     Out.Tex0 = Tex0;
@@ -135,7 +139,14 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = In.Color * tex2D(SrcSamp, In.Tex0);
-    Out.a = m_hfId;
+    Out.a = m_hfId * In.Color.w;
+    //Out.a = m_hfId + In.Color.w;
+    
+    // 加算型
+    // 1: 1 + 0.3 = 1.3, 1 + 0.8 = 1.8: 結果両方が1を超える影響で手前のオブジェクトにエッジがのらない？
+    
+    // 乗算型
+    // 1: 1 * 0.3 = 0.3, 1 * 0.8 = 0.8: 結果両方が1を超えないので手前のオブジェクトにエッジがのる
 	
     return Out;
 }
