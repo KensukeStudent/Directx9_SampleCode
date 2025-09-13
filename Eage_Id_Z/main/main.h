@@ -36,12 +36,10 @@ class CMyD3DApplication : public CD3DApplication
     // シェーダ
     LPD3DXEFFECT		    m_pEffect;		// エフェクト
     D3DXHANDLE				m_hTechnique;	// テクニック
-    D3DXHANDLE				m_hmWVP0;		// 変換行列
-    D3DXHANDLE				m_hmWVP1;		// 変換行列
+    D3DXHANDLE				m_hmWVP;		// 変換行列
     D3DXHANDLE				m_hvCol;		// 頂点色
     D3DXHANDLE				m_hvDir;		// 光源の方向
-    D3DXHANDLE				m_hfId0;		// ID値 背景
-    D3DXHANDLE				m_hfId1;		// ID値 ボックス
+    D3DXHANDLE				m_hfId;		    // ID値
     D3DXHANDLE				m_htSrcTex;		// テクスチャ
     D3DXHANDLE				m_htFloorTex;   // 床テクスチャ
     D3DXHANDLE				m_htOriginalTex;// 画面テクスチャ

@@ -89,10 +89,8 @@ CMyD3DApplication::CMyD3DApplication()
 
 	m_pEffect = NULL;
 	m_hTechnique = NULL;
-	m_hmWVP0 = NULL;
-	m_hmWVP1 = NULL;
-	m_hfId0 = NULL;
-	m_hfId1 = NULL;
+	m_hmWVP = NULL;
+	m_hfId = NULL;
 	m_hvCol = NULL;
 	m_hvDir = NULL;
 	m_htSrcTex = NULL;
@@ -218,10 +216,8 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 	}
 	else {
 		m_hTechnique = m_pEffect->GetTechniqueByName("TShader");
-		m_hmWVP0 = m_pEffect->GetParameterByName(NULL, "mWVP0");
-		m_hmWVP1 = m_pEffect->GetParameterByName(NULL, "mWVP1");
-		m_hfId0 = m_pEffect->GetParameterByName(NULL, "m_hfId0");
-		m_hfId1 = m_pEffect->GetParameterByName(NULL, "m_hfId1");
+		m_hmWVP = m_pEffect->GetParameterByName(NULL, "mWVP");
+		m_hfId = m_pEffect->GetParameterByName(NULL, "m_hfId");
 		m_hvCol = m_pEffect->GetParameterByName(NULL, "vCol");
 		m_hvDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
 		m_htSrcTex = m_pEffect->GetParameterByName(NULL, "SrcTex");
@@ -422,8 +418,8 @@ HRESULT CMyD3DApplication::Render()
 			m_pEffect->BeginPass(0);
 
 			m = m_mWorld * m_mView * m_mProj;
-			m_pEffect->SetMatrix(m_hmWVP0, &m);
-			m_pEffect->SetFloat(m_hfId0, 0);
+			m_pEffect->SetMatrix(m_hmWVP, &m);
+			m_pEffect->SetFloat(m_hfId, 0);
 
 			// 背景の描画
 			pMtrl = m_pMeshBg->m_pMaterials;
@@ -445,8 +441,8 @@ HRESULT CMyD3DApplication::Render()
 				D3DXMatrixTranslation(&mT, 0.0f, 0.6f, i);
 				mW = mT * m_mWorld;
 				m = mW * m_mView * m_mProj;
-				m_pEffect->SetMatrix(m_hmWVP1, &m);
-				m_pEffect->SetFloat(m_hfId1, 1);
+				m_pEffect->SetMatrix(m_hmWVP, &m);
+				m_pEffect->SetFloat(m_hfId, 1);
 
 				// 光源の設定
 				D3DXMatrixInverse(&m, NULL, &mW);

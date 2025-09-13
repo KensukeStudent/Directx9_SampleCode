@@ -8,11 +8,8 @@
 // ------------------------------------------------------------
 // グローバル変数
 // ------------------------------------------------------------
-float4x4 mWVP0;
-float4x4 mWVP1;
-
-float m_hfId0;
-float m_hfId1;
+float4x4 mWVP;
+float m_hfId;
 
 float4 vCol;
 float4 vLightDir; // ライトの方向
@@ -83,7 +80,7 @@ VS_OUTPUT VS_pass0(
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
     
 	// 位置座標
-    Out.Pos = mul(Pos, mWVP0);
+    Out.Pos = mul(Pos, mWVP);
 	
 	// テクスチャ座標
     Out.Tex0 = Tex0;
@@ -99,7 +96,7 @@ float4 PS_pass0(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = tex2D(FloorSamp, In.Tex0);
-    Out.a = m_hfId0;
+    Out.a = m_hfId;
 	
     return Out;
 }
@@ -117,7 +114,7 @@ VS_OUTPUT VS_pass1(
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
     
 	// 位置座標
-    Out.Pos = mul(Pos, mWVP1);
+    Out.Pos = mul(Pos, mWVP);
 	
 	// 色
     float diffuse = max(dot(vLightDir.xyz, Normal.xyz), 0); //拡散色
@@ -138,7 +135,7 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = In.Color * tex2D(SrcSamp, In.Tex0);
-    Out.a = m_hfId1;
+    Out.a = m_hfId;
 	
     return Out;
 }
@@ -156,7 +153,7 @@ VS_OUTPUT VS_pass2(
     VS_OUTPUT Out = (VS_OUTPUT) 0; // 出力データ
     
 	// 位置座標
-    Out.Pos = mul(Pos, mWVP1);
+    Out.Pos = mul(Pos, mWVP);
 	
 	// テクスチャ座標
     Out.Tex0 = Tex0;
