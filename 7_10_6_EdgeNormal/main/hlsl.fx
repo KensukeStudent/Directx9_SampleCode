@@ -97,7 +97,8 @@ VS_OUTPUT VS_pass0(
     Out.Pos = mul(Pos, mWVP0);
 		
 	// 法線 0~1に線形変換
-    Out.Normal = 0.5f * Normal + 0.5f; // ホントはワールドに変換
+    //Out.Normal = 0.5f * Normal + 0.5f; // ホントはワールドに変換
+    Out.Normal = 0;
     
 	// テクスチャ座標
     Out.Tex0 = Tex0;
