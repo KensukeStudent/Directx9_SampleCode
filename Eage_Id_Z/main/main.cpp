@@ -438,8 +438,10 @@ HRESULT CMyD3DApplication::Render()
 
 			for (size_t i = 0; i < 2; i++)
 			{
-				D3DXMatrixTranslation(&mT, 0.0f, 0.6f, i);
-				mW = mT * m_mWorld;
+				D3DXMatrixTranslation(&mT, 0.0f, 0.5f, i);
+				float scale = 0.5f + 0.5f * i;
+				D3DXMatrixScaling(&mS, scale, scale, scale);
+				mW = mT * mS * m_mWorld;
 				m = mW * m_mView * m_mProj;
 				m_pEffect->SetMatrix(m_hmWVP, &m);
 				m_pEffect->SetFloat(m_hfId, 1);
