@@ -85,7 +85,7 @@ VS_OUTPUT VS_pass0(
     Out.Pos = mul(Pos, mWVP0);
 		
     // 深度値
-    Out.Color.w = (Out.Pos.w - fNear) / (fFar - fNear);
+    //Out.Color.w = (Out.Pos.w - fNear) / (fFar - fNear);
     
 	// テクスチャ座標
     Out.Tex0 = Tex0;
@@ -101,7 +101,8 @@ float4 PS_pass0(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = tex2D(FloorSamp, In.Tex0);
-    Out.a = In.Color.w;
+    //Out.a = In.Color.w;
+    Out.a = 0;
 	
     return Out;
 }
@@ -141,7 +142,7 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
 	
 	// 色
     Out = In.Color * tex2D(SrcSamp, In.Tex0);
-    Out.a = In.Color;
+    Out.a = In.Color.w;
 	
     return Out;
 }
