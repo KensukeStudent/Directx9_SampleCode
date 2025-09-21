@@ -23,8 +23,8 @@
 #include "resource.h"
 #include "main.h"
 
-#define MAP_WIDTH		512
-#define MAP_HEIGHT		512
+#define MAP_WIDTH		1600
+#define MAP_HEIGHT		900
 #define SMALL_WIDTH		((MAP_WIDTH )/8)
 #define SMALL_HEIGHT	((MAP_HEIGHT)/8)
 
@@ -110,8 +110,8 @@ CMyD3DApplication::CMyD3DApplication()
 	m_fWorldRotY = 0.0f;
 	m_fViewZoom = 4.1f;
 
-	m_dwCreationWidth = 512;
-	m_dwCreationHeight = 512;
+	m_dwCreationWidth = MAP_WIDTH;
+	m_dwCreationHeight = MAP_HEIGHT;
 	m_strWindowTitle = TEXT("main");
 	m_d3dEnumeration.AppUsesDepthBuffer = TRUE;
 	m_bStartFullscreen = false;
@@ -461,23 +461,51 @@ HRESULT CMyD3DApplication::Render()
 
 			m_pd3dDevice->SetFVF(D3DFVF_XYZ | D3DFVF_TEX4);
 
-			float u0 = 0 + 0.5f / SMALL_WIDTH;
-			float u1 = 1 + 0.5f / SMALL_WIDTH;
-			float v0 = 0 + 0.5f / SMALL_HEIGHT;
-			float v1 = 1 + 0.5f / SMALL_HEIGHT;
+			float u0 = 0 + 0.5f / SMALL_WIDTH; // 左
+			float u1 = 1 + 0.5f / SMALL_WIDTH; // 右
+			float v0 = 0 + 0.5f / SMALL_HEIGHT;// 上
+			float v1 = 1 + 0.5f / SMALL_HEIGHT;// 下
 			float dw = 0.25f / SMALL_WIDTH;
 			float dh = 0.25f / SMALL_HEIGHT;
+			// x,y,z: 頂点座標
+			// u,v: テクスチャ座標
+			// 概ね以下の形でサンプリング点をとる
+			// □□
+			//  ■
+			// □□
 			T4VERTEX VertexSmall[4] = {
 				// x      y     z    w   u0    v0    u1    v1    u2    v2    u3    v3
-				{-1.0f, +1.0f, 0.1f, u0 - dw,v0 - dh,u0 + dw,v0 - dh,u0 - dw,v0 + dh,u0 + dw,v0 + dh,},
-				{+1.0f, +1.0f, 0.1f, u1 - dw,v0 - dh,u1 + dw,v0 - dh,u1 - dw,v0 + dh,u1 + dw,v0 + dh,},
-				{+1.0f, -1.0f, 0.1f, u1 - dw,v1 - dh,u1 + dw,v1 - dh,u1 - dw,v1 + dh,u1 + dw,v1 + dh,},
-				{-1.0f, -1.0f, 0.1f, u0 - dw,v1 - dh,u0 + dw,v1 - dh,u0 - dw,v1 + dh,u0 + dw,v1 + dh,},
+				// 左上
+				{-1.0f, +1.0f, 0.1f, 
+				u0 - dw,v0 - dh, 
+				u0 + dw,v0 - dh, 
+				u0 - dw,v0 + dh, 
+				u0 + dw,v0 + dh,},
+				// 右上
+				{+1.0f, +1.0f, 0.1f, 
+				u1 - dw,v0 - dh, 
+				u1 + dw,v0 - dh, 
+				u1 - dw,v0 + dh, 
+				u1 + dw,v0 + dh,},
+				// 右下
+				{+1.0f, -1.0f, 0.1f, 
+				u1 - dw,v1 - dh,  
+				u1 + dw,v1 - dh, 
+				u1 - dw,v1 + dh, 
+				u1 + dw,v1 + dh,},
+				// 左下
+				{-1.0f, -1.0f, 0.1f, 
+				u0 - dw,v1 - dh,  
+				u0 + dw,v1 - dh,  
+				u0 - dw,v1 + dh, 
+				u0 + dw,v1 + dh,},
 			};
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[0]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pOriginalTex);
+			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
-				, 2, VertexSmall, sizeof(T4VERTEX));
+				, 2, VertexSmall, sizeof(T4VERTEX)); // sizeof(T4VERTEX)分vs_pass0の頂点シェーダーが動く(今回だと4回)
+
 			//-------------------------------------------------
 			// さらにぼかす
 			//-------------------------------------------------
@@ -485,23 +513,42 @@ HRESULT CMyD3DApplication::Render()
 			dh = 1.0f / SMALL_HEIGHT;
 			T4VERTEX Vertex4[4] = {
 				// x      y     z     u0 v0  u1   v1 u2  v2    u3    v3
-				{-1.0f, +1.0f, 0.1f,  0, 0, 0 + dw, 0, 0, 0 + dh, 0 + dw, 0 + dh,},
-				{+1.0f, +1.0f, 0.1f,  1, 0, 1 + dw, 0, 1, 0 + dh, 1 + dw, 0 + dh,},
-				{+1.0f, -1.0f, 0.1f,  1, 1, 1 + dw, 1, 1, 1 + dh, 1 + dw, 1 + dh,},
-				{-1.0f, -1.0f, 0.1f,  0, 1, 0 + dw, 1, 0, 1 + dh, 0 + dw, 1 + dh,},
+				{-1.0f, +1.0f, 0.1f,  
+					0, 0, 
+					0 + dw, 0, 
+					0, 0 + dh, 
+					0 + dw, 0 + dh,},
+				{+1.0f, +1.0f, 0.1f,  
+					1, 0, 
+					1 + dw, 0, 
+					1, 0 + dh, 
+					1 + dw, 0 + dh,},
+				{+1.0f, -1.0f, 0.1f,  
+					1, 1, 
+					1 + dw, 1, 
+					1, 1 + dh, 
+					1 + dw, 1 + dh,},
+				{-1.0f, -1.0f, 0.1f,  
+					0, 1,
+					0 + dw, 1, 
+					0, 1 + dh, 
+					0 + dw, 1 + dh,},
 			};
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[1]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pPostTex[0]);
+			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex4, sizeof(T4VERTEX));
 
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[0]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pPostTex[1]);
+			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex4, sizeof(T4VERTEX));
 
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[1]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pPostTex[0]);
+			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex4, sizeof(T4VERTEX));
 
@@ -538,6 +585,8 @@ HRESULT CMyD3DApplication::Render()
 			m_pEffect->SetTexture(m_htBlurTex, m_pPostTex[1]);
 			m_pEffect->SetTexture(m_htBlendTex, m_pTex);
 			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX4);
+			m_pEffect->CommitChanges();
+
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex3, sizeof(T3VERTEX));
 			m_pEffect->End();

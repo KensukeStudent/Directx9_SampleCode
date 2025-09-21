@@ -494,11 +494,11 @@ HRESULT CMyD3DApplication::Render()
 		//-----------------------------------------------------
 
 		TVERTEX Vertex2[4] = {
-			//   x    y   z    rhw    tu    tv
-			{ 0.0f,   0, 0.1f, 1.0f, 0.0f, 0.0f,},
+			//     x    y   z    rhw    tu    tv
+			{     0.0f, 0, 0.1f, 1.0f, 0.0f, 0.0f,},
 			{ 0.5f * w, 0, 0.1f, 1.0f, 0.5f, 0.0f,},
 			{ 0.5f * w, h, 0.1f, 1.0f, 0.5f, 1.0f,},
-			{ 0.0f,   h, 0.1f, 1.0f, 0.0f, 1.0f,},
+			{     0.0f, h, 0.1f, 1.0f, 0.0f, 1.0f,},
 		};
 		m_pd3dDevice->SetTexture(0, m_pPostMap);
 		m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
