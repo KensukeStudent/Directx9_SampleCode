@@ -26,6 +26,8 @@
 #define MAP_WIDTH	1600
 #define MAP_HEIGHT	900
 
+#define SMALL_WIDTH		((MAP_WIDTH )/8)
+#define SMALL_HEIGHT	((MAP_HEIGHT)/8)
 
 // 長いから短縮形を作ってみた
 #define RS   m_pd3dDevice->SetRenderState
@@ -42,9 +44,20 @@ typedef struct {
 } TVERTEX;
 
 typedef struct {
+	FLOAT       p[4];
+	FLOAT       t[2][2];// テクスチャ2枚
+} T2VERTEX;
+
+typedef struct {
     FLOAT       p[3];
     FLOAT       t[4][2];// テクスチャ４枚
 } T4VERTEX;
+
+// スクリーン描画用（RHW を含む）頂点構造体
+typedef struct {
+	FLOAT       p[4];      // x, y, z, rhw
+	FLOAT       t[4][2];   // テクスチャ4枚
+} T4VERTEXRHW;
 
 //-------------------------------------------------------------
 // グローバル変数
@@ -255,12 +268,24 @@ HRESULT CMyD3DApplication::RestoreDeviceObjects()
 		return E_FAIL;
 	if (FAILED(m_pOriginalTex->GetSurfaceLevel(0, &m_pOriginalSurf)))
 		return E_FAIL;
+	//// ぼかすためのもの
+	//for(i=0;i<2;i++){
+	//	if (FAILED(m_pd3dDevice->CreateTexture(
+	//						MAP_WIDTH/2, MAP_HEIGHT/2, 1,
+	//						D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8,
+	//						D3DPOOL_DEFAULT, &m_pPostTex[i], NULL)))
+	//		return E_FAIL;
+	//	if (FAILED(m_pPostTex[i]->GetSurfaceLevel(0, &m_pPostSurf[i])))
+	//		return E_FAIL;
+	//}
+
+
 	// ぼかすためのもの
-	for(i=0;i<2;i++){
+	for (i = 0; i < 2; i++) {
 		if (FAILED(m_pd3dDevice->CreateTexture(
-							MAP_WIDTH/2, MAP_HEIGHT/2, 1,
-							D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8,
-							D3DPOOL_DEFAULT, &m_pPostTex[i], NULL)))
+			SMALL_WIDTH, SMALL_HEIGHT, 1,
+			D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8,
+			D3DPOOL_DEFAULT, &m_pPostTex[i], NULL)))
 			return E_FAIL;
 		if (FAILED(m_pPostTex[i]->GetSurfaceLevel(0, &m_pPostSurf[i])))
 			return E_FAIL;
@@ -378,7 +403,6 @@ HRESULT CMyD3DApplication::FrameMove()
     else if( m_UserInput.bW && !m_UserInput.bQ )
         m_Scale -= m_fElapsedTime;
 	if(  m_Scale<0)m_Scale=0;
-	if(2<m_Scale  )m_Scale=2;
 
 	return S_OK;
 }
@@ -421,21 +445,15 @@ HRESULT CMyD3DApplication::Render()
 	//---------------------------------------------------------
     if( SUCCEEDED( m_pd3dDevice->BeginScene() ) )
     {
+		//-------------------------------------------------
+		// レンダリングターゲットの保存
+		//-------------------------------------------------
+		m_pd3dDevice->GetRenderTarget(0, &pOldBackBuffer);
+		m_pd3dDevice->GetDepthStencilSurface(&pOldZBuffer);
+		m_pd3dDevice->GetViewport(&oldViewport);
+
 		if( m_pEffect != NULL ) 
 		{
-			//-------------------------------------------------
-			// レンダリングターゲットの保存
-			//-------------------------------------------------
-			m_pd3dDevice->GetRenderTarget(0, &pOldBackBuffer);
-			m_pd3dDevice->GetDepthStencilSurface(&pOldZBuffer);
-			m_pd3dDevice->GetViewport(&oldViewport);
-
-			//-------------------------------------------------
-			// シェーダの設定
-			//-------------------------------------------------
-			m_pEffect->SetTechnique( m_hTechnique );
-			m_pEffect->Begin( NULL, 0 );
-
 			//-------------------------------------------------
 			// レンダリングターゲットの変更
 			//-------------------------------------------------
@@ -452,6 +470,12 @@ HRESULT CMyD3DApplication::Render()
 			m_pd3dDevice->Clear(0L, NULL
 							, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
 							, 0xff000000, 1.0f, 0L);
+
+			//-------------------------------------------------
+			// シェーダの設定
+			//-------------------------------------------------
+			m_pEffect->SetTechnique(m_hTechnique);
+			m_pEffect->Begin(NULL, 0);
 
 			//-------------------------------------------------
 			// モデルの描画
@@ -507,53 +531,107 @@ HRESULT CMyD3DApplication::Render()
 			m_pEffect->BeginPass( 2 );
 			RS( D3DRS_ZENABLE, FALSE );
 			RS( D3DRS_LIGHTING, FALSE );
-			TSS(0,D3DTSS_COLOROP,	D3DTOP_SELECTARG1);
-			TSS(0,D3DTSS_COLORARG1,	D3DTA_TEXTURE);
-			TSS(1,D3DTSS_COLOROP,   D3DTOP_DISABLE);
+			//TSS(0,D3DTSS_COLOROP,	D3DTOP_SELECTARG1);
+			//TSS(0,D3DTSS_COLORARG1,	D3DTA_TEXTURE);
+			//TSS(1,D3DTSS_COLOROP,   D3DTOP_DISABLE);
 			
-			float du = 1.0f/MAP_WIDTH;
-			float dv = 1.0f/MAP_HEIGHT;
-			T4VERTEX Vertex1[4] = {
-				// x      y     z    u0 v0   u1  v1 u2   v2    u3    v3
-				{-1.0f, +1.0f, 0.1f,  0, 0, 0+du, 0, 0, 0+dv, 0+du, 0+dv,},
-				{+1.0f, +1.0f, 0.1f,  1, 0, 1+du, 0, 1, 0+dv, 1+du, 0+dv,},
-				{+1.0f, -1.0f, 0.1f,  1, 1, 1+du, 1, 1, 1+dv, 1+du, 1+dv,},
-				{-1.0f, -1.0f, 0.1f,  0, 1, 0+du, 1, 0, 1+dv, 0+du, 1+dv,},
+			float u0 = 0 + 0.5f / SMALL_WIDTH; // 左
+			float u1 = 1 + 0.5f / SMALL_WIDTH; // 右
+			float v0 = 0 + 0.5f / SMALL_HEIGHT;// 上
+			float v1 = 1 + 0.5f / SMALL_HEIGHT;// 下
+			float dw = 0.25f / SMALL_WIDTH;
+			float dh = 0.25f / SMALL_HEIGHT;
+			// x,y,z: 頂点座標
+			// u,v: テクスチャ座標
+			// 概ね以下の形でサンプリング点をとる
+			// □□
+			//  ■
+			// □□
+			T4VERTEX VertexSmall[4] = {
+				// x      y     z    w   u0    v0    u1    v1    u2    v2    u3    v3
+				// 左上
+				{-1.0f, +1.0f, 0.1f,
+				u0 - dw,v0 - dh,
+				u0 + dw,v0 - dh,
+				u0 - dw,v0 + dh,
+				u0 + dw,v0 + dh,},
+				// 右上
+				{+1.0f, +1.0f, 0.1f,
+				u1 - dw,v0 - dh,
+				u1 + dw,v0 - dh,
+				u1 - dw,v0 + dh,
+				u1 + dw,v0 + dh,},
+				// 右下
+				{+1.0f, -1.0f, 0.1f,
+				u1 - dw,v1 - dh,
+				u1 + dw,v1 - dh,
+				u1 - dw,v1 + dh,
+				u1 + dw,v1 + dh,},
+				// 左下
+				{-1.0f, -1.0f, 0.1f,
+				u0 - dw,v1 - dh,
+				u0 + dw,v1 - dh,
+				u0 - dw,v1 + dh,
+				u0 + dw,v1 + dh,},
 			};
+
 			m_pd3dDevice->SetFVF( D3DFVF_XYZ | D3DFVF_TEX4 );
 
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[0]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pOriginalTex);
 			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN
-							, 2, Vertex1, sizeof( T4VERTEX ) );
+							, 2, VertexSmall, sizeof( T4VERTEX ) );
 
-			du = 0.5f/MAP_WIDTH;
-			dv = 0.5f/MAP_HEIGHT;
-			T4VERTEX Vertex2[4] = {
-				// x      y     z    u0 v0   u1  v1 u2   v2    u3    v3
-				{-1.0f, +1.0f, 0.1f,  0, 0, 0+du, 0, 0, 0+dv, 0+du, 0+dv,},
-				{+1.0f, +1.0f, 0.1f,  1, 0, 1+du, 0, 1, 0+dv, 1+du, 0+dv,},
-				{+1.0f, -1.0f, 0.1f,  1, 1, 1+du, 1, 1, 1+dv, 1+du, 1+dv,},
-				{-1.0f, -1.0f, 0.1f,  0, 1, 0+du, 1, 0, 1+dv, 0+du, 1+dv,},
+			//-------------------------------------------------
+			// さらにぼかす
+			//-------------------------------------------------
+
+			dw = 1.0f / SMALL_WIDTH;
+			dh = 1.0f / SMALL_HEIGHT;
+			T4VERTEX Vertex4[4] = {
+				// x      y     z     u0 v0  u1   v1 u2  v2    u3    v3
+				{-1.0f, +1.0f, 0.1f,
+					0, 0,
+					0 + dw, 0,
+					0, 0 + dh,
+					0 + dw, 0 + dh,},
+				{+1.0f, +1.0f, 0.1f,
+					1, 0,
+					1 + dw, 0,
+					1, 0 + dh,
+					1 + dw, 0 + dh,},
+				{+1.0f, -1.0f, 0.1f,
+					1, 1,
+					1 + dw, 1,
+					1, 1 + dh,
+					1 + dw, 1 + dh,},
+				{-1.0f, -1.0f, 0.1f,
+					0, 1,
+					0 + dw, 1,
+					0, 1 + dh,
+					0 + dw, 1 + dh,},
 			};
+
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[1]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pPostTex[0]);
 			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN
-							, 2, Vertex2, sizeof( T4VERTEX ) );
+							, 2, Vertex4, sizeof( T4VERTEX ) );
 
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[0]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pPostTex[1]);
 			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN
-							, 2, Vertex2, sizeof( T4VERTEX ) );
+							, 2, Vertex4, sizeof( T4VERTEX ) );
 
 			m_pd3dDevice->SetRenderTarget(0, m_pPostSurf[1]);
 			m_pEffect->SetTexture(m_htSrcTex, m_pPostTex[0]);
 			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN
-							, 2, Vertex2, sizeof( T4VERTEX ) );
+							, 2, Vertex4, sizeof( T4VERTEX ) );
+
+			m_pEffect->EndPass();
 
 			//-----------------------------------------------------
 			// レンダリングターゲットを元に戻す
@@ -571,9 +649,7 @@ HRESULT CMyD3DApplication::Render()
 
 			//-----------------------------------------------------
 			// ブラーしたものを張る
-			//-----------------------------------------------------
-			m_pEffect->BeginPass(3);
-			
+			//-----------------------------------------------------			
 			v.w = m_Focus;
 			m_pEffect->SetVector( m_hvCenter, &v );
 			v.w = m_Scale;
@@ -581,21 +657,23 @@ HRESULT CMyD3DApplication::Render()
 
 			FLOAT w = (FLOAT)oldViewport.Width;
 			FLOAT h = (FLOAT)oldViewport.Height;
-			FLOAT dw = 0.5f/w;
-			FLOAT dh = 0.5f/h;
-			T4VERTEX Vertex[4] = {
-				//x  y   z    w    tu    tv
-				{ 0, 0, 0.1f, 1, 0+dw, 0+dh, 0+dw, 0+dh, 0+dw, 0+dh,},
-				{ w, 0, 0.1f, 1, 1+dw, 0+dh, 1+dw, 0+dh, 1+dw, 0+dh,},
-				{ w, h, 0.1f, 1, 1+dw, 1+dh, 1+dw, 1+dh, 1+dw, 1+dh,},
-				{ 0, h, 0.1f, 1, 0+dw, 1+dh, 0+dw, 1+dh, 0+dw, 1+dh,},
+			T4VERTEXRHW Vertex[4] = {
+				//x  y   z    rhw    tu    tv
+				{ 0, 0, 0.1f, 1, 0 + dw, 0 + dh, 0 + dw, 0 + dh, 0 + dw, 0 + dh,},
+				{ w, 0, 0.1f, 1, 1 + dw, 0 + dh, 1 + dw, 0 + dh, 1 + dw, 0 + dh,},
+				{ w, h, 0.1f, 1, 1 + dw, 1 + dh, 1 + dw, 1 + dh, 1 + dw, 1 + dh,},
+				{ 0, h, 0.1f, 1, 0 + dw, 1 + dh, 0 + dw, 1 + dh, 0 + dw, 1 + dh,},
 			};
+
+			m_pEffect->BeginPass(3);
+
 			m_pEffect->SetTexture( m_htSrcTex,   m_pOriginalTex );
-			m_pEffect->SetTexture( m_htBlurTex,  m_pPostTex[1] );
-			m_pd3dDevice->SetFVF( D3DFVF_XYZRHW | D3DFVF_TEX4 );
+			m_pEffect->SetTexture(m_htBlurTex, m_pPostTex[1]);
+			m_pd3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX4);
+
 			m_pEffect->CommitChanges();
 			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN
-								, 2, Vertex, sizeof( T4VERTEX ) );
+								, 2, Vertex, sizeof(T4VERTEXRHW) );
 
 			m_pEffect->EndPass();
 			m_pEffect->End();
@@ -607,29 +685,29 @@ HRESULT CMyD3DApplication::Render()
         // ヘルプの表示
         RenderText();
 
-#if 0 // デバッグ用にテクスチャを表示する
-		{
-		m_pd3dDevice->SetTextureStageState(0,D3DTSS_COLOROP,	D3DTOP_SELECTARG1);
-		m_pd3dDevice->SetTextureStageState(0,D3DTSS_COLORARG1,	D3DTA_TEXTURE);
-		m_pd3dDevice->SetTextureStageState(1,D3DTSS_COLOROP,    D3DTOP_DISABLE);
-		m_pd3dDevice->SetVertexShader(NULL);
-		m_pd3dDevice->SetFVF( D3DFVF_XYZRHW | D3DFVF_TEX1 );
-		m_pd3dDevice->SetPixelShader(0);
-		float scale = 128.0f;
-		for(DWORD i=0; i<2; i++){
-			TVERTEX Vertex[4] = {
-				// x  y  z rhw tu tv
-				{    0,(i+0)*scale,0, 1, 0, 0,},
-				{scale,(i+0)*scale,0, 1, 1, 0,},
-				{scale,(i+1)*scale,0, 1, 1, 1,},
-				{    0,(i+1)*scale,0, 1, 0, 1,},
-			};
-			if(0==i) m_pd3dDevice->SetTexture( 0, m_pOriginalTex );
-			if(1==i) m_pd3dDevice->SetTexture( 0, m_pPostTex[1] );
-			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, Vertex, sizeof( TVERTEX ) );
-		}
-		}
-#endif		
+//#if 0 // デバッグ用にテクスチャを表示する
+//		{
+//		m_pd3dDevice->SetTextureStageState(0,D3DTSS_COLOROP,	D3DTOP_SELECTARG1);
+//		m_pd3dDevice->SetTextureStageState(0,D3DTSS_COLORARG1,	D3DTA_TEXTURE);
+//		m_pd3dDevice->SetTextureStageState(1,D3DTSS_COLOROP,    D3DTOP_DISABLE);
+//		m_pd3dDevice->SetVertexShader(NULL);
+//		m_pd3dDevice->SetFVF( D3DFVF_XYZRHW | D3DFVF_TEX1 );
+//		m_pd3dDevice->SetPixelShader(0);
+//		float scale = 500;
+//		for(DWORD i=0; i<2; i++){
+//			TVERTEX Vertex[4] = {
+//				// x  y  z rhw tu tv
+//				{    0,(i+0)*scale,0, 1, 0, 0,},
+//				{scale,(i+0)*scale,0, 1, 1, 0,},
+//				{scale,(i+1)*scale,0, 1, 1, 1,},
+//				{    0,(i+1)*scale,0, 1, 0, 1,},
+//			};
+//			if(0==i) m_pd3dDevice->SetTexture( 0, m_pOriginalTex );
+//			if(1==i) m_pd3dDevice->SetTexture( 0, m_pPostTex[1] );
+//			m_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, Vertex, sizeof( TVERTEX ) );
+//		}
+//		}
+//#endif		
 
 		// 描画の終了
         m_pd3dDevice->EndScene();
@@ -659,11 +737,13 @@ HRESULT CMyD3DApplication::RenderText()
     fNextLine -= 20.0f;
     m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
 
-	wsprintfW( szMsg, TEXT("Press 'Q'-'W' to change strength of the DOF (Now %f)"), m_Scale );
+	// 0に近いほど奥行からぼけが深くなる、大きいほど奥行のぼけが浅くなる
+	swprintf_s( szMsg, TEXT("Press 'Q'-'W' to change strength of the DOF (Now %f)"), m_Scale );
     fNextLine -= 20.0f;
     m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
 
-	wsprintfW( szMsg, TEXT("Press 'A'-'S' to change the point of the focus (Now %f)"), m_Focus );
+	// 奥行設定
+	swprintf_s( szMsg, TEXT("Press 'A'-'S' to change the point of the Focus (Now %f)"), m_Focus );
     fNextLine -= 20.0f;
     m_pFont->DrawText( 2, fNextLine, fontColor, szMsg );
 

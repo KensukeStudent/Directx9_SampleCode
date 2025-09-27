@@ -2,6 +2,8 @@
 // 被写界深度
 // 
 // Copyright (c) 2003 IMAGIRE Takashi. All rights reserved.
+// 実際のカメラの被写界深度
+// url: https://www.photografan.com/basic-knowledge/what-is-depth-of-field-and-bokeh/
 // ------------------------------------------------------------
 
 // ------------------------------------------------------------
@@ -150,16 +152,20 @@ VS_OUTPUT VS_pass2 (
 }
 
 // ------------------------------------------------------------
-// ピクセルシェーダプログラム(ぼかし)
+// ピクセルシェーダプログラム
 // ------------------------------------------------------------
-float4 PS_pass2 (VS_OUTPUT In) : COLOR
+float4 PS_pass2(VS_OUTPUT In) : COLOR
 {
-	float4 col0 = tex2D( SrcSamp, In.Tex0 );
-	float4 col1 = tex2D( SrcSamp, In.Tex1 );
-	float4 col2 = tex2D( SrcSamp, In.Tex2 );
-	float4 col3 = tex2D( SrcSamp, In.Tex3 );
+    float4 Out = 0;
 	
-	return 0.25*(col0+col1+col2+col3);
+    float3 col0 = tex2D(SrcSamp, In.Tex0);
+    float3 col1 = tex2D(SrcSamp, In.Tex1);
+    float3 col2 = tex2D(SrcSamp, In.Tex2);
+    float3 col3 = tex2D(SrcSamp, In.Tex3);
+	
+    Out.xyz = 0.25f * (col0 + col1 + col2 + col3);
+	
+    return Out;
 }
 
 
@@ -183,14 +189,16 @@ float4 PS_pass2 (VS_OUTPUT In) : COLOR
 float4 PS_pass3(VS_OUTPUT In) : COLOR
 {
     float4 sharp = tex2D(SrcSamp, In.Tex0); // くっきりした画像 (t0)
-    float4 blur = tex2D(BlurSamp, In.Tex0); // ぼかした画像 (t1)
+    float4 blur = tex2D(BlurSamp, In.Tex1); // ぼかした画像 (t1)
 
 	// フォーカス係数を組み立てる（assembly の動作を再現）
-    float f = 4 * (sharp.a - vCenter.w); // sub_x4 r0, t0.a, c0
-    f = 4 * (f * f); // mul_x4 r0, r0.a, r0.a  (二乗して符号消し)
+    // sharp.a が深度値, vCenter.w がフォーカスの中心
+    // フォーカスを合わせる距離？深度を求める
+    float f = sharp.a - vCenter.w; // sub_x4 r0, t0.a, c0
+    f = f * f; // mul_x4 r0, r0.a, r0.a  (二乗して符号消し)
     f = saturate(4 * f * vScale.w); // mul_x4_sat r0, r0, c1
 
-	// 線形合成（lrp r0, r0.a, t1, t0）
+    // 線形合成（ lrp r0, r0.a, t1, t0）
     return lerp(blur, sharp, f);
 }
 

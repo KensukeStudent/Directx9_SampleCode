@@ -589,8 +589,9 @@ HRESULT CMyD3DApplication::Render()
 
 			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN
 				, 2, Vertex3, sizeof(T3VERTEX));
-			m_pEffect->End();
+
 			m_pEffect->EndPass();
+			m_pEffect->End();
 		}
 
 		RS(D3DRS_ZENABLE, TRUE);
