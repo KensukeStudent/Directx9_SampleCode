@@ -115,10 +115,10 @@ technique TShader
 // -------------------------------------------------------------
 // テクスチャ
 // -------------------------------------------------------------
-texture DepthMap;
+texture DepthTex;
 sampler DepthMapSamp = sampler_state
 {
-    Texture = <DepthMap>;
+    Texture = <DepthTex>;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
     MipFilter = NONE;
@@ -127,10 +127,10 @@ sampler DepthMapSamp = sampler_state
     AddressV = Clamp;
 };
 // -------------------------------------------------------------
-texture FrameBuffer;
+texture FrameBufferTex;
 sampler FrameBufferSamp = sampler_state
 {
-    Texture = <FrameBuffer>;
+    Texture = <FrameBufferTex>;
     MinFilter = POINT;
     MagFilter = POINT;
     MipFilter = NONE;
@@ -309,5 +309,24 @@ technique TFinal
         // シェーダ
         VertexShader = compile vs_1_1 VS_FINAL();
         PixelShader  = compile ps_2_0 PS_FINAL();
+    }
+}
+
+// -------------------------------------------------------------
+// デバッグ
+// -------------------------------------------------------------
+float4 PS_DEBUG_DEPTH(VS_OUTPUT_FINAL In) : COLOR
+{
+    float d = tex2D(DepthMapSamp, In.Tex).x;
+    return float4(d, d, d, 1.0f);
+}
+
+technique TDebugDepth
+{
+    pass P0
+    {
+        Sampler[0] = (DepthMapSamp);
+        VertexShader = compile vs_1_1 VS_FINAL();
+        PixelShader = compile ps_2_0 PS_DEBUG_DEPTH();
     }
 }

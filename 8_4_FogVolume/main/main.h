@@ -40,6 +40,8 @@ class CMyD3DApplication : public CD3DApplication
 	D3DXHANDLE						m_hvCol;	// メッシュの色
 	D3DXHANDLE						m_hvDir;	// ライトの方向
 	D3DXHANDLE						m_hvDecaleTex; // デカールテクスチャー
+	D3DXHANDLE						m_hvDepthTex; // 深度テクスチャー
+	D3DXHANDLE						m_hvFrameBufferTex; // テクスチャー
 
 	// レンダリングターゲット
 	LPDIRECT3DSURFACE9				m_pMapZ;	// 共通Ｚバッファ

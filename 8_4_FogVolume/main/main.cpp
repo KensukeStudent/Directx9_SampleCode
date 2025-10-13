@@ -67,6 +67,8 @@ CMyD3DApplication::CMyD3DApplication()
 	m_hvCol = NULL;
 	m_hvDir = NULL;
 	m_hvDecaleTex = NULL;
+	m_hvDepthTex = NULL;
+	m_hvFrameBufferTex = NULL;
 
 	m_pMapZ = NULL;
 	m_pColorMap = NULL;
@@ -213,6 +215,8 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 		m_hvCol = m_pEffect->GetParameterByName(NULL, "vCol");
 		m_hvDir = m_pEffect->GetParameterByName(NULL, "vLightDir");
 		m_hvDecaleTex = m_pEffect->GetParameterByName(NULL, "DecaleTex");
+		m_hvDepthTex = m_pEffect->GetParameterByName(NULL, "DepthTex");
+		m_hvFrameBufferTex = m_pEffect->GetParameterByName(NULL, "FrameBufferTex");
 	}
 
 	m_pFont->InitDeviceObjects(m_pd3dDevice);// フォント
@@ -483,8 +487,8 @@ HRESULT CMyD3DApplication::Render()
 			//-------------------------------------------------
 			hTechnique = m_pEffect->GetTechniqueByName("TVolume");
 			m_pEffect->SetTechnique(hTechnique);
-			m_pEffect->SetTexture("DepthMap", m_pDepthMap);
-			m_pEffect->SetTexture("FrameBuffer", m_pFogMap);
+			m_pEffect->SetTexture(m_hvDepthTex, m_pDepthMap);
+			m_pEffect->SetTexture(m_hvFrameBufferTex, m_pFogMap);
 
 			D3DXMatrixTranslation(&mL, 0, 1.0f, 0);
 			m = mL * m_mWorld * m_mView * m_mProj;
@@ -554,7 +558,7 @@ HRESULT CMyD3DApplication::Render()
 			m_pEffect->End();
 		}
 
-#if 0 // デバッグ用にテクスチャを表示する
+#if 1 // デバッグ用にテクスチャを表示する
 		m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 		m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 		m_pd3dDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -562,22 +566,31 @@ HRESULT CMyD3DApplication::Render()
 		m_pd3dDevice->SetVertexShader(NULL);
 		m_pd3dDevice->SetPixelShader(0);
 		for (DWORD loop = 0; loop < 3; loop++) {
-			const float scale = 128.0f;
+			const float scale = 200.0f;
 			typedef struct { FLOAT p[4]; FLOAT tu, tv; } TVERTEX;
 
 			TVERTEX Vertex[4] = {
-				//       x        y   z rhw tu tv
 				{(loop)*scale,    0,0, 1, ds, dt,},
 				{(loop + 1) * scale,    0,0, 1,  s, dt,},
 				{(loop + 1) * scale,scale,0, 1,  s,  t,},
 				{(loop)*scale,scale,0, 1, ds,  t,},
 			};
-			switch (loop) {
-			case 0: m_pd3dDevice->SetTexture(0, m_pColorMap); break;
-			case 1: m_pd3dDevice->SetTexture(0, m_pDepthMap); break;
-			case 2: m_pd3dDevice->SetTexture(0, m_pFogMap); break;
+
+			if (loop == 1 && m_pEffect) {
+				// 深度はエフェクトで .x を RGB にコピーして描画（灰色）
+				m_pEffect->SetTechnique(m_pEffect->GetTechniqueByName("TDebugDepth"));
+				m_pEffect->SetTexture("DepthTex", m_pDepthMap);
+				m_pEffect->Begin(NULL, 0);
+				m_pEffect->BeginPass(0);
+				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+				m_pEffect->EndPass();
+				m_pEffect->End();
 			}
-			m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+			else {
+				// 通常のテクスチャ描画（ColorMap / FogMap）
+				m_pd3dDevice->SetTexture(0, (loop == 0) ? m_pColorMap : m_pFogMap);
+				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
+			}
 		}
 #endif      
 		RenderText();				// ヘルプ等の表示
