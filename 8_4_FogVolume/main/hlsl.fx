@@ -160,7 +160,7 @@ VS_OUTPUT_VOLUME VS_VOLUME (
 	
 	Out.Pos = pos;					// 位置座標
 	
-	Out.Tex = mul(Pos, mWVPT);		// テクスチャ座標
+    Out.Tex = mul(Pos, mWVPT); // テクスチャ座標
 	
 	Out.Depth = 0.1f*pos.w;			// 深度
 	
@@ -321,12 +321,22 @@ float4 PS_DEBUG_DEPTH(VS_OUTPUT_FINAL In) : COLOR
     return float4(d, d, d, 1.0f);
 }
 
+float4 PS_DEBUG_FOG(VS_OUTPUT_FINAL In) : COLOR
+{
+    float d = tex2D(FogMapSamp, In.Tex).x;
+    return float4(d, d, d, 1.0f);
+}
+
 technique TDebugDepth
 {
     pass P0
     {
         Sampler[0] = (DepthMapSamp);
-        VertexShader = compile vs_1_1 VS_FINAL();
         PixelShader = compile ps_2_0 PS_DEBUG_DEPTH();
+    }
+    pass P0
+    {
+        Sampler[0] = (FogMapSamp);
+        PixelShader = compile ps_2_0 PS_DEBUG_FOG();
     }
 }

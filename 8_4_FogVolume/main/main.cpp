@@ -575,20 +575,20 @@ HRESULT CMyD3DApplication::Render()
 				{(loop + 1) * scale,scale,0, 1,  s,  t,},
 				{(loop)*scale,scale,0, 1, ds,  t,},
 			};
-
-			if (loop == 1 && m_pEffect) {
+			D3DXHANDLE str = loop == 1 ? "DepthTex" : "FrameBufferTex";
+			if ((loop == 1 || loop == 2) && m_pEffect) {
 				// 深度はエフェクトで .x を RGB にコピーして描画（灰色）
 				m_pEffect->SetTechnique(m_pEffect->GetTechniqueByName("TDebugDepth"));
-				m_pEffect->SetTexture("DepthTex", m_pDepthMap);
+				m_pEffect->SetTexture(str, m_pDepthMap);
 				m_pEffect->Begin(NULL, 0);
-				m_pEffect->BeginPass(0);
+				m_pEffect->BeginPass(loop-1);
 				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
 				m_pEffect->EndPass();
 				m_pEffect->End();
 			}
 			else {
-				// 通常のテクスチャ描画（ColorMap / FogMap）
-				m_pd3dDevice->SetTexture(0, (loop == 0) ? m_pColorMap : m_pFogMap);
+				// 通常のテクスチャ描画 ColorMap
+				m_pd3dDevice->SetTexture(0, m_pColorMap);
 				m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, Vertex, sizeof(TVERTEX));
 			}
 		}
