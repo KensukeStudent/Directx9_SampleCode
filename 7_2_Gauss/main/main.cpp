@@ -249,6 +249,7 @@ HRESULT CMyD3DApplication::InitDeviceObjects()
 	// シェーダ内で使う2テクセル先を指定する定数
 	offset.x = 16.0f / MAP_WIDTH;  offset.y = 0.0f / MAP_HEIGHT;
 	m_pEffect->SetVector("offsetX", &offset);
+
 	offset.x = 0.0f / MAP_WIDTH;	offset.y = 16.0f / MAP_HEIGHT;
 	m_pEffect->SetVector("offsetY", &offset);
 

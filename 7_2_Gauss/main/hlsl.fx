@@ -98,20 +98,20 @@ float4 PS_pass1(VS_OUTPUT In) : COLOR
     // +1,-1は中心に近いテクセルなので重みが強いweightの配列0番目を掛ける
     Color  = weight[0] * (tex2D( SrcSamp, In.Tex0 )
                         + tex2D( SrcSamp, In.Tex7 + offsetX ));
-    Color += weight[1] * (tex2D( SrcSamp, In.Tex1 )
-                        + tex2D( SrcSamp, In.Tex6 + offsetX ));
-    Color += weight[2] * (tex2D( SrcSamp, In.Tex2 )
-                        + tex2D( SrcSamp, In.Tex5 + offsetX ));
-    Color += weight[3] * (tex2D( SrcSamp, In.Tex3 )
-                        + tex2D( SrcSamp, In.Tex4 + offsetX ));
-    Color += weight[4] * (tex2D( SrcSamp, In.Tex4 )
-                        + tex2D( SrcSamp, In.Tex3 + offsetX ));
-    Color += weight[5] * (tex2D( SrcSamp, In.Tex5 )
-                        + tex2D( SrcSamp, In.Tex2 + offsetX ));
-    Color += weight[6] * (tex2D( SrcSamp, In.Tex6 )
-                        + tex2D( SrcSamp, In.Tex1 + offsetX ));
-    Color += weight[7] * (tex2D( SrcSamp, In.Tex7 )
-                        + tex2D( SrcSamp, In.Tex0 + offsetX ));
+    //Color += weight[1] * (tex2D( SrcSamp, In.Tex1 )
+    //                    + tex2D( SrcSamp, In.Tex6 + offsetX ));
+    //Color += weight[2] * (tex2D( SrcSamp, In.Tex2 )
+    //                    + tex2D( SrcSamp, In.Tex5 + offsetX ));
+    //Color += weight[3] * (tex2D( SrcSamp, In.Tex3 )
+    //                    + tex2D( SrcSamp, In.Tex4 + offsetX ));
+    //Color += weight[4] * (tex2D( SrcSamp, In.Tex4 )
+    //                    + tex2D( SrcSamp, In.Tex3 + offsetX ));
+    //Color += weight[5] * (tex2D( SrcSamp, In.Tex5 )
+    //                    + tex2D( SrcSamp, In.Tex2 + offsetX ));
+    //Color += weight[6] * (tex2D( SrcSamp, In.Tex6 )
+    //                    + tex2D( SrcSamp, In.Tex1 + offsetX ));
+    //Color += weight[7] * (tex2D( SrcSamp, In.Tex7 )
+    //                    + tex2D( SrcSamp, In.Tex0 + offsetX ));
     
     return Color;
 }
